@@ -70,8 +70,8 @@
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <PropertyGroup>
-    <PostBuildEvent>xcopy "$(SolutionDir)\packages\NHibernate.JetDriver.2.0.0.1002\lib\net40\NHibernate.JetDriver.dll" "$(ProjectDir)\bin\Debug" /Y /I
-xcopy "$(SolutionDir)\packages\NHibernate.JetDriver.2.0.0.1002\lib\net40\NHibernate.JetDriver.dll" "$(ProjectDir)\bin\Release" /Y /I</PostBuildEvent>
+    <PostBuildEvent>xcopy "$(SolutionDir)packages\NHibernate.JetDriver.2.0.0.1002\lib\net40" "$(ProjectDir)bin\Debug" /y /i
+xcopy "$(SolutionDir)packages\NHibernate.JetDriver.2.0.0.1002\lib\net40" "$(ProjectDir)bin\Release" /y /i</PostBuildEvent>
   </PropertyGroup>
   <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 
        Other similar extension points exist, see Microsoft.Common.targets.
