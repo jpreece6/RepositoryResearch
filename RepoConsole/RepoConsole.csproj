@@ -43,8 +43,6 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
-    <Compile Include="Presenter\AddProductPresenter.cs" />
-    <Compile Include="Presenter\GetProductPresenter.cs" />
     <Compile Include="Presenter\MainMenuPresenter.cs" />
     <Compile Include="Presenter\IPresenter.cs" />
     <Compile Include="Presenter\ProductPresenter.cs" />
