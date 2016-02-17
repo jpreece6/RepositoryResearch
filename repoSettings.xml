@@ -1,0 +1,4 @@
+<root>
+	<ConnectionString mode="preferred" type="MsSQL2012">Server=ARTEMIS\SQLEXPRESS;Database=Research;User Id=tester;Password=password;</ConnectionString>
+	<ConnectionString mode="local" type="JetProvider">Provider=Microsoft.ACE.OLEDB.12.0;Data Source=C:\Users\joshp\Desktop\Research.accdb;</ConnectionString>
+</root>

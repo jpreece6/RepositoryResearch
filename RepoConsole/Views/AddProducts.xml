@@ -1,0 +1,5 @@
+<display>
+	<title>Add New Product</title>
+	<input type="string">Name:</input>
+	<input type="double">Price:</input>
+</display>
