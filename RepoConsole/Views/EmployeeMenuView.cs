@@ -80,6 +80,7 @@ namespace RepoConsole.Views
             Console.WriteLine("Employee Info\n");
             Console.WriteLine("1: Search by ID");
             Console.WriteLine("2: Search by Name");
+            Console.Write("\nChoice: ");
 
             var input = Console.ReadLine();
             int result;
@@ -90,6 +91,7 @@ namespace RepoConsole.Views
                 {
                     case 1:
                         Console.Clear();
+                        Console.WriteLine("Enter Employee ID\n");
                         Console.Write("ID: ");
 
                         input = Console.ReadLine();
@@ -101,13 +103,13 @@ namespace RepoConsole.Views
                         break;
                     case 2:
                         Console.Clear();
+                        Console.WriteLine("Enter Employee Name\n");
                         Console.Write("Name: ");
                         FirstName = Console.ReadLine();
                         Get(this, EventArgs.Empty);
                         break;
                 }
             }
-            Console.ReadLine();
         }
 
         public void Show_Add()
@@ -128,7 +130,7 @@ namespace RepoConsole.Views
                 Console.Clear();
                 Console.WriteLine("Employee Menu\n");
                 Console.WriteLine("1: Add new employee");
-                Console.WriteLine("2: Get employee by ID");
+                Console.WriteLine("2: Get employee (filtered)");
                 Console.WriteLine("3: Get All");
                 Console.WriteLine("4: Remove employee");
                 Console.WriteLine("5: Back");
