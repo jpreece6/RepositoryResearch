@@ -56,7 +56,6 @@
     <Compile Include="Sync\LocalContext.cs" />
     <Compile Include="Sync\RemoteContext.cs" />
     <Compile Include="Sync\SyncManager.cs" />
-    <Compile Include="Sync\TableRepository.cs" />
   </ItemGroup>
   <ItemGroup>
     <None Include="App.config" />
