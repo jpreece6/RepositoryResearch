@@ -14,12 +14,10 @@ using NHibernate.Event;
 
 namespace SyncConsole.Sync
 {
+    // TODO TALK ABOUT GENERIC ISSUES WHERE YOU CANT HAVE DIFFERENT TYPES EVEN INTERFACES
     public class SyncManager : ISyncManager
     {
         public bool Active { get; set; }
-
-        private TableRepository<IRepository<IEntity>> _remoteTableRepository;
-        private TableRepository<IRepository<IEntity>> _localTableRepository;
 
         private SessionContext _remoteSessionContext;
         private SessionContext _localSessionContext;
@@ -32,8 +30,6 @@ namespace SyncConsole.Sync
             _factoryManager = new SessionFactoryManager();
 
             CreateContexts();
-            CreateRemoteRepositories();
-            CreateLocalRepositories();
         }
 
         public void CreateContexts()
@@ -42,25 +38,16 @@ namespace SyncConsole.Sync
             _localSessionContext = new LocalContext(_factoryManager);
         }
 
-        public void CreateRemoteRepositories()
+        public void SyncTable_Employee()
         {
-            _remoteTableRepository = new TableRepository<IRepository<IEntity>>();
-            _remoteTableRepository.Save( new EmployeeRepository<IEntity>(_remoteSessionContext));
-        }
+            var localTable = new EmployeeRepository<Employee>(_localSessionContext);
+            var remoteTable = new EmployeeRepository<Employee>(_remoteSessionContext);
 
-        public void CreateLocalRepositories()
-        {
-            _localTableRepository = new TableRepository<IRepository<IEntity>>();
-            _localTableRepository.Save( new EmployeeRepository<IEntity>(_localSessionContext));
-
-        }
-
-        public void SyncTable(IRepository<IEntity> localTable, IRepository<IEntity> remoteTable)
-        {
+            #region SyncCode
             foreach (var row in localTable.GetAll())
             {
                 // Get the id of the current object row 
-                var rowId = (int) row.GetType().GetProperty("Id", typeof (int)).GetValue(row);
+                var rowId = (int)row.GetType().GetProperty("Id", typeof(int)).GetValue(row);
                 if (remoteTable.Exists(rowId) == 0)
                 {
                     var newObject = ObjectCopy.Copy(row);
@@ -73,11 +60,44 @@ namespace SyncConsole.Sync
 
                 // Save changes to remote
                 remoteTable.Commit();
-                
+
                 // Remove after successful remove
                 localTable.Remove(row);
                 localTable.Commit();
             }
+            #endregion
+
+        }
+
+        public void SyncTable_Product()
+        {
+            var localTable = new ProductRepository<Product>(_localSessionContext);
+            var remoteTable = new ProductRepository<Product>(_remoteSessionContext);
+
+            #region SyncCode
+            foreach (var row in localTable.GetAll())
+            {
+                // Get the id of the current object row 
+                var rowId = (int)row.GetType().GetProperty("Id", typeof(int)).GetValue(row);
+                if (remoteTable.Exists(rowId) == 0)
+                {
+                    var newObject = ObjectCopy.Copy(row);
+                    remoteTable.Save(newObject);
+                }
+                else
+                {
+                    remoteTable.Save(row);
+                }
+
+                // Save changes to remote
+                remoteTable.Commit();
+
+                // Remove after successful remove
+                localTable.Remove(row);
+                localTable.Commit();
+            }
+            #endregion
+
         }
 
         public void SyncAllTables()
@@ -85,13 +105,8 @@ namespace SyncConsole.Sync
             _localSessionContext.OpenContextSession();
             _remoteSessionContext.OpenContextSession();
 
-            foreach (var localTable in _localTableRepository.GetAll()) // Get a local table
-            {
-                foreach (var remoteTable in _remoteTableRepository.GetAll()) // Get a remote table
-                { 
-                    SyncTable(localTable, remoteTable);
-                }
-            }
+            SyncTable_Employee();
+            SyncTable_Product();
         }
     }
 }

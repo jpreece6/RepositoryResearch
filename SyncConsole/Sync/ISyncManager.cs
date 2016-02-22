@@ -11,9 +11,6 @@ namespace SyncConsole.Sync
     public interface ISyncManager
     {
         void CreateContexts();
-        void CreateRemoteRepositories();
-        void CreateLocalRepositories();
-        void SyncTable(IRepository<IEntity> localRepository, IRepository<IEntity> remoteRepository);
         void SyncAllTables();
     }
 }
