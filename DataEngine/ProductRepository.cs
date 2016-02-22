@@ -8,7 +8,7 @@ using NHibernate.Linq;
 
 namespace DataEngine
 {
-    public class ProductRepository<T> : Repository<T> where T : class
+    public class ProductRepository<T> : Repository<T> where T : Product
     {
         public ProductRepository(ISessionContext sessionContext) : base(sessionContext)
         {
