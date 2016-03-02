@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Globalization;
 using System.Runtime.InteropServices;
 using RepoConsole.Presenter;
 
@@ -39,12 +40,9 @@ namespace RepoConsole.Views
                         Show_Get();
                         break;
                     case 3:
-                        Show_GetAll();
-                        break;
-                    case 4:
                         Show_Remove();
                         break;
-                    case 5:
+                    case 4:
                         _exit = true;
                         break;
                 }
@@ -55,13 +53,12 @@ namespace RepoConsole.Views
         {
             Console.Clear();
             GetAll(this, EventArgs.Empty);
-            Console.ReadLine();
         }
 
         public void Show_Remove()
         {
             Console.Clear();
-            Console.WriteLine("Remove Employee");
+            Console.WriteLine("Remove Employee\n");
             Console.Write("ID: ");
 
             var input = Console.ReadLine();
@@ -81,6 +78,9 @@ namespace RepoConsole.Views
             Console.WriteLine("Employee Info\n");
             Console.WriteLine("1: Search by ID");
             Console.WriteLine("2: Search by Name");
+            Console.WriteLine("3: Search by Store");
+            Console.WriteLine("4: Get All");
+            Console.WriteLine("5: Back");
             Console.Write("\nChoice: ");
 
             var input = Console.ReadLine();
@@ -109,8 +109,27 @@ namespace RepoConsole.Views
                         FirstName = Console.ReadLine();
                         Get(this, EventArgs.Empty);
                         break;
+                    case 3:
+                        Console.Clear();
+                        Console.WriteLine("Enter Store ID\n");
+                        Console.Write("Store ID: ");
+
+                        input = Console.ReadLine();
+                        if (int.TryParse(input, out result))
+                        {
+                            StoreId = result;
+                            Get(this, EventArgs.Empty);
+                        }
+                        break;
+                    case 4:
+                        Console.Clear();
+                        GetAll(this, EventArgs.Empty);
+                        break;
+                    case 5:
+                        break;
                 }
             }
+            Console.ReadLine();
         }
 
         public void Show_Add()
@@ -119,7 +138,18 @@ namespace RepoConsole.Views
             Console.WriteLine("Add new Employee\n");
             Console.Write("Name: ");
             FirstName = Console.ReadLine();
+
+            Console.Write("Store ID: ");
+            var input = Console.ReadLine();
+            int result;
+
+            if (int.TryParse(input, out result))
+            {
+                StoreId = result;
+            }
+
             if (Add != null) Add(this, EventArgs.Empty);
+            
 
             Console.ReadLine();
         }
@@ -131,8 +161,7 @@ namespace RepoConsole.Views
                 Console.Clear();
                 Console.WriteLine("Employee Menu\n");
                 Console.WriteLine("1: Add new employee");
-                Console.WriteLine("2: Get employee (filtered)");
-                Console.WriteLine("3: Get All");
+                Console.WriteLine("2: Find Employee(s)");
                 Console.WriteLine("4: Remove employee");
                 Console.WriteLine("5: Back");
                 Console.Write("\nChoice: ");
