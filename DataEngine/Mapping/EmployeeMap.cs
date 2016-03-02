@@ -9,6 +9,7 @@ namespace DataEngine.Mapping
         {
             Id(x => x.Id);
             Map(x => x.FirstName);
+            Map(x => x.StoreId);
         }
     }
 }

@@ -13,6 +13,7 @@ namespace RepoConsole.Views
 
         public int Id { get; set; }
         public string FirstName { get; set; }
+        public int StoreId { get; set; }
 
         private Presenter.IPresenter _presenter;
         private bool _exit = false;

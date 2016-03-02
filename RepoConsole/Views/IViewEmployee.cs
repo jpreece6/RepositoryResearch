@@ -6,7 +6,7 @@ namespace RepoConsole.Views
     {
         int Id { get; set; }
         string FirstName { get; set; }
+        int StoreId { get; set; }
 
-        event EventHandler<EventArgs> GetAll;
     }
 }

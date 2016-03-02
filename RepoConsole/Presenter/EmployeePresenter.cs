@@ -67,6 +67,7 @@ namespace RepoConsole.Presenter
             Console.WriteLine("");
             var emp = new Employee();
             emp.FirstName = _view.FirstName;
+            emp.StoreId = _view.StoreId;
 
             _employeeRepository.Save(emp);
             _employeeRepository.Commit();
@@ -76,29 +77,34 @@ namespace RepoConsole.Presenter
 
         private void View_Get(object sender, EventArgs e)
         {
-            Employee emp = null;
-
             if (_view.Id != 0)
             {
-                emp = _employeeRepository.Get(_view.Id);
+                var emp = _employeeRepository.Get(_view.Id);
                 if (emp == null)
                 {
                     Console.WriteLine("No employee found with ID of " + _view.Id);
                     return;
                 }
+
+                Console.WriteLine("First Name: " + emp.FirstName);
             }
 
             if (_view.FirstName != null)
             {
-                emp = _employeeRepository.Get(_view.Id);
-                if (emp == null)
+                var emps = _employeeRepository.GetWithName(_view.FirstName);
+                if (emps.Count == 0)
                 {
-                    Console.WriteLine("No employee found with ID of " + _view.Id);
+                    Console.WriteLine("No employee(s) found with name " + _view.FirstName);
                     return;
                 }
-            }
 
-            Console.WriteLine("First Name: " + emp.FirstName);
+                foreach (var employee in emps)
+                {
+                    Console.WriteLine("ID: " + employee.Id);
+                    Console.WriteLine("Name: " + employee.FirstName);
+                    Console.WriteLine("");
+                }
+            }
         }
 
         public void Initialise()
