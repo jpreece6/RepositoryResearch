@@ -19,5 +19,6 @@ namespace RepoConsole.Views
         void Show_Get();
         void Show_GetAll();
         void Show_Remove();
+        void WaitForInput();
     }
 }
