@@ -43,9 +43,10 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
-    <Compile Include="Presenter\MainMenuPresenter.cs" />
     <Compile Include="Presenter\IPresenter.cs" />
+    <Compile Include="Presenter\MainMenuPresenter.cs" />
     <Compile Include="Presenter\ProductPresenter.cs" />
+    <Compile Include="Presenter\StorePresenter.cs" />
     <Compile Include="Program.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="Views\EmployeeMenuView.cs" />
@@ -53,8 +54,10 @@
     <Compile Include="Views\IViewEmployee.cs" />
     <Compile Include="Views\IViewProduct.cs" />
     <Compile Include="Views\IView.cs" />
+    <Compile Include="Views\IViewStore.cs" />
     <Compile Include="Views\MainView.cs" />
     <Compile Include="Views\ProductMenuView.cs" />
+    <Compile Include="Views\StoreMenuView.cs" />
   </ItemGroup>
   <ItemGroup>
     <None Include="App.config" />
