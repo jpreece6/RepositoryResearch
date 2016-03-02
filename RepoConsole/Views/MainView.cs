@@ -35,17 +35,21 @@ namespace RepoConsole.Views
                 switch (result)
                 {
                     case 1:
+                        var stor = new StoreMenuView();
+                        stor.Show();
+                        break;
+                    case 2:
                         var emp = new EmployeeMenuView();
                         emp.Show();
                         break;
-                    case 2:
+                    case 3:
                         var prod = new ProductMenuView();
                         prod.Show();
                         break;
-                    case 3:
+                    case 4:
 
                         break;
-                    case 4:
+                    case 5:
                         _exit = true;
                         break;
                 }
@@ -58,10 +62,11 @@ namespace RepoConsole.Views
             {
                 Console.Clear();
                 Console.WriteLine("Main Menu\n");
-                Console.WriteLine("1: Employees");
-                Console.WriteLine("2: Products");
-                Console.WriteLine("3: ...");
-                Console.WriteLine("4: Exit");
+                Console.WriteLine("1: Stores");
+                Console.WriteLine("2: Employees");
+                Console.WriteLine("3: Products");
+                Console.WriteLine("4: ...");
+                Console.WriteLine("5: Exit");
                 Console.Write("\nChoice: ");
                 WaitForInput();
             } while(_exit == false);
