@@ -56,7 +56,8 @@ namespace DataEngine.Contexts
             }
             catch(Exception ex)
             {
-                CheckConnectionException(ex);
+                if (!CheckConnectionException(ex))
+                    throw;
             }
         }
 
@@ -68,7 +69,8 @@ namespace DataEngine.Contexts
             }
             catch(Exception ex)
             {
-                CheckConnectionException(ex);
+                if (!CheckConnectionException(ex))
+                    throw;
             }
         }
 
@@ -84,18 +86,24 @@ namespace DataEngine.Contexts
             }
             catch (Exception ex)
             {
-                CheckConnectionException(ex);
+                if (!CheckConnectionException(ex))
+                    throw;
             }
         }
 
-        private void CheckConnectionException(Exception ex)
+        public bool CheckConnectionException(Exception ex)
         {
-            if (ex.InnerException.HResult == -2146232060)
+            // -__-
+            // Forign HResult = -2146232832, ErrorCode = -2146232060
+            // Con HResult = -2146232832, ErrorCode = -2146232060
+            if (Session.Connection.State == ConnectionState.Closed)
             {
                 // Fire event for failed attempt
                 Session = SessionFactoryManager.GetLocal().OpenSession();
                 _isLocal = true;
+                return true;
             }
+            return false;
         }
 
         public bool IsLocal()

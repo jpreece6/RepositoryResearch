@@ -28,8 +28,20 @@ namespace RepoConsole.Presenter
 
         private void View_GetAll(object sender, EventArgs e)
         {
+
+            IList<Employee> emps = new List<Employee>();
+
             Console.WriteLine("");
-            var emps = _employeeRepository.GetAll();
+            try
+            {
+                emps = _employeeRepository.GetAll();
+            }
+            catch (Exception ex)
+            {
+                Console.WriteLine("Could not retrieve employees\n");
+                Console.WriteLine("Error: " + ex.Message);
+                Console.WriteLine("");
+            }
 
             if (emps.Count <= 0)
             {
@@ -56,8 +68,17 @@ namespace RepoConsole.Presenter
                 return;
             }
 
-            _employeeRepository.Remove(emp);
-            _employeeRepository.Commit();
+            try
+            {
+                _employeeRepository.Remove(emp);
+                _employeeRepository.Commit();
+            }
+            catch (Exception ex)
+            {
+                Console.WriteLine("Could not remove employee");
+                Console.WriteLine("Error: " + ex.InnerException.Message);
+                return;
+            }
 
             Console.WriteLine("Removed");
         }
@@ -69,8 +90,17 @@ namespace RepoConsole.Presenter
             emp.FirstName = _view.FirstName;
             emp.StoreId = _view.StoreId;
 
-            _employeeRepository.Save(emp);
-            _employeeRepository.Commit();
+            try
+            {
+                _employeeRepository.Save(emp);
+                _employeeRepository.Commit();
+            }
+            catch (Exception ex)
+            {
+                Console.WriteLine("Could not save employee\n\n");
+                Console.WriteLine("Error: " + ex.InnerException.Message);
+                return;
+            }
 
             Console.WriteLine("New employee created with ID of " + emp.Id);
         }

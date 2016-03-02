@@ -62,7 +62,16 @@ namespace DataEngine.RepositoryCore
         public virtual IList<T> GetAll()
         {
             //return _sessionContext.Session.CreateQuery("FROM " + typeof(T).Name).Enumerable<T>();
-            return SessionContext.Session.CreateCriteria<T>().List<T>();
+            try
+            {
+                return SessionContext.Session.CreateCriteria<T>().List<T>();
+            }
+            catch (Exception ex)
+            {
+                if (!SessionContext.CheckConnectionException(ex))
+                    throw;
+                return new List<T>();
+            }
         }
 
         public virtual int Count()

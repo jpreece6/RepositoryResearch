@@ -1,4 +1,5 @@
-﻿using NHibernate;
+﻿using System;
+using NHibernate;
 
 namespace DataEngine.Contexts
 {
@@ -9,5 +10,6 @@ namespace DataEngine.Contexts
         void Commit();
         void SaveOrUpdate<T>(T tData);
         void Remove<T>(T tData);
+        bool CheckConnectionException(Exception ex);
     }
 }
