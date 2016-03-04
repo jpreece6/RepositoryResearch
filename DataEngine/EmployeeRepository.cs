@@ -17,7 +17,15 @@ namespace DataEngine
 
         public IList<Employee> GetWithName(string name)
         {
-            var query = SessionContext.Session.Query<Employee>().ToList();
+            var query = SessionContext.Session.QueryOver<Employee>().Where(x => x.FirstName == name).List();
+            IList<Employee> employees = query;
+
+            return employees;
+        }
+
+        public IList<Employee> GetWithStoreId(int id)
+        {
+            var query = SessionContext.Session.QueryOver<Employee>().Where(x => x.StoreId == id).List();
             IList<Employee> employees = query;
 
             return employees;
