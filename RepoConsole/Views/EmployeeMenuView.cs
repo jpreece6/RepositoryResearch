@@ -162,8 +162,8 @@ namespace RepoConsole.Views
                 Console.WriteLine("Employee Menu\n");
                 Console.WriteLine("1: Add new employee");
                 Console.WriteLine("2: Find Employee(s)");
-                Console.WriteLine("4: Remove employee");
-                Console.WriteLine("5: Back");
+                Console.WriteLine("3: Remove employee");
+                Console.WriteLine("4: Back");
                 Console.Write("\nChoice: ");
                 WaitForInput();
             } while (_exit == false);

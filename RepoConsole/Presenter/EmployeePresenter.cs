@@ -14,7 +14,8 @@ namespace RepoConsole.Presenter
     class EmployeePresenter : IPresenter
     {
         private readonly IViewEmployee _view;
-        private EmployeeRepository<Employee> _employeeRepository; 
+        private EmployeeRepository<Employee> _employeeRepository;
+        private SessionContext _sessionContext;
          
         public EmployeePresenter(IViewEmployee view)
         {
@@ -28,10 +29,11 @@ namespace RepoConsole.Presenter
 
         private void View_GetAll(object sender, EventArgs e)
         {
+            if (!OpenSession())
+                return;
 
-            IList<Employee> emps = new List<Employee>();
+            IList<Employee> emps;
 
-            Console.WriteLine("");
             try
             {
                 emps = _employeeRepository.GetAll();
@@ -39,8 +41,8 @@ namespace RepoConsole.Presenter
             catch (Exception ex)
             {
                 Console.WriteLine("Could not retrieve employees\n");
-                Console.WriteLine("Error: " + ex.Message);
-                Console.WriteLine("");
+                Console.WriteLine("Error: " + (ex.InnerException?.Message ?? ex.Message));
+                return;
             }
 
             if (emps.Count <= 0)
@@ -53,14 +55,28 @@ namespace RepoConsole.Presenter
             {
                 Console.WriteLine("ID: " + employee.Id);
                 Console.WriteLine("First Name: " + employee.FirstName);
+                Console.WriteLine("Store ID: " + employee.StoreId);
                 Console.WriteLine("");
             }
         }
 
         private void View_Remove(object sender, EventArgs e)
         {
-            Console.WriteLine("");
-            var emp = _employeeRepository.Get(_view.Id);
+            if (!OpenSession())
+                return;
+
+            Employee emp;
+
+            try
+            {
+                emp = _employeeRepository.Get(_view.Id);
+            }
+            catch (Exception ex)
+            {
+                Console.WriteLine("Could not retrieve Employee");
+                Console.WriteLine("Error: " + (ex.InnerException?.Message ?? ex.Message));
+                return;
+            }
 
             if (emp == null)
             {
@@ -76,16 +92,18 @@ namespace RepoConsole.Presenter
             catch (Exception ex)
             {
                 Console.WriteLine("Could not remove employee");
-                Console.WriteLine("Error: " + ex.InnerException.Message);
+                Console.WriteLine("Error: " + ex.InnerException?.Message ?? ex.Message);
                 return;
             }
 
-            Console.WriteLine("Removed");
+            Console.WriteLine("Employee Removed!");
         }
 
         private void View_Add(object sender, EventArgs e)
         {
-            Console.WriteLine("");
+            if (!OpenSession())
+                return;
+
             var emp = new Employee();
             emp.FirstName = _view.FirstName;
             emp.StoreId = _view.StoreId;
@@ -98,7 +116,7 @@ namespace RepoConsole.Presenter
             catch (Exception ex)
             {
                 Console.WriteLine("Could not save employee\n\n");
-                Console.WriteLine("Error: " + ex.InnerException.Message);
+                Console.WriteLine("Error: " + (ex.InnerException?.Message ?? ex.Message));
                 return;
             }
 
@@ -107,9 +125,24 @@ namespace RepoConsole.Presenter
 
         private void View_Get(object sender, EventArgs e)
         {
+            if (!OpenSession())
+                return;
+
             if (_view.Id != 0)
             {
-                var emp = _employeeRepository.Get(_view.Id);
+                Employee emp;
+
+                try
+                {
+                    emp = _employeeRepository.Get(_view.Id);
+                }
+                catch (Exception ex)
+                {
+                    Console.WriteLine("Could not retrieve Employee in Get");
+                    Console.WriteLine("Error: " + (ex.InnerException?.Message ?? ex.Message));
+                    return;
+                }
+
                 if (emp == null)
                 {
                     Console.WriteLine("No employee found with ID of " + _view.Id);
@@ -117,11 +150,30 @@ namespace RepoConsole.Presenter
                 }
 
                 Console.WriteLine("First Name: " + emp.FirstName);
+                return;
             }
 
-            if (_view.FirstName != null)
+            if (_view.FirstName != null || _view.StoreId != 0)
             {
-                var emps = _employeeRepository.GetWithName(_view.FirstName);
+                IList<Employee> emps = new List<Employee>();
+
+                try
+                {
+                    if (_view.FirstName != null)
+                    {
+                        emps = _employeeRepository.GetWithName(_view.FirstName);
+                    } else if (_view.StoreId != 0)
+                    {
+                        emps = _employeeRepository.GetWithStoreId(_view.StoreId);
+                    }
+
+                } catch (Exception ex)
+                {
+                    Console.WriteLine("Could not retrieve Employee in by Name or Store ID");
+                    Console.WriteLine("Error: " + (ex.InnerException?.Message ?? ex.Message));
+                    return;
+                }
+
                 if (emps.Count == 0)
                 {
                     Console.WriteLine("No employee(s) found with name " + _view.FirstName);
@@ -132,6 +184,7 @@ namespace RepoConsole.Presenter
                 {
                     Console.WriteLine("ID: " + employee.Id);
                     Console.WriteLine("Name: " + employee.FirstName);
+                    Console.WriteLine("Store ID: " + employee.StoreId);
                     Console.WriteLine("");
                 }
             }
@@ -145,10 +198,32 @@ namespace RepoConsole.Presenter
 
             // Init page.. 
             var sessionFactManager = new SessionFactoryManager();
-            var sessionContext = new SessionContext(sessionFactManager);
-            sessionContext.OpenContextSession();
+            _sessionContext = new SessionContext(sessionFactManager);
 
-            _employeeRepository = new EmployeeRepository<Employee>(sessionContext);
+            _employeeRepository = new EmployeeRepository<Employee>(_sessionContext);
+        }
+
+        private bool OpenSession()
+        {
+            Console.WriteLine("\nConnecting....");
+
+            try
+            {
+                _sessionContext.OpenContextSession();
+                Console.Clear();
+
+                if (_sessionContext.IsLocal())
+                {
+                    Console.WriteLine("Could not connect to server!\n- Now using local DB for this operation!\n");
+                }
+            }
+            catch (Exception ex)
+            {
+                Console.WriteLine("Could not connect to server!");
+                return false;
+            }
+
+            return true;
         }
     }
 }
