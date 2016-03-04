@@ -96,13 +96,21 @@ namespace DataEngine.Contexts
             // -__-
             // Forign HResult = -2146232832, ErrorCode = -2146232060
             // Con HResult = -2146232832, ErrorCode = -2146232060
-            if (Session.Connection.State == ConnectionState.Closed)
+            if (ex.InnerException.Message.Contains("network-related"))
             {
                 // Fire event for failed attempt
                 Session = SessionFactoryManager.GetLocal().OpenSession();
                 _isLocal = true;
                 return true;
             }
+
+            /*if (Session.Connection.State == ConnectionState.Closed || Session.Connection == null)
+            {
+                // Fire event for failed attempt
+                Session = SessionFactoryManager.GetLocal().OpenSession();
+                _isLocal = true;
+                return true;
+            }*/
             return false;
         }
 
