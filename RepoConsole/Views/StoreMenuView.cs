@@ -58,6 +58,7 @@ namespace RepoConsole.Views
             Console.WriteLine("1: Search by ID");
             Console.WriteLine("2: Search by Name");
             Console.WriteLine("3: Get All");
+            Console.WriteLine("4: Back");
             Console.Write("\nChoice: ");
 
             var input = Console.ReadLine();
@@ -88,6 +89,8 @@ namespace RepoConsole.Views
                         break;
                     case 3:
                         Show_GetAll();
+                        break;
+                    case 4:
                         break;
                 }
             }
