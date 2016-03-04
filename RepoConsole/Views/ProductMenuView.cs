@@ -41,12 +41,9 @@ namespace RepoConsole.Views
                         Show_Get();
                         break;
                     case 3:
-                        Show_GetAll();
-                        break;
-                    case 4:
                         Show_Remove();
                         break;
-                    case 5:
+                    case 4:
                         _exit = true;
                         break;
                 }
@@ -78,16 +75,58 @@ namespace RepoConsole.Views
         public void Show_Get()
         {
             Console.Clear();
-            Console.WriteLine("Get Employee\n");
-            Console.Write("ID: ");
+            Console.WriteLine("Find Product(s)\n");
+            Console.WriteLine("1: Search by ID");
+            Console.WriteLine("2: Search by Name");
+            Console.WriteLine("3: Search by Price");
+            Console.WriteLine("4: Get All");
+            Console.WriteLine("5: Back");
+            Console.Write("\nChoice: ");
 
             var input = Console.ReadLine();
             int result;
 
             if (int.TryParse(input, out result))
             {
-                Id = result;
-                Get(this, EventArgs.Empty);
+                switch (result)
+                {
+                    case 1:
+                        Console.Clear();
+                        Console.WriteLine("Enter Product ID\n");
+                        Console.Write("ID: ");
+                        input = Console.ReadLine();
+
+                        if (int.TryParse(input, out result))
+                        {
+                            Id = result;
+                            Get(this, EventArgs.Empty);
+                        }
+                        break;
+                    case 2:
+                        Console.Clear();
+                        Console.Write("Name: ");
+                        Name = Console.ReadLine();
+                        Get(this, EventArgs.Empty);
+
+                        break;
+                    case 3:
+                        Console.Clear();
+                        Console.Write("Price: ");
+                        input = Console.ReadLine();
+                        float dResult;
+
+                        if (float.TryParse(input, out dResult))
+                        {
+                            Price = dResult;
+                            Get(this,EventArgs.Empty);
+                        }
+                        break;
+                    case 4:
+                        Show_GetAll();
+                        break;
+                    case 5:
+                        break;
+                }
             }
 
             Console.Read();
@@ -96,9 +135,8 @@ namespace RepoConsole.Views
         public void Show_GetAll()
         {
             Console.Clear();
-            Console.WriteLine("List all employees\n");
+            Console.WriteLine("List all Products\n");
             GetAll(this, EventArgs.Empty);
-            Console.ReadLine();
         }
 
         public void Show_Remove()
@@ -126,10 +164,9 @@ namespace RepoConsole.Views
                 Console.Clear();
                 Console.WriteLine("Products Menu\n");
                 Console.WriteLine("1: Add new product");
-                Console.WriteLine("2: Get product");
-                Console.WriteLine("3: Get All");
-                Console.WriteLine("4: Remove product");
-                Console.WriteLine("5: Back");
+                Console.WriteLine("2: Find Product(s)");
+                Console.WriteLine("3: Remove product");
+                Console.WriteLine("4: Back");
                 Console.Write("\nChoice: ");
                 WaitForInput();
             } while (_exit == false);
