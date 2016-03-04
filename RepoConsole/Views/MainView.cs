@@ -47,7 +47,8 @@ namespace RepoConsole.Views
                         prod.Show();
                         break;
                     case 4:
-
+                        var sale = new SaleMenuView();
+                        sale.Show();
                         break;
                     case 5:
                         _exit = true;
@@ -65,7 +66,7 @@ namespace RepoConsole.Views
                 Console.WriteLine("1: Stores");
                 Console.WriteLine("2: Employees");
                 Console.WriteLine("3: Products");
-                Console.WriteLine("4: ...");
+                Console.WriteLine("4: Sales");
                 Console.WriteLine("5: Exit");
                 Console.Write("\nChoice: ");
                 WaitForInput();
