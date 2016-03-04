@@ -1,18 +1,10 @@
-﻿using System;
-using System.CodeDom;
-using System.Collections.Generic;
-using System.Data;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-using DataEngine;
+﻿using DataEngine;
 using DataEngine.Contexts;
 using DataEngine.Entities;
-using DataEngine.Helpers;
-using DataEngine.RepositoryCore;
-using NHibernate.Event;
+using Helpers;
+using SyncEngine.Contexts;
 
-namespace SyncConsole.Sync
+namespace SyncEngine
 {
     // TODO TALK ABOUT GENERIC ISSUES WHERE YOU CANT HAVE DIFFERENT TYPES EVEN INTERFACES
     public class SyncManager : ISyncManager

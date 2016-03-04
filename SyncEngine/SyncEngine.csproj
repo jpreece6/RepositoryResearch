@@ -4,17 +4,15 @@
   <PropertyGroup>
     <Configuration Condition=" '$(Configuration)' == '' ">Debug</Configuration>
     <Platform Condition=" '$(Platform)' == '' ">AnyCPU</Platform>
-    <ProjectGuid>{06C88A89-FD13-4D8C-81A6-3504373A37DF}</ProjectGuid>
-    <OutputType>Exe</OutputType>
+    <ProjectGuid>{F6CB0012-2DC9-4098-AB78-D094C1C84B91}</ProjectGuid>
+    <OutputType>Library</OutputType>
     <AppDesignerFolder>Properties</AppDesignerFolder>
-    <RootNamespace>SyncConsole</RootNamespace>
-    <AssemblyName>SyncConsole</AssemblyName>
+    <RootNamespace>SyncEngine</RootNamespace>
+    <AssemblyName>SyncEngine</AssemblyName>
     <TargetFrameworkVersion>v4.5.2</TargetFrameworkVersion>
     <FileAlignment>512</FileAlignment>
-    <AutoGenerateBindingRedirects>true</AutoGenerateBindingRedirects>
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|AnyCPU' ">
-    <PlatformTarget>AnyCPU</PlatformTarget>
     <DebugSymbols>true</DebugSymbols>
     <DebugType>full</DebugType>
     <Optimize>false</Optimize>
@@ -24,7 +22,6 @@
     <WarningLevel>4</WarningLevel>
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Release|AnyCPU' ">
-    <PlatformTarget>AnyCPU</PlatformTarget>
     <DebugType>pdbonly</DebugType>
     <Optimize>true</Optimize>
     <OutputPath>bin\Release\</OutputPath>
@@ -43,28 +40,24 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
-    <Compile Include="Program.cs" />
+    <Compile Include="ISyncManager.cs" />
+    <Compile Include="Contexts\LocalContext.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
+    <Compile Include="Contexts\RemoteContext.cs" />
+    <Compile Include="SyncManager.cs" />
   </ItemGroup>
+  <ItemGroup />
   <ItemGroup>
-    <None Include="App.config" />
-    <None Include="packages.config" />
-  </ItemGroup>
-  <ItemGroup>
-    <ProjectReference Include="..\Helpers\Helpers.csproj">
-      <Project>{c99d8d4a-c354-4aeb-bdb9-a1479acbeca2}</Project>
-      <Name>Helpers</Name>
+    <ProjectReference Include="..\DataEngine\DataEngine.csproj">
+      <Project>{9b2601a4-cb46-4141-bd72-3f8ca512c5d2}</Project>
+      <Name>DataEngine</Name>
     </ProjectReference>
-    <ProjectReference Include="..\SyncEngine\SyncEngine.csproj">
-      <Project>{f6cb0012-2dc9-4098-ab78-d094c1c84b91}</Project>
-      <Name>SyncEngine</Name>
+    <ProjectReference Include="..\Helpers\Helpers.csproj">
+      <Project>{C99D8D4A-C354-4AEB-BDB9-A1479ACBECA2}</Project>
+      <Name>Helpers</Name>
     </ProjectReference>
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
-  <PropertyGroup>
-    <PostBuildEvent>xcopy "$(SolutionDir)packages\NHibernate.JetDriver.2.0.0.1002\lib\net40" "$(ProjectDir)bin\Debug" /y /i
-xcopy "$(SolutionDir)packages\NHibernate.JetDriver.2.0.0.1002\lib\net40" "$(ProjectDir)bin\Release" /y /i</PostBuildEvent>
-  </PropertyGroup>
   <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 
        Other similar extension points exist, see Microsoft.Common.targets.
   <Target Name="BeforeBuild">

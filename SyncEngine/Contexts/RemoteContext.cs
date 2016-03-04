@@ -1,11 +1,6 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-using DataEngine.Contexts;
+﻿using DataEngine.Contexts;
 
-namespace SyncConsole.Sync
+namespace SyncEngine.Contexts
 {
     public class RemoteContext : SessionContext
     {
@@ -15,7 +10,7 @@ namespace SyncConsole.Sync
 
         public override void OpenContextSession()
         {
-            Session = SessionFactoryManager.GetPreferred().OpenSession();
+            //Session = SessionFactoryManager.GetPreferred().OpenSession();
         }
     }
 }

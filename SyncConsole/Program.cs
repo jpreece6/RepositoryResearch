@@ -3,11 +3,8 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
-using DataEngine;
-using DataEngine.Contexts;
-using DataEngine.Entities;
-using DataEngine.Helpers;
-using SyncConsole.Sync;
+using Helpers;
+using SyncEngine;
 
 namespace SyncConsole
 {
