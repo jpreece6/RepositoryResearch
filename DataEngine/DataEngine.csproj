@@ -22,6 +22,8 @@
     <ErrorReport>prompt</ErrorReport>
     <WarningLevel>4</WarningLevel>
     <Prefer32Bit>false</Prefer32Bit>
+    <DocumentationFile>
+    </DocumentationFile>
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Release|AnyCPU' ">
     <DebugType>pdbonly</DebugType>
@@ -90,6 +92,7 @@
     <Compile Include="RepositoryCore\IRepositoryKeyValue.cs" />
     <Compile Include="RepositoryCore\Repository.cs" />
     <Compile Include="RepositoryCore\RepositoryKeyValue.cs" />
+    <Compile Include="SaleRepository.cs" />
     <Compile Include="StoreRepository.cs" />
   </ItemGroup>
   <ItemGroup>
