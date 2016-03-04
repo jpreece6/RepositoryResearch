@@ -16,7 +16,8 @@ namespace RepoConsole.Presenter
     class ProductPresenter : IPresenter
     {
         private readonly IViewProduct _view;
-        private ProductRepository<Product> _productRepository; 
+        private ProductRepository<Product> _productRepository;
+        private SessionContext _sessionContext;
 
         public ProductPresenter(IViewProduct view)
         {
@@ -31,8 +32,21 @@ namespace RepoConsole.Presenter
 
         private void View_GetAll(object sender, EventArgs e)
         {
-            Console.WriteLine("");
-            var prods = _productRepository.GetAll();
+            if (!OpenSession())
+                return;
+
+            IList<Product> prods;
+
+            try
+            {
+                prods = _productRepository.GetAll();
+            }
+            catch (Exception ex)
+            {
+                Console.WriteLine("Could not retrieve Products\n");
+                Console.WriteLine("Error: " + (ex.InnerException?.Message ?? ex.Message));
+                return;
+            }
 
             if (prods.Count <= 0)
             {
@@ -51,8 +65,21 @@ namespace RepoConsole.Presenter
 
         private void View_Remove(object sender, EventArgs e)
         {
-            Console.WriteLine("");
-            var prod = _productRepository.Get(_view.Id);
+            if (!OpenSession())
+                return;
+
+            Product prod;
+
+            try
+            {
+                prod = _productRepository.Get(_view.Id);
+            }
+            catch (Exception ex)
+            {
+                Console.WriteLine("Could not retrieve Product on Remove");
+                Console.WriteLine("Error: " + (ex.InnerException?.Message ?? ex.Message));
+                return;
+            }
 
             if (prod == null)
             {
@@ -60,36 +87,111 @@ namespace RepoConsole.Presenter
                 return;
             }
 
-            _productRepository.Remove(prod);
-            _productRepository.Commit();
+            try
+            {
+                _productRepository.Remove(prod);
+                _productRepository.Commit();
+            }
+            catch (Exception ex)
+            {
+                Console.WriteLine("Could not remove Product!");
+                Console.WriteLine("Error: " + (ex.InnerException?.Message ?? ex.Message));
+                return;
+            }
 
             Console.WriteLine("Removed");
         }
 
         private void View_Get(object sender, EventArgs e)
         {
-            Console.WriteLine("");
-            var prod = _productRepository.Get(_view.Id);
+            if (!OpenSession())
+                return;
 
-            if (prod == null)
+            if (_view.Id != 0)
             {
-                Console.WriteLine("No product found with an ID of " + _view.Id);
+                Product prod;
+
+                try
+                {
+                    prod = _productRepository.Get(_view.Id);
+                }
+                catch (Exception ex)
+                {
+                    Console.WriteLine("Could not retrieve Product on get");
+                    Console.WriteLine("Error: " + (ex.InnerException?.Message ?? ex.Message));
+                    return;
+                }
+
+                if (prod == null)
+                {
+                    Console.WriteLine("No product found with an ID of " + _view.Id);
+                    return;
+                }
+
+                Console.WriteLine("ID: " + prod.Id);
+                Console.WriteLine("Name: " + prod.Prod_Name);
+                Console.WriteLine("Price: " + prod.Price);
                 return;
             }
 
-            Console.WriteLine("Name: " + prod.Prod_Name);
-            Console.WriteLine("Price: " + prod.Price);
+            IList<Product> prods;
+
+            try
+            {
+                if (_view.Name != null)
+                {
+                    prods = _productRepository.GetWithName(_view.Name);
+                }
+                else
+                {
+                    prods = _productRepository.GetWithPrice(_view.Price);
+                }
+            }
+            catch (Exception ex)
+            {
+                Console.WriteLine("Could not retrieve Product with Name");
+                Console.WriteLine("Error: " + (ex.InnerException?.Message ?? ex.Message));
+                return;
+            }
+
+            if (prods.Count == 0)
+            {
+                Console.WriteLine("No Products Found");
+                return;
+            }
+
+            foreach (var product in prods)
+            {
+                Console.WriteLine("ID: " + product.Id);
+                Console.WriteLine("Name: " + product.Prod_Name);
+                Console.WriteLine("Price: " + product.Price);
+                Console.WriteLine("");
+            }
+
         }
 
         private void View_Add(object sender, EventArgs e)
         {
-            Console.WriteLine("");
+            if (!OpenSession())
+                return;
+
             var prod = new Product();
             prod.Prod_Name = _view.Name;
             prod.Price = _view.Price;
 
-            _productRepository.Save(prod);
-            _productRepository.Commit();
+            try
+            {
+
+                _productRepository.Save(prod);
+                _productRepository.Commit();
+
+            }
+            catch (Exception ex)
+            {
+                Console.WriteLine("Could not save Product");
+                Console.WriteLine("Error: " + (ex.InnerException?.Message ?? ex.Message));
+                return;
+            }
 
             Console.WriteLine("Added new product with ID of " + prod.Id);
         }
@@ -102,10 +204,32 @@ namespace RepoConsole.Presenter
 
             // Init page.. 
             var sessionFactManager = new SessionFactoryManager();
-            var sessionContext = new SessionContext(sessionFactManager);
-            sessionContext.OpenContextSession();
+            _sessionContext = new SessionContext(sessionFactManager);
 
-            _productRepository = new ProductRepository<Product>(sessionContext);
+            _productRepository = new ProductRepository<Product>(_sessionContext);
+        }
+
+        private bool OpenSession()
+        {
+            Console.WriteLine("\nConnecting....");
+
+            try
+            {
+                _sessionContext.OpenContextSession();
+                Console.Clear();
+
+                if (_sessionContext.IsLocal())
+                {
+                    Console.WriteLine("Could not connect to server!\n- Now using local DB for this operation!\n");
+                }
+            }
+            catch (Exception ex)
+            {
+                Console.WriteLine("Could not connect to server!");
+                return false;
+            }
+
+            return true;
         }
     }
 }

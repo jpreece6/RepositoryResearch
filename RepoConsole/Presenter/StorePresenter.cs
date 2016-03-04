@@ -16,6 +16,7 @@ namespace RepoConsole.Presenter
     {
         private readonly IViewStore _view;
         private StoreRepository<Store> _storeRepository;
+        private SessionContext _sessionContext;
 
         public StorePresenter(IViewStore view)
         {
@@ -29,8 +30,21 @@ namespace RepoConsole.Presenter
 
         private void View_Remove(object sender, EventArgs e)
         {
-            Console.WriteLine("");
-            var store = _storeRepository.Get(_view.Id);
+            if (!OpenSession())
+                return;
+
+            Store store;
+
+            try
+            {
+                store = _storeRepository.Get(_view.Id);
+            }
+            catch (Exception ex)
+            {
+                Console.WriteLine("Could not retrieve Store on remove");
+                Console.WriteLine("Error: " + (ex.InnerException?.Message ?? ex.Message));
+                return;
+            }
 
             if (store == null)
             {
@@ -38,18 +52,40 @@ namespace RepoConsole.Presenter
                 return;
             }
 
-            _storeRepository.Remove(store);
-            _storeRepository.Commit();
+            try
+            {
+                _storeRepository.Remove(store);
+                _storeRepository.Commit();
+            }
+            catch (Exception ex)
+            {
+                Console.WriteLine("Could not remove Store from DB");
+                Console.WriteLine("Error: " + (ex.InnerException?.Message ?? ex.Message));
+                return;
+            }
 
             Console.WriteLine("Store Removed!");
         }
 
         private void View_GetAll(object sender, EventArgs e)
         {
-            Console.Clear();
-            var stores = _storeRepository.GetAll();
+            if (!OpenSession())
+                return;
 
-            if (stores.Count <= 0)
+            IList<Store> stores;
+
+            try
+            {
+                stores = _storeRepository.GetAll();
+            }
+            catch (Exception ex)
+            {
+                Console.WriteLine("Could not retrieve any Stores from GetAll");
+                Console.WriteLine("Error: " + (ex.InnerException?.Message ?? ex.Message));
+                return;
+            }
+
+            if (stores.Count == 0)
             {
                 Console.WriteLine("No stores found.");
                 return;
@@ -65,10 +101,24 @@ namespace RepoConsole.Presenter
 
         private void View_Get(object sender, EventArgs e)
         {
-            Console.Clear();
+            if (!OpenSession())
+                return;
+
+            // Get by ID
             if (_view.Id != 0)
             {
-                var store = _storeRepository.Get(_view.Id);
+                Store store;
+                try
+                {
+                    store = _storeRepository.Get(_view.Id);
+                }
+                catch (Exception ex)
+                {
+                    Console.WriteLine("Could not retrieve Store on Get");
+                    Console.WriteLine("Error: " + (ex.InnerException?.Message ?? ex.Message));
+                    return;
+                }
+
                 if (store == null)
                 {
                     Console.WriteLine("No store found with an ID of " + _view.Id);
@@ -80,9 +130,21 @@ namespace RepoConsole.Presenter
                 return;
             }
 
+            // Get by name
             if (_view.StoreName != null)
             {
-                var stores = _storeRepository.GetWithName(_view.StoreName);
+                IList<Store> stores;
+
+                try
+                {
+                    stores = _storeRepository.GetWithName(_view.StoreName);
+                }
+                catch (Exception ex)
+                {
+                    Console.WriteLine("Could not retrieve Store(s) by name");
+                    Console.WriteLine("Error: " + (ex.InnerException?.Message ?? ex.Message));
+                    return;
+                }
 
                 if (stores.Count == 0)
                 {
@@ -101,12 +163,23 @@ namespace RepoConsole.Presenter
 
         private void View_Add(object sender, EventArgs e)
         {
-            Console.WriteLine("");
+            if (!OpenSession())
+                return;
+
             var store = new Store();
             store.StoreName = _view.StoreName;
 
-            _storeRepository.Save(store);
-            _storeRepository.Commit();
+            try
+            {
+                _storeRepository.Save(store);
+                _storeRepository.Commit();
+            }
+            catch (Exception ex)
+            {
+                Console.WriteLine("Could not add new Store to DB");
+                Console.WriteLine("Error: " + (ex.InnerException?.Message ?? ex.Message));
+                return;
+            }
 
             Console.WriteLine("New store created with ID of " + store.Id);
         }
@@ -119,10 +192,32 @@ namespace RepoConsole.Presenter
 
             // Init page.. 
             var sessionFactManager = new SessionFactoryManager();
-            var sessionContext = new SessionContext(sessionFactManager);
-            sessionContext.OpenContextSession();
+            _sessionContext = new SessionContext(sessionFactManager);
 
-            _storeRepository = new StoreRepository<Store>(sessionContext);
+            _storeRepository = new StoreRepository<Store>(_sessionContext);
+        }
+
+        private bool OpenSession()
+        {
+            Console.WriteLine("\nConnecting....");
+
+            try
+            {
+                _sessionContext.OpenContextSession();
+                Console.Clear();
+
+                if (_sessionContext.IsLocal())
+                {
+                    Console.WriteLine("Could not connect to server!\n- Now using local DB for this operation!\n");
+                }
+            }
+            catch (Exception ex)
+            {
+                Console.WriteLine("Could not connect to server!");
+                return false;
+            }
+
+            return true;
         }
     }
 }
