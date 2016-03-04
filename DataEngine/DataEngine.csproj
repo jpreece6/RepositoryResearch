@@ -24,6 +24,7 @@
     <Prefer32Bit>false</Prefer32Bit>
     <DocumentationFile>
     </DocumentationFile>
+    <RegisterForComInterop>false</RegisterForComInterop>
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Release|AnyCPU' ">
     <DebugType>pdbonly</DebugType>
@@ -81,10 +82,6 @@
     <Compile Include="Entities\Employee.cs" />
     <Compile Include="Entities\IEntity.cs" />
     <Compile Include="Entities\Product.cs" />
-    <Compile Include="Helpers\BaseConfig.cs" />
-    <Compile Include="Helpers\ConfigReader.cs" />
-    <Compile Include="Helpers\IConfigReader.cs" />
-    <Compile Include="Helpers\ObjectCopy.cs" />
     <Compile Include="Mapping\EmployeeMap.cs" />
     <Compile Include="Mapping\StoreConfiguration.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
@@ -98,7 +95,12 @@
   <ItemGroup>
     <None Include="packages.config" />
   </ItemGroup>
-  <ItemGroup />
+  <ItemGroup>
+    <ProjectReference Include="..\Helpers\Helpers.csproj">
+      <Project>{c99d8d4a-c354-4aeb-bdb9-a1479acbeca2}</Project>
+      <Name>Helpers</Name>
+    </ProjectReference>
+  </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 
        Other similar extension points exist, see Microsoft.Common.targets.

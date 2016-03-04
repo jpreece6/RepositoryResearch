@@ -6,8 +6,8 @@ using System.Threading.Tasks;
 using DataEngine;
 using DataEngine.Contexts;
 using DataEngine.Entities;
-using DataEngine.Helpers;
-using RepoConsole.Views;
+ using Helpers;
+ using RepoConsole.Views;
 
 namespace RepoConsole
 {
@@ -19,6 +19,10 @@ namespace RepoConsole
             //main.Show();
             //var manager = new ViewManager();
             //manager.Start();
+
+            // Load settings
+            var configReader = new ConfigReader(@"C:\repoSettings.xml");
+            BaseConfig.Sources = configReader.GetAllInstancesOf("ConnectionString");
 
             var main = new MainView();
             main.Show();

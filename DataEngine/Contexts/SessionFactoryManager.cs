@@ -3,11 +3,11 @@ using System.Data.SqlClient;
 using System.Diagnostics;
 using System.Linq.Expressions;
 using DataEngine.Entities;
-using DataEngine.Helpers;
 using DataEngine.Mapping;
 using FluentNHibernate.Automapping;
 using FluentNHibernate.Cfg;
 using FluentNHibernate.Cfg.Db;
+using Helpers;
 using NHibernate;
 
 namespace DataEngine.Contexts

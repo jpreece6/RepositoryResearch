@@ -6,7 +6,6 @@ using System.Threading.Tasks;
 using DataEngine;
 using DataEngine.Contexts;
 using DataEngine.Entities;
-using DataEngine.Helpers;
 using RepoConsole.Views;
 
 namespace RepoConsole.Presenter
@@ -14,8 +13,8 @@ namespace RepoConsole.Presenter
     class EmployeePresenter : IPresenter
     {
         private readonly IViewEmployee _view;
-        private EmployeeRepository<Employee> _employeeRepository;
-        private SessionContext _sessionContext;
+        private readonly EmployeeRepository<Employee> _employeeRepository;
+        private readonly SessionContext _sessionContext;
          
         public EmployeePresenter(IViewEmployee view)
         {
@@ -24,7 +23,12 @@ namespace RepoConsole.Presenter
             _view.Get += View_Get;
             _view.GetAll += View_GetAll;
             _view.Remove += View_Remove;
-            Initialise();
+
+            // Init page.. 
+            var sessionFactManager = new SessionFactoryManager();
+            _sessionContext = new SessionContext(sessionFactManager);
+
+            _employeeRepository = new EmployeeRepository<Employee>(_sessionContext);
         }
 
         private void View_GetAll(object sender, EventArgs e)
@@ -188,19 +192,6 @@ namespace RepoConsole.Presenter
                     Console.WriteLine("");
                 }
             }
-        }
-
-        public void Initialise()
-        {
-            // Load settings
-            var configReader = new ConfigReader(@"C:\repoSettings.xml");
-            BaseConfig.Sources = configReader.GetAllInstancesOf("ConnectionString");
-
-            // Init page.. 
-            var sessionFactManager = new SessionFactoryManager();
-            _sessionContext = new SessionContext(sessionFactManager);
-
-            _employeeRepository = new EmployeeRepository<Employee>(_sessionContext);
         }
 
         private bool OpenSession()

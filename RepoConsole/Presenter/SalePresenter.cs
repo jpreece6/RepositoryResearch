@@ -8,7 +8,6 @@ using System.Threading.Tasks;
 using DataEngine;
 using DataEngine.Contexts;
 using DataEngine.Entities;
-using DataEngine.Helpers;
 using RepoConsole.Views;
 
 namespace RepoConsole.Presenter
@@ -16,8 +15,8 @@ namespace RepoConsole.Presenter
     public class SalePresenter : IPresenter
     {
         private readonly IViewSale _view;
-        private SessionContext _sessionContext;
-        private SaleRepository<Sale> _saleRepository;
+        private readonly SessionContext _sessionContext;
+        private readonly SaleRepository<Sale> _saleRepository;
 
         public SalePresenter(IViewSale view)
         {
@@ -26,7 +25,12 @@ namespace RepoConsole.Presenter
             _view.Get += View_Get; ;
             _view.GetAll += View_GetAll;
             _view.Remove += View_Remove; ;
-            Initialise();
+
+            // Init page.. 
+            var sessionFactManager = new SessionFactoryManager();
+            _sessionContext = new SessionContext(sessionFactManager);
+
+            _saleRepository = new SaleRepository<Sale>(_sessionContext);
         }
 
         private void View_Remove(object sender, EventArgs e)
@@ -192,19 +196,6 @@ namespace RepoConsole.Presenter
             }
 
             Console.WriteLine("New sale created with ID of " + sale.Id);
-        }
-
-        public void Initialise()
-        {
-            // Load settings
-            var configReader = new ConfigReader(@"C:\repoSettings.xml");
-            BaseConfig.Sources = configReader.GetAllInstancesOf("ConnectionString");
-
-            // Init page.. 
-            var sessionFactManager = new SessionFactoryManager();
-            _sessionContext = new SessionContext(sessionFactManager);
-
-            _saleRepository = new SaleRepository<Sale>(_sessionContext);
         }
 
         private bool OpenSession()

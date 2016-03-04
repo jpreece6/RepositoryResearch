@@ -70,6 +70,10 @@
       <Project>{9b2601a4-cb46-4141-bd72-3f8ca512c5d2}</Project>
       <Name>DataEngine</Name>
     </ProjectReference>
+    <ProjectReference Include="..\Helpers\Helpers.csproj">
+      <Project>{c99d8d4a-c354-4aeb-bdb9-a1479acbeca2}</Project>
+      <Name>Helpers</Name>
+    </ProjectReference>
   </ItemGroup>
   <ItemGroup>
     <Folder Include="Helpers\" />

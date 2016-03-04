@@ -1,12 +1,6 @@
 ﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-using log4net.Appender;
-using Remotion.Linq.Clauses.ResultOperators;
 
-namespace DataEngine.Helpers
+namespace Helpers
 {
     public static class ObjectCopy
     {

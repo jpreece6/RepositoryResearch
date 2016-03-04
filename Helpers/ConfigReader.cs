@@ -2,7 +2,7 @@
 using System.Linq;
 using System.Xml.Linq;
 
-namespace DataEngine.Helpers
+namespace Helpers
 {
     public class ConfigReader
     {

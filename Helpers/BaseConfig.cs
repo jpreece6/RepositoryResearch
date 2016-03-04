@@ -2,7 +2,7 @@
 using System.Collections.Generic;
 using System.Xml.Linq;
 
-namespace DataEngine.Helpers
+namespace Helpers
 {
     /// <summary>
     /// Type safe enum for connection method

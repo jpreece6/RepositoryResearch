@@ -8,7 +8,7 @@ using System.Threading.Tasks;
 using DataEngine;
 using DataEngine.Contexts;
 using DataEngine.Entities;
-using DataEngine.Helpers;
+using Helpers;
 using RepoConsole.Views;
 
 namespace RepoConsole.Presenter
@@ -16,8 +16,8 @@ namespace RepoConsole.Presenter
     class ProductPresenter : IPresenter
     {
         private readonly IViewProduct _view;
-        private ProductRepository<Product> _productRepository;
-        private SessionContext _sessionContext;
+        private readonly ProductRepository<Product> _productRepository;
+        private readonly SessionContext _sessionContext;
 
         public ProductPresenter(IViewProduct view)
         {
@@ -27,7 +27,11 @@ namespace RepoConsole.Presenter
             _view.GetAll += View_GetAll;
             _view.Remove += View_Remove;
 
-            Initialise();
+            // Init page.. 
+            var sessionFactManager = new SessionFactoryManager();
+            _sessionContext = new SessionContext(sessionFactManager);
+
+            _productRepository = new ProductRepository<Product>(_sessionContext);
         }
 
         private void View_GetAll(object sender, EventArgs e)
@@ -194,19 +198,6 @@ namespace RepoConsole.Presenter
             }
 
             Console.WriteLine("Added new product with ID of " + prod.Id);
-        }
-
-        public void Initialise()
-        {
-            // Load settings
-            var configReader = new ConfigReader(@"C:\repoSettings.xml");
-            BaseConfig.Sources = configReader.GetAllInstancesOf("ConnectionString");
-
-            // Init page.. 
-            var sessionFactManager = new SessionFactoryManager();
-            _sessionContext = new SessionContext(sessionFactManager);
-
-            _productRepository = new ProductRepository<Product>(_sessionContext);
         }
 
         private bool OpenSession()

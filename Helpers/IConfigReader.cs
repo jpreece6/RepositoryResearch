@@ -1,7 +1,7 @@
 ﻿using System.Collections.Generic;
 using System.Xml.Linq;
 
-namespace DataEngine.Helpers
+namespace Helpers
 {
     public interface IConfigReader
     {

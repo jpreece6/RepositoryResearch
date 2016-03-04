@@ -7,7 +7,6 @@ using System.Threading.Tasks;
 using DataEngine;
 using DataEngine.Contexts;
 using DataEngine.Entities;
-using DataEngine.Helpers;
 using RepoConsole.Views;
 
 namespace RepoConsole.Presenter
@@ -15,8 +14,8 @@ namespace RepoConsole.Presenter
     public class StorePresenter : IPresenter
     {
         private readonly IViewStore _view;
-        private StoreRepository<Store> _storeRepository;
-        private SessionContext _sessionContext;
+        private readonly StoreRepository<Store> _storeRepository;
+        private readonly SessionContext _sessionContext;
 
         public StorePresenter(IViewStore view)
         {
@@ -25,7 +24,12 @@ namespace RepoConsole.Presenter
             _view.Get += View_Get;
             _view.GetAll += View_GetAll;
             _view.Remove += View_Remove;
-            Initialise();
+
+            // Init page.. 
+            var sessionFactManager = new SessionFactoryManager();
+            _sessionContext = new SessionContext(sessionFactManager);
+
+            _storeRepository = new StoreRepository<Store>(_sessionContext);
         }
 
         private void View_Remove(object sender, EventArgs e)
@@ -184,19 +188,6 @@ namespace RepoConsole.Presenter
             Console.WriteLine("New store created with ID of " + store.Id);
         }
 
-        public void Initialise()
-        {
-            // Load settings
-            var configReader = new ConfigReader(@"C:\repoSettings.xml");
-            BaseConfig.Sources = configReader.GetAllInstancesOf("ConnectionString");
-
-            // Init page.. 
-            var sessionFactManager = new SessionFactoryManager();
-            _sessionContext = new SessionContext(sessionFactManager);
-
-            _storeRepository = new StoreRepository<Store>(_sessionContext);
-        }
-
         private bool OpenSession()
         {
             Console.WriteLine("\nConnecting....");
@@ -218,6 +209,11 @@ namespace RepoConsole.Presenter
             }
 
             return true;
+        }
+
+        private void SessionFinished()
+        {
+            
         }
     }
 }
