@@ -15,11 +15,6 @@ namespace RepoConsole.Presenter
         public MainMenuPresenter(IView view)
         {
             _view = view;
-            Initialise();
-        }
-
-        private void Initialise()
-        {
             Console.Clear();
         }
     }

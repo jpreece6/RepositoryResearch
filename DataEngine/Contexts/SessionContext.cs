@@ -27,10 +27,7 @@ namespace DataEngine.Contexts
             }
             catch (Exception ex)
             {
-                if (ex.InnerException is SqlException)
-                {
-                    OpenSessionFallback();
-                }
+                //
             }
         }
 
@@ -104,13 +101,6 @@ namespace DataEngine.Contexts
                 return true;
             }
 
-            /*if (Session.Connection.State == ConnectionState.Closed || Session.Connection == null)
-            {
-                // Fire event for failed attempt
-                Session = SessionFactoryManager.GetLocal().OpenSession();
-                _isLocal = true;
-                return true;
-            }*/
             return false;
         }
 
