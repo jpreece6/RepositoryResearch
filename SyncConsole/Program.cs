@@ -17,6 +17,12 @@ namespace SyncConsole
 
             // TODO local repo will still lose the original id of its object due to autonumber....
             SyncManager sync = new SyncManager();
+
+            sync.OnSyncComplete += Sync_OnSyncComplete;
+            sync.OnSyncFailure += Sync_OnSyncFailure;
+            sync.OnUpdateStatus += Sync_OnUpdateStatus;
+            sync.OnSyncStart += Sync_OnSyncStart;
+
             sync.SyncAllTables();
 
             /*var sessionFactManager = new SessionFactoryManager();
@@ -61,11 +67,32 @@ namespace SyncConsole
             employeeRemoteRepository.Commit();
             employeeLocalRepository.Commit();*/
 
-            Console.WriteLine("Done!");
             Console.ReadLine();
 
             // Sync all to ....
 
+        }
+
+        private static void Sync_OnSyncStart(object sender, SyncEngine.Events.SyncStartedArgs e)
+        {
+            Console.WriteLine("\n" + e.Status);
+        }
+
+        private static void Sync_OnUpdateStatus(object sender, SyncEngine.Events.ProgressEventArgs e)
+        {
+            Console.WriteLine(e.Status);
+        }
+
+        private static void Sync_OnSyncFailure(object sender, SyncEngine.Events.SyncFailedEventArgs e)
+        {
+            Console.Clear();
+            Console.WriteLine("\n" + e.Status);
+            Console.WriteLine("Error: " + e.ExceptionObject.Message);
+        }
+
+        private static void Sync_OnSyncComplete(object sender, SyncEngine.Events.SyncCompleteArgs e)
+        {
+            Console.WriteLine("\n" + e.Status);
         }
     }
 }

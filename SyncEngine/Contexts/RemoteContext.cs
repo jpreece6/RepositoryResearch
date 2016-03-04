@@ -7,10 +7,5 @@ namespace SyncEngine.Contexts
         public RemoteContext(ISessionFactoryManager sessionFactoryManager) : base(sessionFactoryManager)
         {
         }
-
-        public override void OpenContextSession()
-        {
-            //Session = SessionFactoryManager.GetPreferred().OpenSession();
-        }
     }
 }
