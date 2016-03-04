@@ -1,4 +1,5 @@
 ﻿using System.Collections.Generic;
+using System.Diagnostics;
 using System.Linq;
 using DataEngine.Contexts;
 using DataEngine.Entities;
@@ -17,7 +18,15 @@ namespace DataEngine
 
         public IList<Product> GetWithName(string name)
         {
-            var query = SessionContext.Session.Query<Product>().ToList();
+            var query = SessionContext.Session.QueryOver<Product>().Where(x => x.Prod_Name == name).List();
+            IList<Product> products = query;
+
+            return products;
+        }
+
+        public IList<Product> GetWithPrice(float price)
+        {
+            var query = SessionContext.Session.QueryOver<Product>().Where(x => x.Price == price).List();
             IList<Product> products = query;
 
             return products;
