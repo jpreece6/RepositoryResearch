@@ -21,16 +21,85 @@ namespace RepoConsole.Presenter
         public SalePresenter(IViewSale view)
         {
             _view = view;
-            _view.Add += View_Add; ;
-            _view.Get += View_Get; ;
+            _view.Add += View_Add;
+            _view.Get += View_Get;
             _view.GetAll += View_GetAll;
-            _view.Remove += View_Remove; ;
+            _view.Remove += View_Remove;
+            _view.Edit += View_Edit;
 
             // Init page.. 
             var sessionFactManager = new SessionFactoryManager();
             _sessionContext = new SessionContext(sessionFactManager);
 
             _saleRepository = new SaleRepository<Sale>(_sessionContext);
+        }
+
+        private void View_Edit(object sender, EventArgs e)
+        {
+            if (!OpenSession())
+                return;
+
+            Sale sale;
+
+            try
+            {
+                sale = _saleRepository.Get(_view.Id);
+            }
+            catch (Exception ex)
+            {
+                Console.WriteLine("Could not retrieve Sale by ID\n");
+                Console.WriteLine("Error: " + ex.Message);
+                return;
+            }
+
+            if (sale == null)
+            {
+                Console.WriteLine("Could not find Sale with an ID of " + _view.Id);
+                return;
+            }
+
+            Console.WriteLine("Edit: (ID: " + sale.Id + ")\n");
+            Console.Write("Store ID: ");
+
+            var input = Console.ReadLine();
+            int result;
+
+            if (int.TryParse(input, out result))
+            {
+                Console.WriteLine("\nPlease enter a valid Store ID");
+                return;
+            }
+
+            sale.StoreId = result;
+
+            Console.Write("Product ID: ");
+            input = Console.ReadLine();
+
+            if (int.TryParse(input, out result))
+            {
+                Console.WriteLine("\nPlease enter a valid Product ID");
+                return;
+            }
+
+            sale.ProductId = result;
+
+            Console.Write("\nUpdate Timestamp? [yes or no]: ");
+            input = Console.ReadLine();
+
+            if (input.ToLower().Equals("yes"))
+                sale.Timestamp = DateTime.Now;
+
+            try
+            {
+                _saleRepository.Save(sale);
+                _saleRepository.Commit();
+                Console.WriteLine("\nRecord updated successfully!");
+            }
+            catch (Exception ex)
+            {
+                Console.WriteLine("Could not update record");
+                Console.WriteLine("Error: " + ex.Message);
+            }
         }
 
         private void View_Remove(object sender, EventArgs e)

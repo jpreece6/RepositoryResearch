@@ -23,12 +23,80 @@ namespace RepoConsole.Presenter
             _view.Get += View_Get;
             _view.GetAll += View_GetAll;
             _view.Remove += View_Remove;
+            _view.Edit += View_Edit;
 
             // Init page.. 
             var sessionFactManager = new SessionFactoryManager();
             _sessionContext = new SessionContext(sessionFactManager);
 
             _employeeRepository = new EmployeeRepository<Employee>(_sessionContext);
+        }
+
+        private void View_Edit(object sender, EventArgs e)
+        {
+            if (!OpenSession())
+                return;
+
+            if (_view.Id == 0)
+            {
+                Console.WriteLine("No ID specified!");
+                return;
+            }
+
+            Employee emp;
+
+            try
+            {
+                emp = _employeeRepository.Get(_view.Id);
+            }
+            catch (Exception ex)
+            {
+                Console.WriteLine("Could not retrieve Employee in Get");
+                Console.WriteLine("Error: " + (ex.InnerException?.Message ?? ex.Message));
+                return;
+            }
+
+            if (emp == null)
+            {
+                Console.WriteLine("No employee found with ID of " + _view.Id);
+                return;
+            }
+
+            Console.WriteLine("Edit: (ID: " + emp.Id + ") " + emp.FirstName);
+            Console.Write("Name: ");
+            var input = Console.ReadLine();
+
+            if (input == "")
+            {
+                Console.WriteLine("Please enter a valid name");
+                return;
+            }
+
+            emp.FirstName = input;
+
+            Console.Write("Store ID: ");
+            input = Console.ReadLine();
+            int result;
+
+            if (int.TryParse(input, out result) == false)
+            {
+                Console.WriteLine("Please enter a valid store ID");
+                return;
+            }
+
+            emp.StoreId = result;
+
+            try
+            {
+                _employeeRepository.Save(emp);
+                _employeeRepository.Commit();
+                Console.WriteLine("\nRecord successfully updated!");
+            }
+            catch (Exception ex)
+            {
+                Console.WriteLine("Could not update Employee\n");
+                Console.WriteLine("Error: " + ex.Message);
+            }
         }
 
         private void View_GetAll(object sender, EventArgs e)

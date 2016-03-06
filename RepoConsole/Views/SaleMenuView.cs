@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Runtime.InteropServices;
 using System.Text;
 using System.Threading.Tasks;
 using RepoConsole.Presenter;
@@ -10,6 +11,7 @@ namespace RepoConsole.Views
     public class SaleMenuView : IViewSale
     {
         public event EventHandler<EventArgs> Add;
+        public event EventHandler<EventArgs> Edit;
         public event EventHandler<EventArgs> Get;
         public event EventHandler<EventArgs> GetAll;
         public event EventHandler<EventArgs> Remove;
@@ -33,9 +35,10 @@ namespace RepoConsole.Views
                 Console.Clear();
                 Console.WriteLine("Sales Menu\n");
                 Console.WriteLine("1: Add Sale");
-                Console.WriteLine("2: Find Sale(s)");
-                Console.WriteLine("3: Remove Sale");
-                Console.WriteLine("4: Back");
+                Console.WriteLine("2: Edit Sale");
+                Console.WriteLine("3: Find Sale(s)");
+                Console.WriteLine("4: Remove Sale");
+                Console.WriteLine("5: Back");
                 Console.Write("\nChoice: ");
                 WaitForInput();
 
@@ -65,6 +68,13 @@ namespace RepoConsole.Views
             }
 
             Console.ReadLine();
+        }
+
+        public void Show_Edit()
+        {
+            Console.Clear();
+            Console.WriteLine("Edit Store\n");
+            Get_ID(Edit);
         }
 
         public void Show_Get()
@@ -166,15 +176,31 @@ namespace RepoConsole.Views
                         Show_Add();
                         break;
                     case 2:
-                        Show_Get();
+                        Show_Edit();
                         break;
                     case 3:
-                        Show_Remove();
+                        Show_Get();
                         break;
                     case 4:
+                        Show_Remove();
+                        break;
+                    case 5:
                         _exit = true;
                         break;
                 }
+            }
+        }
+
+        private void Get_ID(EventHandler<EventArgs> fireEvent)
+        {
+            Console.Write("ID: ");
+            var input = Console.ReadLine();
+            int result;
+
+            if (int.TryParse(input, out result))
+            {
+                Id = result;
+                fireEvent(this, EventArgs.Empty);
             }
         }
     }

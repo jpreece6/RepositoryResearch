@@ -26,12 +26,81 @@ namespace RepoConsole.Presenter
             _view.Get += View_Get;
             _view.GetAll += View_GetAll;
             _view.Remove += View_Remove;
+            _view.Edit += View_Edit;
 
             // Init page.. 
             var sessionFactManager = new SessionFactoryManager();
             _sessionContext = new SessionContext(sessionFactManager);
 
             _productRepository = new ProductRepository<Product>(_sessionContext);
+        }
+
+        private void View_Edit(object sender, EventArgs e)
+        {
+            if (!OpenSession())
+                return;
+
+            if (_view.Id == 0)
+            {
+                Console.WriteLine("No ID sepecifed");
+                return;
+            }
+
+            Product prod;
+
+            try
+            {
+                prod = _productRepository.Get(_view.Id);
+            }
+            catch (Exception ex)
+            {
+                Console.WriteLine("Could not retrieve Product on get");
+                Console.WriteLine("Error: " + (ex.InnerException?.Message ?? ex.Message));
+                return;
+            }
+
+            if (prod == null)
+            {
+                Console.WriteLine("No product found with an ID of " + _view.Id);
+                return;
+            }
+
+            Console.Clear();
+            Console.WriteLine("Edit: (ID: " + prod.Id + ") " + prod.Prod_Name);
+            Console.Write("\nName: ");
+
+            var input = Console.ReadLine();
+            if (input == null)
+            {
+                Console.WriteLine("\nPlease enter a name!");
+                return;
+            }
+
+            prod.Prod_Name = input;
+            Console.Write("Price: ");
+            input = Console.ReadLine();
+            float result;
+
+            if (float.TryParse(input, out result) == false)
+            {
+                Console.WriteLine("\nPlease enter a valid type!");
+                return;
+            }
+
+            prod.Price = result;
+
+            try
+            {
+                _productRepository.Save(prod);
+                _productRepository.Commit();
+                Console.WriteLine("\nRecord updated successfully!");
+            }
+            catch (Exception ex)
+            {
+                Console.WriteLine("Could not update product");
+                Console.WriteLine("Error: " + ex.Message);
+            }
+
         }
 
         private void View_GetAll(object sender, EventArgs e)

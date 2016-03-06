@@ -12,6 +12,7 @@ namespace RepoConsole.Views
         public event EventHandler<EventArgs> GetAll;
         public event EventHandler<EventArgs> Remove;
         public event EventHandler<EventArgs> Add;
+        public event EventHandler<EventArgs> Edit;
         public event EventHandler<EventArgs> Get;
         public int Id { get; set; }
         public string Name { get; set; }
@@ -38,12 +39,15 @@ namespace RepoConsole.Views
                         Show_Add();
                         break;
                     case 2:
-                        Show_Get();
+                        Show_Edit();
                         break;
                     case 3:
-                        Show_Remove();
+                        Show_Get();
                         break;
                     case 4:
+                        Show_Remove();
+                        break;
+                    case 5:
                         _exit = true;
                         break;
                 }
@@ -72,6 +76,15 @@ namespace RepoConsole.Views
             Console.ReadLine();
         }
 
+        public void Show_Edit()
+        {
+            Console.Clear();
+            Console.WriteLine("Edit Product\n");
+            Get_ID(Edit);
+
+            Console.ReadLine();
+        }
+
         public void Show_Get()
         {
             Console.Clear();
@@ -93,14 +106,7 @@ namespace RepoConsole.Views
                     case 1:
                         Console.Clear();
                         Console.WriteLine("Enter Product ID\n");
-                        Console.Write("ID: ");
-                        input = Console.ReadLine();
-
-                        if (int.TryParse(input, out result))
-                        {
-                            Id = result;
-                            Get(this, EventArgs.Empty);
-                        }
+                        Get_ID(Get);
                         break;
                     case 2:
                         Console.Clear();
@@ -143,16 +149,7 @@ namespace RepoConsole.Views
         {
             Console.Clear();
             Console.WriteLine("Remove Employee\n");
-            Console.Write("ID: ");
-
-            var input = Console.ReadLine();
-            int result;
-
-            if (int.TryParse(input, out result))
-            {
-                Id = result;
-                Remove(this, EventArgs.Empty);
-            }
+            Get_ID(Remove);
 
             Console.Read();
         }
@@ -164,12 +161,27 @@ namespace RepoConsole.Views
                 Console.Clear();
                 Console.WriteLine("Products Menu\n");
                 Console.WriteLine("1: Add new product");
-                Console.WriteLine("2: Find Product(s)");
-                Console.WriteLine("3: Remove product");
-                Console.WriteLine("4: Back");
+                Console.WriteLine("2: Edit product");
+                Console.WriteLine("3: Find Product(s)");
+                Console.WriteLine("4: Remove product");
+                Console.WriteLine("5: Back");
                 Console.Write("\nChoice: ");
                 WaitForInput();
             } while (_exit == false);
+        }
+
+        private void Get_ID(EventHandler<EventArgs> fireEvent)
+        {
+            Console.Write("ID: ");
+            var input = Console.ReadLine();
+            int result;
+
+            if (int.TryParse(input, out result))
+            {
+                Id = result;
+                if (fireEvent == null) return;
+                fireEvent(this, EventArgs.Empty);
+            }
         }
     }
 }
