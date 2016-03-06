@@ -4,12 +4,43 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using DataEngine.Contexts;
+using RepoConsole.Events;
 
 namespace RepoConsole.Presenter
 {
     public abstract class Presenter
     {
         protected SessionContext SessionContext;
+
+        public delegate void StatusUpdateHandler(object sender, StatusUpdateArgs e);
+        public event StatusUpdateHandler OnUpdateStatus;
+
+        public delegate void OperationFailedHandler(object sender, OperationFailedArgs e);
+        public event OperationFailedHandler OnOperationFail;
+
+        protected void OperationFailed(Exception ex)
+        {
+            if (OnOperationFail == null) return;
+            
+            var failArgs = new OperationFailedArgs(ex);
+            OnOperationFail(this, failArgs);
+        }
+
+        protected void OperationFailed(Exception ex, string status)
+        {
+            if (OnOperationFail == null) return;
+
+            var failArgs = new OperationFailedArgs(ex, status);
+            OnOperationFail(this, failArgs);
+        }
+
+        protected void UpdateStatus(string status)
+        {
+            if (OnUpdateStatus == null) return;
+
+            var statArgs = new StatusUpdateArgs(status);
+            OnUpdateStatus(this, statArgs);
+        }
 
         protected virtual bool OpenSession()
         {

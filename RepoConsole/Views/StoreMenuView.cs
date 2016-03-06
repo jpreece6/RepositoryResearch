@@ -25,6 +25,19 @@ namespace RepoConsole.Views
         public StoreMenuView()
         {
             _presenter = new StorePresenter(this);
+            _presenter.OnUpdateStatus += Presenter_OnUpdateStatus;
+            _presenter.OnOperationFail += Presenter_OnOperationFail;
+        }
+
+        private void Presenter_OnOperationFail(object sender, Events.OperationFailedArgs e)
+        {
+            Console.WriteLine(e.Status);
+            Console.WriteLine("\nError: " + (e.ExceptionObject.InnerException?.Message ?? e.ExceptionObject.Message));
+        }
+
+        private void Presenter_OnUpdateStatus(object sender, Events.StatusUpdateArgs e)
+        {
+            Console.WriteLine(e.Status);
         }
 
         public void Show()

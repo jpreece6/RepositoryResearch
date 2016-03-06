@@ -17,12 +17,25 @@ namespace RepoConsole.Views
         public string FirstName { get; set; }
         public int StoreId { get; set; }
 
-        private Presenter.IPresenter _presenter;
+        private EmployeePresenter _presenter;
         private bool _exit = false;
 
         public EmployeeMenuView()
         {
             _presenter = new EmployeePresenter(this);
+            _presenter.OnUpdateStatus += Presenter_OnUpdateStatus;
+            _presenter.OnOperationFail += Presenter_OnOperationFail;
+        }
+
+        private void Presenter_OnOperationFail(object sender, Events.OperationFailedArgs e)
+        {
+            Console.WriteLine(e.Status);
+            Console.WriteLine("Error: " + (e.ExceptionObject.InnerException?.Message ?? e.ExceptionObject.Message));
+        }
+
+        private void Presenter_OnUpdateStatus(object sender, Events.StatusUpdateArgs e)
+        {
+            Console.WriteLine(e.Status);
         }
 
         public void WaitForInput()
