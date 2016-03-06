@@ -13,11 +13,10 @@ using RepoConsole.Views;
 
 namespace RepoConsole.Presenter
 {
-    class ProductPresenter : IPresenter
+    class ProductPresenter : Presenter
     {
         private readonly IViewProduct _view;
         private readonly ProductRepository<Product> _productRepository;
-        private readonly SessionContext _sessionContext;
 
         public ProductPresenter(IViewProduct view)
         {
@@ -30,9 +29,9 @@ namespace RepoConsole.Presenter
 
             // Init page.. 
             var sessionFactManager = new SessionFactoryManager();
-            _sessionContext = new SessionContext(sessionFactManager);
+            SessionContext = new SessionContext(sessionFactManager);
 
-            _productRepository = new ProductRepository<Product>(_sessionContext);
+            _productRepository = new ProductRepository<Product>(SessionContext);
         }
 
         private void View_Edit(object sender, EventArgs e)
@@ -143,7 +142,7 @@ namespace RepoConsole.Presenter
 
             Product prod;
 
-            if (_productRepository.AllowLocalEdits == false && _sessionContext.IsLocal())
+            if (_productRepository.AllowLocalEdits == false && SessionContext.IsLocal())
             {
                 Console.WriteLine("Unable to remove Product local remove is not allowed!");
                 return;
@@ -256,7 +255,7 @@ namespace RepoConsole.Presenter
 
             var prod = new Product();
 
-            if (_productRepository.AllowLocalEdits == false && _sessionContext.IsLocal())
+            if (_productRepository.AllowLocalEdits == false && SessionContext.IsLocal())
             {
                 Console.WriteLine("Unable to create Product local creation not allowed!");
                 return;
@@ -280,29 +279,6 @@ namespace RepoConsole.Presenter
             }
 
             Console.WriteLine("Added new product with ID of " + prod.Id);
-        }
-
-        private bool OpenSession()
-        {
-            Console.WriteLine("\nConnecting....");
-
-            try
-            {
-                _sessionContext.OpenContextSession();
-                Console.Clear();
-
-                if (_sessionContext.IsLocal())
-                {
-                    Console.WriteLine("Could not connect to server!\n- Now using local DB for this operation!\n");
-                }
-            }
-            catch (Exception ex)
-            {
-                Console.WriteLine("Could not connect to server!");
-                return false;
-            }
-
-            return true;
         }
     }
 }

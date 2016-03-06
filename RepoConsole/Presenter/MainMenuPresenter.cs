@@ -8,7 +8,7 @@ using RepoConsole.Views;
 
 namespace RepoConsole.Presenter
 {
-    class MainMenuPresenter : IPresenter
+    class MainMenuPresenter : Presenter
     {
         private IView _view;
 

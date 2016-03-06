@@ -12,10 +12,9 @@ using RepoConsole.Views;
 
 namespace RepoConsole.Presenter
 {
-    public class SalePresenter : IPresenter
+    public class SalePresenter : Presenter
     {
         private readonly IViewSale _view;
-        private readonly SessionContext _sessionContext;
         private readonly SaleRepository<Sale> _saleRepository;
 
         public SalePresenter(IViewSale view)
@@ -29,9 +28,9 @@ namespace RepoConsole.Presenter
 
             // Init page.. 
             var sessionFactManager = new SessionFactoryManager();
-            _sessionContext = new SessionContext(sessionFactManager);
+            SessionContext = new SessionContext(sessionFactManager);
 
-            _saleRepository = new SaleRepository<Sale>(_sessionContext);
+            _saleRepository = new SaleRepository<Sale>(SessionContext);
         }
 
         private void View_Edit(object sender, EventArgs e)
@@ -265,29 +264,6 @@ namespace RepoConsole.Presenter
             }
 
             Console.WriteLine("New sale created with ID of " + sale.Id);
-        }
-
-        private bool OpenSession()
-        {
-            Console.WriteLine("\nConnecting....");
-
-            try
-            {
-                _sessionContext.OpenContextSession();
-                Console.Clear();
-
-                if (_sessionContext.IsLocal())
-                {
-                    Console.WriteLine("Could not connect to server!\n- Now using local DB for this operation!\n");
-                }
-            }
-            catch (Exception ex)
-            {
-                Console.WriteLine("Could not connect to server!");
-                return false;
-            }
-
-            return true;
         }
     }
 }

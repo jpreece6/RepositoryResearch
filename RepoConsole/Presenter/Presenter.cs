@@ -11,7 +11,7 @@ namespace RepoConsole.Presenter
     {
         protected SessionContext SessionContext;
 
-        protected bool OpenSession()
+        protected virtual bool OpenSession()
         {
             Console.WriteLine("\nConnecting....");
 

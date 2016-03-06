@@ -10,11 +10,10 @@ using RepoConsole.Views;
 
 namespace RepoConsole.Presenter
 {
-    class EmployeePresenter : IPresenter
+    class EmployeePresenter : Presenter
     {
         private readonly IViewEmployee _view;
         private readonly EmployeeRepository<Employee> _employeeRepository;
-        private readonly SessionContext _sessionContext;
          
         public EmployeePresenter(IViewEmployee view)
         {
@@ -27,9 +26,9 @@ namespace RepoConsole.Presenter
 
             // Init page.. 
             var sessionFactManager = new SessionFactoryManager();
-            _sessionContext = new SessionContext(sessionFactManager);
+            SessionContext = new SessionContext(sessionFactManager);
 
-            _employeeRepository = new EmployeeRepository<Employee>(_sessionContext);
+            _employeeRepository = new EmployeeRepository<Employee>(SessionContext);
         }
 
         private void View_Edit(object sender, EventArgs e)
@@ -260,29 +259,6 @@ namespace RepoConsole.Presenter
                     Console.WriteLine("");
                 }
             }
-        }
-
-        private bool OpenSession()
-        {
-            Console.WriteLine("\nConnecting....");
-
-            try
-            {
-                _sessionContext.OpenContextSession();
-                Console.Clear();
-
-                if (_sessionContext.IsLocal())
-                {
-                    Console.WriteLine("Could not connect to server!\n- Now using local DB for this operation!\n");
-                }
-            }
-            catch (Exception ex)
-            {
-                Console.WriteLine("Could not connect to server!");
-                return false;
-            }
-
-            return true;
         }
     }
 }
