@@ -22,6 +22,7 @@ namespace SyncConsole
             sync.OnSyncFailure += Sync_OnSyncFailure;
             sync.OnUpdateStatus += Sync_OnUpdateStatus;
             sync.OnSyncStart += Sync_OnSyncStart;
+            sync.OnCleanUp += Sync_OnCleanUp;
 
             sync.SyncAllTables();
 
@@ -71,6 +72,11 @@ namespace SyncConsole
 
             // Sync all to ....
 
+        }
+
+        private static void Sync_OnCleanUp(object sender, SyncEngine.Events.SyncCleanupArgs e)
+        {
+            Console.WriteLine("\nCleaning up - " + e.Status);
         }
 
         private static void Sync_OnSyncStart(object sender, SyncEngine.Events.SyncStartedArgs e)

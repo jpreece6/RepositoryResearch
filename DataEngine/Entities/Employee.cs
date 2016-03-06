@@ -1,4 +1,6 @@
-﻿namespace DataEngine.Entities
+﻿using System.Data;
+
+namespace DataEngine.Entities
 {
     public class Employee : IEntity
     {
