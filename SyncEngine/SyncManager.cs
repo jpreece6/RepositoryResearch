@@ -255,8 +255,17 @@ namespace SyncEngine
         {
             try
             {
+                CreateContexts();
+
                 _localSessionContext.OpenContextSession();
                 _remoteSessionContext.OpenContextSession();
+
+                if (_remoteSessionContext.IsLocal())
+                {
+                    SyncFailed(new Exception("Remote server is unavilable!"), "Unable to sync at this time!");
+                    return;
+                }
+
                 _recordRepository = new SyncRecordRepository<SyncRecord>(_localSessionContext);
 
                 SyncStarted("All Tables");
@@ -273,8 +282,11 @@ namespace SyncEngine
             }
             finally
             {
-                CleanUp_Records();
-                SyncComplete();
+                if (_remoteSessionContext.IsLocal() == false)
+                {
+                    CleanUp_Records();
+                    SyncComplete();
+                }
             }
         }
 
@@ -290,6 +302,14 @@ namespace SyncEngine
 
             var cleanup = new SyncCleanupArgs("Removing sync records!");
             OnCleanUp(this, cleanup);
+        }
+
+        private void SyncFailed(Exception ex, string status)
+        {
+            if (OnSyncFailure == null) return;
+
+            SyncFailedEventArgs failedArgs = new SyncFailedEventArgs(ex, status);
+            OnSyncFailure(this, failedArgs);
         }
 
         private void SyncFailed(Exception ex)

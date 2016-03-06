@@ -12,6 +12,11 @@ namespace SyncEngine.Events
         public string Status { get; private set; }
         public Exception ExceptionObject { get; set; }
 
+        public SyncFailedEventArgs(Exception ex)
+        {
+            ExceptionObject = ex;
+        }
+
         public SyncFailedEventArgs(Exception ex, string status)
         {
             Status = status;
