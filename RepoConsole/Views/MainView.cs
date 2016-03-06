@@ -15,6 +15,7 @@ namespace RepoConsole.Views
         private bool _exit = false;
 
         public event EventHandler<EventArgs> Add;
+        public event EventHandler<EventArgs> Edit;
         public event EventHandler<EventArgs> Get;
         public event EventHandler<EventArgs> GetAll;
         public event EventHandler<EventArgs> Remove;
@@ -74,6 +75,11 @@ namespace RepoConsole.Views
         }
 
         public void Show_Add()
+        {
+            throw new NotImplementedException();
+        }
+
+        public void Show_Edit()
         {
             throw new NotImplementedException();
         }
