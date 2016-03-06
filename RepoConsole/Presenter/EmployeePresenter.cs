@@ -36,12 +36,6 @@ namespace RepoConsole.Presenter
             if (!OpenSession())
                 return;
 
-            if (_view.Id == 0)
-            {
-                Console.WriteLine("No ID specified!");
-                return;
-            }
-
             Employee emp;
 
             try
@@ -50,14 +44,13 @@ namespace RepoConsole.Presenter
             }
             catch (Exception ex)
             {
-                Console.WriteLine("Could not retrieve Employee in Get");
-                Console.WriteLine("Error: " + (ex.InnerException?.Message ?? ex.Message));
+                OperationFailed(ex, "Could not retrieve Employee in Get");
                 return;
             }
 
             if (emp == null)
             {
-                Console.WriteLine("No employee found with ID of " + _view.Id);
+                UpdateStatus("No employee found with ID of " + _view.Id);
                 return;
             }
 
@@ -67,7 +60,7 @@ namespace RepoConsole.Presenter
 
             if (input == "")
             {
-                Console.WriteLine("Please enter a valid name");
+                UpdateStatus("Please enter a valid name");
                 return;
             }
 
@@ -79,7 +72,7 @@ namespace RepoConsole.Presenter
 
             if (int.TryParse(input, out result) == false)
             {
-                Console.WriteLine("Please enter a valid store ID");
+                UpdateStatus("Please enter a valid store ID");
                 return;
             }
 
@@ -89,12 +82,11 @@ namespace RepoConsole.Presenter
             {
                 _employeeRepository.Save(emp);
                 _employeeRepository.Commit();
-                Console.WriteLine("\nRecord successfully updated!");
+                UpdateStatus("\nRecord successfully updated!");
             }
             catch (Exception ex)
             {
-                Console.WriteLine("Could not update Employee\n");
-                Console.WriteLine("Error: " + ex.Message);
+                OperationFailed(ex, "Could not update Employee\n");
             }
         }
 
@@ -111,23 +103,22 @@ namespace RepoConsole.Presenter
             }
             catch (Exception ex)
             {
-                Console.WriteLine("Could not retrieve employees\n");
-                Console.WriteLine("Error: " + (ex.InnerException?.Message ?? ex.Message));
+                OperationFailed(ex, "Could not retrieve employees\n");
                 return;
             }
 
             if (emps.Count <= 0)
             {
-                Console.WriteLine("no employees found.");
+                UpdateStatus("No employees found.");
                 return;
             }
 
             foreach (var employee in emps)
             {
-                Console.WriteLine("ID: " + employee.Id);
-                Console.WriteLine("First Name: " + employee.FirstName);
-                Console.WriteLine("Store ID: " + employee.StoreId);
-                Console.WriteLine("");
+                UpdateStatus("ID: " + employee.Id +
+                             "\nFirst Name: " + employee.FirstName + 
+                             "\nStore ID: " + employee.StoreId +
+                             "\n");
             }
         }
 
@@ -144,14 +135,13 @@ namespace RepoConsole.Presenter
             }
             catch (Exception ex)
             {
-                Console.WriteLine("Could not retrieve Employee");
-                Console.WriteLine("Error: " + (ex.InnerException?.Message ?? ex.Message));
+                OperationFailed(ex, "Could not retrieve Employee");
                 return;
             }
 
             if (emp == null)
             {
-                Console.WriteLine("No employee found with ID of " + _view.Id);
+                UpdateStatus("No employee found with ID of " + _view.Id);
                 return;
             }
 
@@ -162,12 +152,11 @@ namespace RepoConsole.Presenter
             }
             catch (Exception ex)
             {
-                Console.WriteLine("Could not remove employee");
-                Console.WriteLine("Error: " + ex.InnerException?.Message ?? ex.Message);
+                OperationFailed(ex, "Could not remove employee");
                 return;
             }
 
-            Console.WriteLine("Employee Removed!");
+            UpdateStatus("Employee Removed!");
         }
 
         private void View_Add(object sender, EventArgs e)
@@ -186,12 +175,11 @@ namespace RepoConsole.Presenter
             }
             catch (Exception ex)
             {
-                Console.WriteLine("Could not save employee\n\n");
-                Console.WriteLine("Error: " + (ex.InnerException?.Message ?? ex.Message));
+                OperationFailed(ex, "Could not save employee\n");
                 return;
             }
 
-            Console.WriteLine("New employee created with ID of " + emp.Id);
+            UpdateStatus("New employee created with ID of " + emp.Id);
         }
 
         private void View_Get(object sender, EventArgs e)
@@ -209,18 +197,17 @@ namespace RepoConsole.Presenter
                 }
                 catch (Exception ex)
                 {
-                    Console.WriteLine("Could not retrieve Employee in Get");
-                    Console.WriteLine("Error: " + (ex.InnerException?.Message ?? ex.Message));
+                    OperationFailed(ex, "Could not retrieve Employee in Get");
                     return;
                 }
 
                 if (emp == null)
                 {
-                    Console.WriteLine("No employee found with ID of " + _view.Id);
+                    UpdateStatus("No employee found with ID of " + _view.Id);
                     return;
                 }
 
-                Console.WriteLine("First Name: " + emp.FirstName);
+                UpdateStatus("First Name: " + emp.FirstName);
                 return;
             }
 
@@ -240,23 +227,22 @@ namespace RepoConsole.Presenter
 
                 } catch (Exception ex)
                 {
-                    Console.WriteLine("Could not retrieve Employee in by Name or Store ID");
-                    Console.WriteLine("Error: " + (ex.InnerException?.Message ?? ex.Message));
+                    OperationFailed(ex, "Could not retrieve Employee in by Name or Store ID");
                     return;
                 }
 
                 if (emps.Count == 0)
                 {
-                    Console.WriteLine("No employee(s) found with name " + _view.FirstName);
+                    UpdateStatus("No employee(s) found with name " + _view.FirstName);
                     return;
                 }
 
                 foreach (var employee in emps)
                 {
-                    Console.WriteLine("ID: " + employee.Id);
-                    Console.WriteLine("Name: " + employee.FirstName);
-                    Console.WriteLine("Store ID: " + employee.StoreId);
-                    Console.WriteLine("");
+                    UpdateStatus("ID: " + employee.Id +
+                                 "\nName: " + employee.FirstName + 
+                                 "\nStore ID: " + employee.StoreId +
+                                 "\n");
                 }
             }
         }

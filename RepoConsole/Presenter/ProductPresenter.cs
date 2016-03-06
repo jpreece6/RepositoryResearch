@@ -39,12 +39,6 @@ namespace RepoConsole.Presenter
             if (!OpenSession())
                 return;
 
-            if (_view.Id == 0)
-            {
-                Console.WriteLine("No ID sepecifed");
-                return;
-            }
-
             Product prod;
 
             try
@@ -53,14 +47,13 @@ namespace RepoConsole.Presenter
             }
             catch (Exception ex)
             {
-                Console.WriteLine("Could not retrieve Product on get");
-                Console.WriteLine("Error: " + (ex.InnerException?.Message ?? ex.Message));
+                OperationFailed(ex, "Could not retrieve Product on get");
                 return;
             }
 
             if (prod == null)
             {
-                Console.WriteLine("No product found with an ID of " + _view.Id);
+                UpdateStatus("No product found with an ID of " + _view.Id);
                 return;
             }
 
@@ -71,7 +64,7 @@ namespace RepoConsole.Presenter
             var input = Console.ReadLine();
             if (input == null)
             {
-                Console.WriteLine("\nPlease enter a name!");
+                UpdateStatus("\nPlease enter a name!");
                 return;
             }
 
@@ -82,7 +75,7 @@ namespace RepoConsole.Presenter
 
             if (float.TryParse(input, out result) == false)
             {
-                Console.WriteLine("\nPlease enter a valid type!");
+                UpdateStatus("\nPlease enter a valid type!");
                 return;
             }
 
@@ -92,12 +85,11 @@ namespace RepoConsole.Presenter
             {
                 _productRepository.Save(prod);
                 _productRepository.Commit();
-                Console.WriteLine("\nRecord updated successfully!");
+                UpdateStatus("\nRecord updated successfully!");
             }
             catch (Exception ex)
             {
-                Console.WriteLine("Could not update product");
-                Console.WriteLine("Error: " + ex.Message);
+                OperationFailed(ex, "Could not update product");
             }
 
         }
@@ -115,23 +107,22 @@ namespace RepoConsole.Presenter
             }
             catch (Exception ex)
             {
-                Console.WriteLine("Could not retrieve Products\n");
-                Console.WriteLine("Error: " + (ex.InnerException?.Message ?? ex.Message));
+                OperationFailed(ex, "Could not retrieve Products\n");
                 return;
             }
 
             if (prods.Count <= 0)
             {
-                Console.WriteLine("No products found.");
+                UpdateStatus("No products found.");
                 return;
             }
 
             foreach (var product in prods)
             {
-                Console.WriteLine("ID: " + product.Id);
-                Console.WriteLine("Name: " + product.Prod_Name);
-                Console.WriteLine("Price: " + product.Price);
-                Console.WriteLine("");
+                UpdateStatus("ID: " + product.Id +
+                             "\nName: " + product.Prod_Name +
+                             "\nPrice: " + product.Price +
+                             "\n");
             }
         }
 
@@ -142,11 +133,12 @@ namespace RepoConsole.Presenter
 
             Product prod;
 
+            /* TODO
             if (_productRepository.AllowLocalEdits == false && SessionContext.IsLocal())
             {
                 Console.WriteLine("Unable to remove Product local remove is not allowed!");
                 return;
-            }
+            }*/
 
             try
             {
@@ -154,14 +146,13 @@ namespace RepoConsole.Presenter
             }
             catch (Exception ex)
             {
-                Console.WriteLine("Could not retrieve Product on Remove");
-                Console.WriteLine("Error: " + (ex.InnerException?.Message ?? ex.Message));
+                OperationFailed(ex, "Could not retrieve Product on Remove");
                 return;
             }
 
             if (prod == null)
             {
-                Console.WriteLine("No product found with an ID of " + _view.Id);
+                UpdateStatus("No product found with an ID of " + _view.Id);
                 return;
             }
 
@@ -172,12 +163,11 @@ namespace RepoConsole.Presenter
             }
             catch (Exception ex)
             {
-                Console.WriteLine("Could not remove Product!");
-                Console.WriteLine("Error: " + (ex.InnerException?.Message ?? ex.Message));
+                OperationFailed(ex, "Could not remove Product!");
                 return;
             }
 
-            Console.WriteLine("Removed");
+            UpdateStatus("Product Removed!");
         }
 
         private void View_Get(object sender, EventArgs e)
@@ -195,20 +185,19 @@ namespace RepoConsole.Presenter
                 }
                 catch (Exception ex)
                 {
-                    Console.WriteLine("Could not retrieve Product on get");
-                    Console.WriteLine("Error: " + (ex.InnerException?.Message ?? ex.Message));
+                    OperationFailed(ex, "Could not retrieve Product on get");
                     return;
                 }
 
                 if (prod == null)
                 {
-                    Console.WriteLine("No product found with an ID of " + _view.Id);
+                    UpdateStatus("No product found with an ID of " + _view.Id);
                     return;
                 }
 
-                Console.WriteLine("ID: " + prod.Id);
-                Console.WriteLine("Name: " + prod.Prod_Name);
-                Console.WriteLine("Price: " + prod.Price);
+                UpdateStatus("ID: " + prod.Id +
+                             "\nName: " + prod.Prod_Name +
+                             "\nPrice: " + prod.Price);
                 return;
             }
 
@@ -227,23 +216,22 @@ namespace RepoConsole.Presenter
             }
             catch (Exception ex)
             {
-                Console.WriteLine("Could not retrieve Product with Name");
-                Console.WriteLine("Error: " + (ex.InnerException?.Message ?? ex.Message));
+                OperationFailed(ex, "Could not retrieve Product with Name or Price");
                 return;
             }
 
             if (prods.Count == 0)
             {
-                Console.WriteLine("No Products Found");
+                UpdateStatus("No Products Found");
                 return;
             }
 
             foreach (var product in prods)
             {
-                Console.WriteLine("ID: " + product.Id);
-                Console.WriteLine("Name: " + product.Prod_Name);
-                Console.WriteLine("Price: " + product.Price);
-                Console.WriteLine("");
+                UpdateStatus("ID: " + product.Id +
+                             "Name: " + product.Prod_Name +
+                             "Price: " + product.Price +
+                             "\n");
             }
 
         }
@@ -255,11 +243,12 @@ namespace RepoConsole.Presenter
 
             var prod = new Product();
 
+            /* TODO
             if (_productRepository.AllowLocalEdits == false && SessionContext.IsLocal())
             {
                 Console.WriteLine("Unable to create Product local creation not allowed!");
                 return;
-            }
+            }*/
 
             prod.Prod_Name = _view.Name;
             prod.Price = _view.Price;
@@ -273,12 +262,11 @@ namespace RepoConsole.Presenter
             }
             catch (Exception ex)
             {
-                Console.WriteLine("Could not save Product");
-                Console.WriteLine("Error: " + (ex.InnerException?.Message ?? ex.Message));
+                OperationFailed(ex, "Could not save Product");
                 return;
             }
 
-            Console.WriteLine("Added new product with ID of " + prod.Id);
+            UpdateStatus("Added new product with ID of " + prod.Id);
         }
     }
 }

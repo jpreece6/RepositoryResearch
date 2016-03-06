@@ -7,6 +7,7 @@ using System.Threading.Tasks;
 using DataEngine;
 using DataEngine.Contexts;
 using DataEngine.Entities;
+using RepoConsole.Events;
 using RepoConsole.Views;
 using SyncEngine;
 
@@ -16,7 +17,7 @@ namespace RepoConsole.Presenter
     {
         private readonly IViewStore _view;
         private readonly StoreRepository<Store> _storeRepository;
-        
+
         public StorePresenter(IViewStore view)
         {
             _view = view;
@@ -45,14 +46,13 @@ namespace RepoConsole.Presenter
             }
             catch (Exception ex)
             {
-                Console.WriteLine("Could not retrieve Store on Get");
-                Console.WriteLine("Error: " + (ex.InnerException?.Message ?? ex.Message));
+                OperationFailed(ex, "Could not retrieve Store on Edit");
                 return;
             }
 
             if (store == null)
             {
-                Console.WriteLine("No store found with an ID of " + _view.Id);
+                UpdateStatus("No store found with an ID of " + _view.Id);
                 return;
             }
 
@@ -71,17 +71,16 @@ namespace RepoConsole.Presenter
                     _storeRepository.Save(store);
                     _storeRepository.Commit();
 
-                    Console.WriteLine("\nRecord updated successfully!");
+                    UpdateStatus("\nRecord updated successfully!");
                 }
                 catch (Exception ex)
                 {
-                    Console.WriteLine("Could not update Store");
-                    Console.WriteLine("Error: " + ex.Message);
+                    OperationFailed(ex, "Could not update Store");
                 }
             }
             else
             {
-                Console.WriteLine("Could not update Store no name specified");
+                UpdateStatus("Could not update Store no name specified");
             }
 
         }
@@ -99,14 +98,13 @@ namespace RepoConsole.Presenter
             }
             catch (Exception ex)
             {
-                Console.WriteLine("Could not retrieve Store on remove");
-                Console.WriteLine("Error: " + (ex.InnerException?.Message ?? ex.Message));
+                OperationFailed(ex, "Could not retrieve Store on remove");
                 return;
             }
 
             if (store == null)
             {
-                Console.WriteLine("No store found with ID of " + _view.Id);
+                UpdateStatus("No store found with ID of " + _view.Id);
                 return;
             }
 
@@ -117,12 +115,11 @@ namespace RepoConsole.Presenter
             }
             catch (Exception ex)
             {
-                Console.WriteLine("Could not remove Store from DB");
-                Console.WriteLine("Error: " + (ex.InnerException?.Message ?? ex.Message));
+                OperationFailed(ex, "Could not remove Store from DB");
                 return;
             }
 
-            Console.WriteLine("Store Removed!");
+            UpdateStatus("Store Removed!");
         }
 
         private void View_GetAll(object sender, EventArgs e)
@@ -138,22 +135,21 @@ namespace RepoConsole.Presenter
             }
             catch (Exception ex)
             {
-                Console.WriteLine("Could not retrieve any Stores from GetAll");
-                Console.WriteLine("Error: " + (ex.InnerException?.Message ?? ex.Message));
+                OperationFailed(ex, "Could not retrieve any Stores from GetAll");
                 return;
             }
 
             if (stores.Count == 0)
             {
-                Console.WriteLine("No stores found.");
+                UpdateStatus("No stores found.");
                 return;
             }
 
             foreach (var store in stores)
             {
-                Console.WriteLine("ID: " + store.Id);
-                Console.WriteLine("Name: " + store.StoreName);
-                Console.WriteLine("");
+                UpdateStatus("ID: " + store.Id +
+                             "\nName: " + store.StoreName +
+                             "\n");
             }
         }
 
@@ -172,19 +168,18 @@ namespace RepoConsole.Presenter
                 }
                 catch (Exception ex)
                 {
-                    Console.WriteLine("Could not retrieve Store on Get");
-                    Console.WriteLine("Error: " + (ex.InnerException?.Message ?? ex.Message));
+                    OperationFailed(ex, "Could not retrieve Store by ID");
                     return;
                 }
 
                 if (store == null)
                 {
-                    Console.WriteLine("No store found with an ID of " + _view.Id);
+                    UpdateStatus("No store found with an ID of " + _view.Id);
                     return;
                 }
 
-                Console.WriteLine("ID: " + store.Id);
-                Console.WriteLine("Name: " + store.StoreName);
+                UpdateStatus("ID: " + store.Id +
+                             "\nName: " + store.StoreName);
                 return;
             }
 
@@ -199,22 +194,21 @@ namespace RepoConsole.Presenter
                 }
                 catch (Exception ex)
                 {
-                    Console.WriteLine("Could not retrieve Store(s) by name");
-                    Console.WriteLine("Error: " + (ex.InnerException?.Message ?? ex.Message));
+                    OperationFailed(ex, "Could not retrieve Store(s) by name");
                     return;
                 }
 
                 if (stores.Count == 0)
                 {
-                    Console.WriteLine("No stores found with name " + _view.StoreName);
+                    UpdateStatus("No stores found with name " + _view.StoreName);
                     return;
                 }
 
                 foreach (var store in stores)
                 {
-                    Console.WriteLine("ID: " + store.Id);
-                    Console.WriteLine("Name: " + store.StoreName);
-                    Console.WriteLine("");
+                    UpdateStatus("ID: " + store.Id +
+                                 "\nName: " + store.StoreName +
+                                 "\n");
                 }
             }
         }
@@ -223,11 +217,6 @@ namespace RepoConsole.Presenter
         {
             if (!OpenSession())
                 return;
-
-            if (_storeRepository.AllowLocalEdits == false && SessionContext.IsLocal())
-            {
-                //Console.WriteLine("Unable to create store");
-            }
 
             var store = new Store();
             store.StoreName = _view.StoreName;
@@ -239,12 +228,11 @@ namespace RepoConsole.Presenter
             }
             catch (Exception ex)
             {
-                Console.WriteLine("Could not add new Store to DB");
-                Console.WriteLine("Error: " + (ex.InnerException?.Message ?? ex.Message));
+                OperationFailed(ex, "Could not add record to DB");
                 return;
             }
 
-            Console.WriteLine("New store created with ID of " + store.Id);
+            UpdateStatus("New Store created with ID of " + store.Id);
         }
 
         

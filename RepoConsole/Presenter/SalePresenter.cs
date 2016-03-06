@@ -46,14 +46,13 @@ namespace RepoConsole.Presenter
             }
             catch (Exception ex)
             {
-                Console.WriteLine("Could not retrieve Sale by ID\n");
-                Console.WriteLine("Error: " + ex.Message);
+                OperationFailed(ex, "Could not retrieve Sale by ID\n");
                 return;
             }
 
             if (sale == null)
             {
-                Console.WriteLine("Could not find Sale with an ID of " + _view.Id);
+                UpdateStatus("Could not find Sale with an ID of " + _view.Id);
                 return;
             }
 
@@ -92,12 +91,11 @@ namespace RepoConsole.Presenter
             {
                 _saleRepository.Save(sale);
                 _saleRepository.Commit();
-                Console.WriteLine("\nRecord updated successfully!");
+                UpdateStatus("\nRecord updated successfully!");
             }
             catch (Exception ex)
             {
-                Console.WriteLine("Could not update record");
-                Console.WriteLine("Error: " + ex.Message);
+                OperationFailed(ex, "Could not update record\n");
             }
         }
 
@@ -113,30 +111,26 @@ namespace RepoConsole.Presenter
             }
             catch (Exception ex)
             {
-                Console.WriteLine("Could not find Sale on remove");
-                Console.WriteLine("Error: " + ex.Message);
+                OperationFailed(ex, "Could not find Sale on remove\n");
                 return;
             }
 
             if (sale == null)
             {
-                Console.WriteLine("Could not find Sale with an Id of " + _view.Id);
+                UpdateStatus("Could not find Sale with an Id of " + _view.Id);
                 return;
             }
 
             try
             {
                 _saleRepository.Remove(sale);
+                _saleRepository.Commit();
+                UpdateStatus("Sale Removed!");
             }
             catch (Exception ex)
             {
-                Console.WriteLine("Could not remove Sale");
-                Console.WriteLine("Error: " + ex.Message);
-                return;
+                OperationFailed(ex, "Could not remove Sale");
             }
-
-            _saleRepository.Commit();
-            Console.WriteLine("Sale Removed!");
         }
 
         private void View_GetAll(object sender, EventArgs e)
@@ -151,24 +145,23 @@ namespace RepoConsole.Presenter
             }
             catch (Exception ex)
             {
-                Console.WriteLine("Could not retrieve Sales");
-                Console.WriteLine("Error: " + ex.Message);
+                OperationFailed(ex, "Could not retrieve Sales\n");
                 return;
             }
 
             if (sales.Count == 0)
             {
-                Console.WriteLine("No Sales found.");
+                UpdateStatus("No Sales found.");
                 return;
             }
 
             foreach (var sale in sales)
             {
-                Console.WriteLine("ID: " + sale.Id);
-                Console.WriteLine("Store ID: " + sale.StoreId);
-                Console.WriteLine("Product ID: " + sale.ProductId);
-                Console.WriteLine("Timestamp: " + sale.Timestamp);
-                Console.WriteLine("");
+                UpdateStatus("ID: " + sale.Id +
+                             "\nStore ID: " + sale.StoreId +
+                             "\nProduct ID: " + sale.ProductId +
+                             "\nTimestamp: " + sale.Timestamp +
+                             "\n");
             }
         }
 
@@ -186,21 +179,21 @@ namespace RepoConsole.Presenter
                 }
                 catch (Exception ex)
                 {
-                    Console.WriteLine("Could not retrieve Sale by ID\n");
-                    Console.WriteLine("Error: " + ex.Message);
+                    OperationFailed(ex, "Could not retrieve Sale by ID\n");
                     return;
                 }
 
                 if (sale == null)
                 {
-                    Console.WriteLine("Could not find Sale with an ID of " + _view.Id);
+                    UpdateStatus("Could not find Sale with an ID of " + _view.Id);
                     return;
                 }
 
-                Console.WriteLine("ID: " + sale.Id);
-                Console.WriteLine("Store ID: " + sale.StoreId);
-                Console.WriteLine("Product ID: " + sale.ProductId);
-                Console.WriteLine("Timestamp: " + sale.Timestamp);
+                UpdateStatus("ID: " + sale.Id +
+                             "\nStore ID: " + sale.StoreId +
+                             "\nProduct ID: " + sale.ProductId +
+                             "\nTimestamp: " + sale.Timestamp);
+
                 return;
 
             }
@@ -218,24 +211,23 @@ namespace RepoConsole.Presenter
             }
             catch (Exception ex)
             {
-                Console.WriteLine("Could not retrieve Sale by Store ID\n");
-                Console.WriteLine("Error: " + ex.Message);
+                OperationFailed(ex, "Could not retrieve Sale by Store ID\n");
                 return;
             }
 
             if (sales.Count == 0)
             {
-                Console.WriteLine("No Sales found with the Store ID of " + _view.StoreId);
+                UpdateStatus("No Sales found with the Store ID of " + _view.StoreId);
                 return;
             }
 
             foreach (var sale in sales)
             {
-                Console.WriteLine("ID: " + sale.Id);
-                Console.WriteLine("Store ID: " + sale.StoreId);
-                Console.WriteLine("Product ID: " + sale.ProductId);
-                Console.WriteLine("Timestamp: " + sale.Timestamp);
-                Console.WriteLine("");
+                UpdateStatus("ID: " + sale.Id +
+                             "\nStore ID: " + sale.StoreId +
+                             "\nProduct ID: " + sale.ProductId +
+                             "\nTimestamp: " + sale.Timestamp +
+                             "\n");
             }
 
         }
@@ -258,12 +250,11 @@ namespace RepoConsole.Presenter
             }
             catch (Exception ex)
             {
-                Console.WriteLine("Could not add Sale\n");
-                Console.WriteLine("Error: " + ex.Message);
+                OperationFailed(ex, "Could not add Sale\n");
                 return;
             }
 
-            Console.WriteLine("New sale created with ID of " + sale.Id);
+            UpdateStatus("New sale created with ID of " + sale.Id);
         }
     }
 }
