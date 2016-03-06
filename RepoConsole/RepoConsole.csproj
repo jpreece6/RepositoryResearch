@@ -43,8 +43,11 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="Events\OperationFailedArgs.cs" />
+    <Compile Include="Events\StatusUpdateArgs.cs" />
     <Compile Include="Presenter\IPresenter.cs" />
     <Compile Include="Presenter\MainMenuPresenter.cs" />
+    <Compile Include="Presenter\Presenter.cs" />
     <Compile Include="Presenter\ProductPresenter.cs" />
     <Compile Include="Presenter\SalePresenter.cs" />
     <Compile Include="Presenter\StorePresenter.cs" />
