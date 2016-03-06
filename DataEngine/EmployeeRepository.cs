@@ -12,7 +12,7 @@ namespace DataEngine
     {
         public EmployeeRepository(ISessionContext sessionContext) : base(sessionContext)
         {
-
+            AllowLocalEdits = true;
         }
 
         public IList<Employee> GetWithName(string name)

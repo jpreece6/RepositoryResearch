@@ -11,9 +11,12 @@ namespace DataEngine
 {
     public class ProductRepository<T> : Repository<T> where T : Product
     {
+
+        //public bool AllowLocalCreation = false;
+
         public ProductRepository(ISessionContext sessionContext) : base(sessionContext)
         {
-
+            AllowLocalEdits = false;
         }
 
         public IList<Product> GetWithName(string name)

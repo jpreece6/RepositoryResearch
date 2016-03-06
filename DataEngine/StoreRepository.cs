@@ -14,7 +14,7 @@ namespace DataEngine
     {
         public StoreRepository(ISessionContext sessionContext) : base(sessionContext)
         {
-            
+            AllowLocalEdits = false;
         }
 
         public IList<Store> GetWithName(string name)

@@ -14,7 +14,7 @@ namespace DataEngine
     {
         public SaleRepository(ISessionContext sessionContext) : base(sessionContext)
         {
-            
+            AllowLocalEdits = true;
         }
 
         public IList<Sale> GetWithStoreID(int id)

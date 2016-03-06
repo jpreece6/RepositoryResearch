@@ -16,6 +16,7 @@ namespace DataEngine.RepositoryCore
     public abstract class Repository<T> : IRepository<T> where T : class
     {
         protected readonly ISessionContext SessionContext;
+        public bool AllowLocalEdits { get; protected set; }
 
         protected Repository()
         {

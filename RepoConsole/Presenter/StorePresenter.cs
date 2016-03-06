@@ -8,6 +8,7 @@ using DataEngine;
 using DataEngine.Contexts;
 using DataEngine.Entities;
 using RepoConsole.Views;
+using SyncEngine;
 
 namespace RepoConsole.Presenter
 {
@@ -170,6 +171,11 @@ namespace RepoConsole.Presenter
             if (!OpenSession())
                 return;
 
+            if (_storeRepository.AllowLocalEdits == false && _sessionContext.IsLocal())
+            {
+                //Console.WriteLine("Unable to create store");
+            }
+
             var store = new Store();
             store.StoreName = _view.StoreName;
 
@@ -213,7 +219,12 @@ namespace RepoConsole.Presenter
 
         private void SessionFinished()
         {
-            
+            if (_sessionContext.IsLocal())
+            {
+                Console.WriteLine("Local instance found attemping to sync");
+                SyncManager syncManager = new SyncManager();
+                syncManager.SyncTable_Store();
+            }
         }
     }
 }

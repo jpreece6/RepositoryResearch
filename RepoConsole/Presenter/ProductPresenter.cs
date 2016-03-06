@@ -74,6 +74,12 @@ namespace RepoConsole.Presenter
 
             Product prod;
 
+            if (_productRepository.AllowLocalEdits == false && _sessionContext.IsLocal())
+            {
+                Console.WriteLine("Unable to remove Product local remove is not allowed!");
+                return;
+            }
+
             try
             {
                 prod = _productRepository.Get(_view.Id);
@@ -180,6 +186,13 @@ namespace RepoConsole.Presenter
                 return;
 
             var prod = new Product();
+
+            if (_productRepository.AllowLocalEdits == false && _sessionContext.IsLocal())
+            {
+                Console.WriteLine("Unable to create Product local creation not allowed!");
+                return;
+            }
+
             prod.Prod_Name = _view.Name;
             prod.Price = _view.Price;
 
