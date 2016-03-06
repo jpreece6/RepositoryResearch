@@ -12,12 +12,11 @@ using SyncEngine;
 
 namespace RepoConsole.Presenter
 {
-    public class StorePresenter : IPresenter
+    public class StorePresenter : Presenter
     {
         private readonly IViewStore _view;
         private readonly StoreRepository<Store> _storeRepository;
-        private readonly SessionContext _sessionContext;
-
+        
         public StorePresenter(IViewStore view)
         {
             _view = view;
@@ -25,12 +24,66 @@ namespace RepoConsole.Presenter
             _view.Get += View_Get;
             _view.GetAll += View_GetAll;
             _view.Remove += View_Remove;
+            _view.Edit += View_Edit;
 
             // Init page.. 
             var sessionFactManager = new SessionFactoryManager();
-            _sessionContext = new SessionContext(sessionFactManager);
+            SessionContext = new SessionContext(sessionFactManager);
 
-            _storeRepository = new StoreRepository<Store>(_sessionContext);
+            _storeRepository = new StoreRepository<Store>(SessionContext);
+        }
+
+        private void View_Edit(object sender, EventArgs e)
+        {
+            if (!OpenSession())
+                return;
+
+            Store store;
+            try
+            {
+                store = _storeRepository.Get(_view.Id);
+            }
+            catch (Exception ex)
+            {
+                Console.WriteLine("Could not retrieve Store on Get");
+                Console.WriteLine("Error: " + (ex.InnerException?.Message ?? ex.Message));
+                return;
+            }
+
+            if (store == null)
+            {
+                Console.WriteLine("No store found with an ID of " + _view.Id);
+                return;
+            }
+
+
+            Console.Clear();
+            Console.WriteLine("Edit: (ID: " + store.Id + ") " + store.StoreName);
+            Console.Write("\nName: ");
+            var input = Console.ReadLine();
+
+            if (input != "")
+            {
+                store.StoreName = input;
+
+                try
+                {
+                    _storeRepository.Save(store);
+                    _storeRepository.Commit();
+
+                    Console.WriteLine("\nRecord updated successfully!");
+                }
+                catch (Exception ex)
+                {
+                    Console.WriteLine("Could not update Store");
+                    Console.WriteLine("Error: " + ex.Message);
+                }
+            }
+            else
+            {
+                Console.WriteLine("Could not update Store no name specified");
+            }
+
         }
 
         private void View_Remove(object sender, EventArgs e)
@@ -171,7 +224,7 @@ namespace RepoConsole.Presenter
             if (!OpenSession())
                 return;
 
-            if (_storeRepository.AllowLocalEdits == false && _sessionContext.IsLocal())
+            if (_storeRepository.AllowLocalEdits == false && SessionContext.IsLocal())
             {
                 //Console.WriteLine("Unable to create store");
             }
@@ -194,32 +247,11 @@ namespace RepoConsole.Presenter
             Console.WriteLine("New store created with ID of " + store.Id);
         }
 
-        private bool OpenSession()
-        {
-            Console.WriteLine("\nConnecting....");
-
-            try
-            {
-                _sessionContext.OpenContextSession();
-                Console.Clear();
-
-                if (_sessionContext.IsLocal())
-                {
-                    Console.WriteLine("Could not connect to server!\n- Now using local DB for this operation!\n");
-                }
-            }
-            catch (Exception ex)
-            {
-                Console.WriteLine("Could not connect to server!");
-                return false;
-            }
-
-            return true;
-        }
+        
 
         private void SessionFinished()
         {
-            if (_sessionContext.IsLocal())
+            if (SessionContext.IsLocal())
             {
                 Console.WriteLine("Local instance found attemping to sync");
                 SyncManager syncManager = new SyncManager();
