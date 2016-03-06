@@ -74,10 +74,12 @@
       <Project>{c99d8d4a-c354-4aeb-bdb9-a1479acbeca2}</Project>
       <Name>Helpers</Name>
     </ProjectReference>
+    <ProjectReference Include="..\SyncEngine\SyncEngine.csproj">
+      <Project>{F6CB0012-2DC9-4098-AB78-D094C1C84B91}</Project>
+      <Name>SyncEngine</Name>
+    </ProjectReference>
   </ItemGroup>
-  <ItemGroup>
-    <Folder Include="Helpers\" />
-  </ItemGroup>
+  <ItemGroup />
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <PropertyGroup>
     <PostBuildEvent>xcopy "$(SolutionDir)packages\NHibernate.JetDriver.2.0.0.1002\lib\net40" "$(ProjectDir)bin\Debug" /y /i

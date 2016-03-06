@@ -74,9 +74,11 @@
     <Compile Include="Contexts\SessionRepository.cs" />
     <Compile Include="Entities\Sale.cs" />
     <Compile Include="Entities\Store.cs" />
+    <Compile Include="Entities\SyncRecord.cs" />
     <Compile Include="Mapping\ProductMap.cs" />
     <Compile Include="Mapping\SaleMap.cs" />
     <Compile Include="Mapping\StoreMap.cs" />
+    <Compile Include="Mapping\SyncRecordMap.cs" />
     <Compile Include="ProductRepository.cs" />
     <Compile Include="EmployeeRepository.cs" />
     <Compile Include="Entities\Employee.cs" />
@@ -91,6 +93,7 @@
     <Compile Include="RepositoryCore\RepositoryKeyValue.cs" />
     <Compile Include="SaleRepository.cs" />
     <Compile Include="StoreRepository.cs" />
+    <Compile Include="SyncRecordRepository.cs" />
   </ItemGroup>
   <ItemGroup>
     <None Include="packages.config" />

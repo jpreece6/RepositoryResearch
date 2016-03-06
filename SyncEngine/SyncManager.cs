@@ -1,4 +1,6 @@
 ﻿using System;
+using System.Net;
+using System.Runtime.InteropServices;
 using System.Security.Policy;
 using DataEngine;
 using DataEngine.Contexts;
@@ -12,7 +14,7 @@ namespace SyncEngine
     // TODO TALK ABOUT GENERIC ISSUES WHERE YOU CANT HAVE DIFFERENT TYPES EVEN INTERFACES
     public class SyncManager : ISyncManager
     {
-
+        #region Events
         public delegate void StatusUpdateHandler(object sender, ProgressEventArgs e);
         public event StatusUpdateHandler OnUpdateStatus;
 
@@ -25,11 +27,17 @@ namespace SyncEngine
         public delegate void StartedSynchandler(object sender, SyncStartedArgs e);
         public event StartedSynchandler OnSyncStart;
 
+        public delegate void Cleanuphandler(object sender, SyncCleanupArgs e);
+        public event Cleanuphandler OnCleanUp;
+
+        #endregion
+
 
         private SessionContext _remoteSessionContext;
         private SessionContext _localSessionContext;
 
         private readonly SessionFactoryManager _factoryManager;
+        private SyncRecordRepository<SyncRecord> _recordRepository; 
 
         public SyncManager()
         {
@@ -46,138 +54,141 @@ namespace SyncEngine
 
         public void SyncTable_Employee()
         {
-            try
+            var localTable = new EmployeeRepository<Employee>(_localSessionContext);
+            var remoteTable = new EmployeeRepository<Employee>(_remoteSessionContext);
+
+            SyncStarted("Employee");
+
+            #region SyncCode
+
+            var count = 0;
+            var total = localTable.Count();
+            foreach (var row in localTable.GetAll())
             {
-                var localTable = new EmployeeRepository<Employee>(_localSessionContext);
-                var remoteTable = new EmployeeRepository<Employee>(_remoteSessionContext);
+                // Find a sync record that matches our related column
+                var record = _recordRepository.GetByLocalId(row.StoreId, "store_table");
 
-                SyncStarted("Employee");
+                // Update our related column with the remote ID to prevent reference errors
+                if (record != null)
+                    row.StoreId = record.Remote_Id;
 
-                #region SyncCode
-
-                var count = 0;
-                var total = localTable.Count();
-                foreach (var row in localTable.GetAll())
+                if (remoteTable.Exists(row.Id) == 0)
                 {
-                    // Get the id of the current object row 
-                    var rowId = (int) row.GetType().GetProperty("Id", typeof (int)).GetValue(row);
-                    if (remoteTable.Exists(rowId) == 0)
-                    {
-                        var newObject = ObjectCopy.Copy(row);
-                        remoteTable.Save(newObject);
-                    }
-                    else
-                    {
-                        remoteTable.Save(row);
-                    }
-
-                    // Save changes to remote
-                    remoteTable.Commit();
-
-                    SyncProgress(++count, total);
-
-                    // Remove after successful remove
-                    localTable.Remove(row);
-                    localTable.Commit();
+                    var newObject = ObjectCopy.Copy(row);
+                    remoteTable.Save(newObject);
+                }
+                else
+                {
+                    remoteTable.Save(row);
                 }
 
-                #endregion
+                // Save changes to remote
+                remoteTable.Commit();
+
+                SyncProgress(++count, total);
+
+                // Remove after successful remove
+                localTable.Remove(row);
+                localTable.Commit();
             }
-            catch (Exception ex)
-            {
-                SyncFailed(ex);
-            }
+
+            #endregion
         }
 
         public void SyncTable_Product()
         {
-            try
+            var localTable = new ProductRepository<Product>(_localSessionContext);
+            var remoteTable = new ProductRepository<Product>(_remoteSessionContext);
+
+            SyncStarted("Product");
+
+            #region SyncCode
+
+            var count = 0;
+            var total = localTable.Count();
+            foreach (var row in localTable.GetAll())
             {
-                var localTable = new ProductRepository<Product>(_localSessionContext);
-                var remoteTable = new ProductRepository<Product>(_remoteSessionContext);
 
-                SyncStarted("Product");
-
-                #region SyncCode
-
-                var count = 0;
-                var total = localTable.Count();
-                foreach (var row in localTable.GetAll())
+                var remoteId = 0;
+                if (remoteTable.Exists(row.Id) == 0)
                 {
-                    // Get the id of the current object row 
-                    var rowId = (int) row.GetType().GetProperty("Id", typeof (int)).GetValue(row);
-                    if (remoteTable.Exists(rowId) == 0)
-                    {
-                        var newObject = ObjectCopy.Copy(row);
-                        remoteTable.Save(newObject);
-                    }
-                    else
-                    {
-                        remoteTable.Save(row);
-                    }
-
-                    // Save changes to remote
-                    remoteTable.Commit();
-
-                    SyncProgress(++count, total);
-
-                    // Remove after successful remove
-                    localTable.Remove(row);
-                    localTable.Commit();
+                    var newObject = ObjectCopy.Copy(row);
+                    remoteTable.Save(newObject);
+                    remoteId = 0;
+                }
+                else
+                {
+                    remoteTable.Save(row);
                 }
 
-                #endregion
+                // Save changes to remote
+                remoteTable.Commit();
+
+                // Create a sync record this captures the remote ID value
+                // so we can update any relationships...
+                var record = new SyncRecord();
+                record.Table_Id = "product_table";
+                record.Local_Id = row.Id;
+                record.Remote_Id = remoteId;
+                _recordRepository.Save(record);
+                _recordRepository.Commit();
+
+                SyncProgress(++count, total);
+
+                // Remove after successful remove
+                localTable.Remove(row);
+                localTable.Commit();
             }
-            catch (Exception ex)
-            {
-                SyncFailed(ex);
-            }
+
+            #endregion
 
         }
 
         public void SyncTable_Store()
         {
-            try
+            var localTable = new StoreRepository<Store>(_localSessionContext);
+            var remoteTable = new StoreRepository<Store>(_remoteSessionContext);
+
+            SyncStarted("Store");
+
+            #region SyncCode
+
+            var count = 0;
+            var total = localTable.Count();
+            foreach (var row in localTable.GetAll())
             {
-                var localTable = new StoreRepository<Store>(_localSessionContext);
-                var remoteTable = new StoreRepository<Store>(_remoteSessionContext);
-
-                SyncStarted("Store");
-
-                #region SyncCode
-
-                var count = 0;
-                var total = localTable.Count();
-                foreach (var row in localTable.GetAll())
+                var remoteId = 0;
+                if (remoteTable.Exists(row.Id) == 0)
                 {
-                    // Get the id of the current object row 
-                    var rowId = (int) row.GetType().GetProperty("Id", typeof (int)).GetValue(row);
-                    if (remoteTable.Exists(rowId) == 0)
-                    {
-                        var newObject = ObjectCopy.Copy(row);
-                        remoteTable.Save(newObject);
-                    }
-                    else
-                    {
-                        remoteTable.Save(row);
-                    }
-
-                    // Save changes to remote
-                    remoteTable.Commit();
-
-                    SyncProgress(++count, total);
-
-                    // Remove after successful remove
-                    localTable.Remove(row);
-                    localTable.Commit();
+                    var newObject = ObjectCopy.Copy(row);
+                    remoteTable.Save(newObject);
+                    remoteId = newObject.Id;
+                }
+                else
+                {
+                    remoteTable.Save(row);
                 }
 
-                #endregion
+                // Save changes to remote
+                remoteTable.Commit();
+
+                // Create a sync record this captures the remote ID value
+                // so we can update any relationships...
+                var record = new SyncRecord();
+                record.Table_Id = "store_table";
+                record.Local_Id = row.Id;
+                record.Remote_Id = remoteId;
+                _recordRepository.Save(record);
+                _recordRepository.Commit();
+
+                SyncProgress(++count, total);
+
+                // Remove after successful remove
+                localTable.Remove(row);
+                localTable.Commit();
             }
-            catch (Exception ex)
-            {
-                SyncFailed(ex);
-            }
+
+            #endregion
 
         }
 
@@ -196,9 +207,20 @@ namespace SyncEngine
                 var total = localTable.Count();
                 foreach (var row in localTable.GetAll())
                 {
-                    // Get the id of the current object row 
-                    var rowId = (int)row.GetType().GetProperty("Id", typeof(int)).GetValue(row);
-                    if (remoteTable.Exists(rowId) == 0)
+                    // Find a sync record that matches our related column
+                    var recordProduct = _recordRepository.GetByLocalId(row.ProductId, "product_table");
+                    var recordStore = _recordRepository.GetByLocalId(row.StoreId, "store_table");
+
+                    // Update our related column with the remote ID to prevent reference errors
+                    // Update product relation
+                    if (recordProduct != null)
+                        row.ProductId = recordProduct.Remote_Id;
+
+                    // Update store relation
+                    if (recordStore != null)
+                        row.StoreId = recordStore.Remote_Id;
+
+                    if (remoteTable.Exists(row.Id) == 0)
                     {
                         var newObject = ObjectCopy.Copy(row);
                         remoteTable.Save(newObject);
@@ -229,17 +251,43 @@ namespace SyncEngine
 
         public void SyncAllTables()
         {
-            _localSessionContext.OpenContextSession();
-            _remoteSessionContext.OpenContextSession();
+            try
+            {
+                _localSessionContext.OpenContextSession();
+                _remoteSessionContext.OpenContextSession();
+                _recordRepository = new SyncRecordRepository<SyncRecord>(_localSessionContext);
 
-            SyncStarted("All Tables");
+                SyncStarted("All Tables");
 
-            SyncTable_Employee();
-            SyncTable_Product();
-            SyncTable_Store();
-            SyncTable_Sale();
+                SyncTable_Store();
+                SyncTable_Employee();
+                SyncTable_Product();
+                SyncTable_Sale();
 
-            SyncComplete();
+            }
+            catch (Exception ex)
+            {
+                SyncFailed(ex);
+            }
+            finally
+            {
+                CleanUp_Records();
+                SyncComplete();
+            }
+        }
+
+        private void CleanUp_Records()
+        {
+            SyncCleanUp();
+            _recordRepository.DeleteAll();
+        }
+
+        private void SyncCleanUp()
+        {
+            if (OnCleanUp == null) return;
+
+            var cleanup = new SyncCleanupArgs("Removing sync records!");
+            OnCleanUp(this, cleanup);
         }
 
         private void SyncFailed(Exception ex)
