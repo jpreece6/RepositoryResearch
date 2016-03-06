@@ -27,7 +27,8 @@ namespace DataEngine.Contexts
             }
             catch (Exception ex)
             {
-                //
+                if (!CheckConnectionException(ex))
+                    throw;
             }
         }
 
@@ -93,12 +94,15 @@ namespace DataEngine.Contexts
             // -__-
             // Forign HResult = -2146232832, ErrorCode = -2146232060
             // Con HResult = -2146232832, ErrorCode = -2146232060
-            if (ex.InnerException.Message.Contains("network-related"))
+            if (ex.InnerException != null)
             {
-                // Fire event for failed attempt
-                Session = SessionFactoryManager.GetLocal().OpenSession();
-                _isLocal = true;
-                return true;
+                if (ex.InnerException.Message.Contains("network-related"))
+                {
+                    // Fire event for failed attempt
+                    Session = SessionFactoryManager.GetLocal().OpenSession();
+                    _isLocal = true;
+                    return true;
+                }
             }
 
             return false;
