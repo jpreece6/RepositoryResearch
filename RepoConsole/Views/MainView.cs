@@ -11,7 +11,7 @@ namespace RepoConsole.Views
 {
     public class MainView : IView
     {
-        private Presenter.IPresenter _presenter;
+        private MainMenuPresenter _presenter;
         private bool _exit = false;
 
         public event EventHandler<EventArgs> Add;
