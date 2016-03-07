@@ -62,23 +62,8 @@ namespace RepoConsole.Views
         {
             Console.Clear();
             Console.WriteLine("Add Sale\n");
-            Console.Write("Store ID: ");
-
-            var input = Console.ReadLine();
-            int result;
-
-            if (int.TryParse(input, out result))
-            {
-                StoreId = result;
-                Console.Write("Product ID: ");
-                input = Console.ReadLine();
-
-                if (int.TryParse(input, out result))
-                {
-                    ProductId = result;
-                    Add(this, EventArgs.Empty);
-                }
-            }
+            Get_StoreID(null);
+            Get_ProductID(Add);
 
             Console.ReadLine();
         }
@@ -111,35 +96,17 @@ namespace RepoConsole.Views
                     case 1:
                         Console.Clear();
                         Console.WriteLine("Enter Sale ID\n");
-                        Console.Write("ID: ");
-                        input = Console.ReadLine();
-                        if (int.TryParse(input, out result))
-                        {
-                            Id = result;
-                            Get(this, EventArgs.Empty);
-                        }
+                        Get_ID(Get);
                         break;
                     case 2:
                         Console.Clear();
                         Console.WriteLine("Enter Store ID\n");
-                        Console.Write("ID: ");
-                        input = Console.ReadLine();
-                        if (int.TryParse(input, out result))
-                        {
-                            StoreId = result;
-                            Get(this, EventArgs.Empty);
-                        }
+                        Get_StoreID(Get);
                         break;
                     case 3:
                         Console.Clear();
                         Console.WriteLine("Enter Product ID\n");
-                        Console.Write("ID: ");
-                        input = Console.ReadLine();
-                        if (int.TryParse(input, out result))
-                        {
-                            ProductId = result;
-                            Get(this, EventArgs.Empty);
-                        }
+                        Get_ProductID(Get);
                         break;
                     case 4:
                         Show_GetAll();
@@ -155,23 +122,14 @@ namespace RepoConsole.Views
         public void Show_GetAll()
         {
             Console.Clear();
-            GetAll(this, EventArgs.Empty);
+            GetAll?.Invoke(this, EventArgs.Empty);
         }
 
         public void Show_Remove()
         {
             Console.Clear();
             Console.WriteLine("Remove Sale\n");
-            Console.Write("Sale ID: ");
-
-            var input = Console.ReadLine();
-            int result;
-
-            if (int.TryParse(input, out result))
-            {
-                Id = result;
-                Remove(this, EventArgs.Empty);
-            }
+            Get_ID(Remove);
 
             Console.ReadLine();
         }
@@ -210,11 +168,34 @@ namespace RepoConsole.Views
             var input = Console.ReadLine();
             int result;
 
-            if (int.TryParse(input, out result))
-            {
-                Id = result;
-                fireEvent(this, EventArgs.Empty);
-            }
+            if (!int.TryParse(input, out result)) return;
+
+            Id = result;
+            fireEvent?.Invoke(this, EventArgs.Empty);
+        }
+
+        private void Get_StoreID(EventHandler<EventArgs> fireEvent)
+        {
+            Console.Write("Store ID: ");
+            var input = Console.ReadLine();
+            int result;
+
+            if (!int.TryParse(input, out result)) return;
+
+            StoreId = result;
+            fireEvent?.Invoke(this, EventArgs.Empty);
+        }
+
+        private void Get_ProductID(EventHandler<EventArgs> fireEvent)
+        {
+            Console.Write("Product ID: ");
+            var input = Console.ReadLine();
+            int result;
+
+            if (!int.TryParse(input, out result)) return;
+
+            ProductId = result;
+            fireEvent?.Invoke(this, EventArgs.Empty);
         }
     }
 }

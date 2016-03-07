@@ -69,7 +69,7 @@ namespace RepoConsole.Views
         public void Show_GetAll()
         {
             Console.Clear();
-            GetAll(this, EventArgs.Empty);
+            GetAll?.Invoke(this, EventArgs.Empty);
         }
 
         public void Show_Remove()
@@ -116,21 +116,12 @@ namespace RepoConsole.Views
                     case 2:
                         Console.Clear();
                         Console.WriteLine("Enter Employee Name\n");
-                        Console.Write("Name: ");
-                        FirstName = Console.ReadLine();
-                        Get(this, EventArgs.Empty);
+                        Get_Name(Get);
                         break;
                     case 3:
                         Console.Clear();
                         Console.WriteLine("Enter Store ID\n");
-                        Console.Write("Store ID: ");
-
-                        input = Console.ReadLine();
-                        if (int.TryParse(input, out result))
-                        {
-                            StoreId = result;
-                            Get(this, EventArgs.Empty);
-                        }
+                        Get_StoreID(Get);
                         break;
                     case 4:
                         Console.Clear();
@@ -147,20 +138,8 @@ namespace RepoConsole.Views
         {
             Console.Clear();
             Console.WriteLine("Add new Employee\n");
-            Console.Write("Name: ");
-            FirstName = Console.ReadLine();
-
-            Console.Write("Store ID: ");
-            var input = Console.ReadLine();
-            int result;
-
-            if (int.TryParse(input, out result))
-            {
-                StoreId = result;
-            }
-
-            if (Add != null) Add(this, EventArgs.Empty);
-            
+            Get_Name(null);
+            Get_StoreID(Add);
 
             Console.ReadLine();
         }
@@ -190,8 +169,32 @@ namespace RepoConsole.Views
             if (int.TryParse(input, out result))
             {
                 Id = result;
-                if (fireEvent == null) return;
-                fireEvent(this, EventArgs.Empty);
+                fireEvent?.Invoke(this, EventArgs.Empty);
+            }
+        }
+
+        private void Get_StoreID(EventHandler<EventArgs> fireEvent)
+        {
+            Console.Write("Store ID: ");
+            var input = Console.ReadLine();
+            int result;
+
+            if (int.TryParse(input, out result))
+            {
+                StoreId = result;
+                fireEvent?.Invoke(this, EventArgs.Empty);
+            }
+        }
+
+        private void Get_Name(EventHandler<EventArgs> fireEvent)
+        {
+            Console.Write("Name: ");
+            var input = Console.ReadLine();
+
+            if (input != "")
+            {
+                FirstName = input;
+                fireEvent?.Invoke(this, EventArgs.Empty);
             }
         }
     }

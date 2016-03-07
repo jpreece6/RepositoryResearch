@@ -72,19 +72,8 @@ namespace RepoConsole.Views
         {
             Console.Clear();
             Console.WriteLine("Add New Product\n");
-            Console.Write("Name: ");
-            Name = Console.ReadLine();
-            Console.Write("Price: ");
-
-            var input = Console.ReadLine();
-            float result;
-
-            if (float.TryParse(input, out result))
-            {
-                Price = result;
-            }
-
-            if (Add != null) Add(this, EventArgs.Empty);
+            Get_Name(null);
+            Get_Price(Add);
 
             Console.ReadLine();
         }
@@ -120,25 +109,18 @@ namespace RepoConsole.Views
                         Console.Clear();
                         Console.WriteLine("Enter Product ID\n");
                         Get_ID(Get);
+
                         break;
                     case 2:
                         Console.Clear();
-                        Console.Write("Name: ");
-                        Name = Console.ReadLine();
-                        Get(this, EventArgs.Empty);
+                        Console.WriteLine("Enter Product Name\n");
+                        Get_Name(Get);
 
                         break;
                     case 3:
                         Console.Clear();
-                        Console.Write("Price: ");
-                        input = Console.ReadLine();
-                        float dResult;
-
-                        if (float.TryParse(input, out dResult))
-                        {
-                            Price = dResult;
-                            Get(this,EventArgs.Empty);
-                        }
+                        Console.WriteLine("Enter Product Price\n");
+                        Get_Price(Get);
                         break;
                     case 4:
                         Show_GetAll();
@@ -155,7 +137,7 @@ namespace RepoConsole.Views
         {
             Console.Clear();
             Console.WriteLine("List all Products\n");
-            GetAll(this, EventArgs.Empty);
+            GetAll?.Invoke(this, EventArgs.Empty);
         }
 
         public void Show_Remove()
@@ -189,12 +171,31 @@ namespace RepoConsole.Views
             var input = Console.ReadLine();
             int result;
 
-            if (int.TryParse(input, out result))
-            {
-                Id = result;
-                if (fireEvent == null) return;
-                fireEvent(this, EventArgs.Empty);
-            }
+            if (!int.TryParse(input, out result)) return;
+
+            Id = result;
+            fireEvent?.Invoke(this, EventArgs.Empty);
+        }
+
+        private void Get_Price(EventHandler<EventArgs> fireEvent)
+        {
+            Console.Write("Price: ");
+            var input = Console.ReadLine();
+            float result;
+
+            if (!float.TryParse(input, out result)) return;
+
+            Price = result;
+            fireEvent?.Invoke(this, EventArgs.Empty);
+        }
+
+        private void Get_Name(EventHandler<EventArgs> fireEvent)
+        {
+            Console.Write("Name: ");
+            var input = Console.ReadLine();
+
+            Name = input;
+            fireEvent?.Invoke(this, EventArgs.Empty);
         }
     }
 }
