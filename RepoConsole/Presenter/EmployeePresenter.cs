@@ -6,6 +6,7 @@ using System.Threading.Tasks;
 using DataEngine;
 using DataEngine.Contexts;
 using DataEngine.Entities;
+using RepoConsole.Events;
 using RepoConsole.Views;
 
 namespace RepoConsole.Presenter
@@ -14,7 +15,9 @@ namespace RepoConsole.Presenter
     {
         private readonly IViewEmployee _view;
         private readonly EmployeeRepository<Employee> _employeeRepository;
-         
+
+        public event EventHandler<ObjectReturnedArgs<IList<Employee>>> OnObjectReturned;
+
         public EmployeePresenter(IViewEmployee view)
         {
             _view = view;
@@ -23,12 +26,41 @@ namespace RepoConsole.Presenter
             _view.GetAll += View_GetAll;
             _view.Remove += View_Remove;
             _view.Edit += View_Edit;
+            _view.Update += View_Update;
 
             // Init page.. 
             var sessionFactManager = new SessionFactoryManager();
             SessionContext = new SessionContext(sessionFactManager);
 
             _employeeRepository = new EmployeeRepository<Employee>(SessionContext);
+        }
+
+        private void View_Update(object sender, Events.UpdateInputArgs<IList<Employee>> e)
+        {
+
+            if (!OpenSession())
+                return;
+
+            if (e.Record.Count == 0)
+            {
+                OperationFailed(new Exception("No object available!"), "Object to update was missing from the collection!");
+                return;
+            }
+
+            e.Record[0].FirstName = _view.FirstName;
+            e.Record[0].StoreId = _view.StoreId;
+
+            try
+            {
+                _employeeRepository.Save(e.Record[0]);
+                _employeeRepository.Commit();
+
+                UpdateStatus("\nRecord successfully updated!");
+            }
+            catch (Exception ex)
+            {
+                OperationFailed(ex, "Could not update Employee\n");
+            }
         }
 
         private void View_Edit(object sender, EventArgs e)
@@ -54,40 +86,10 @@ namespace RepoConsole.Presenter
                 return;
             }
 
-            Console.WriteLine("Edit: (ID: " + emp.Id + ") " + emp.FirstName);
-            Console.Write("Name: ");
-            var input = Console.ReadLine();
+            var output = new List<Employee>();
+            output.Add(emp);
+            OnObjectReturned?.Invoke(this, new ObjectReturnedArgs<IList<Employee>>(output, true));
 
-            if (input == "")
-            {
-                UpdateStatus("Please enter a valid name");
-                return;
-            }
-
-            emp.FirstName = input;
-
-            Console.Write("Store ID: ");
-            input = Console.ReadLine();
-            int result;
-
-            if (int.TryParse(input, out result) == false)
-            {
-                UpdateStatus("Please enter a valid store ID");
-                return;
-            }
-
-            emp.StoreId = result;
-
-            try
-            {
-                _employeeRepository.Save(emp);
-                _employeeRepository.Commit();
-                UpdateStatus("\nRecord successfully updated!");
-            }
-            catch (Exception ex)
-            {
-                OperationFailed(ex, "Could not update Employee\n");
-            }
         }
 
         private void View_GetAll(object sender, EventArgs e)
@@ -113,13 +115,7 @@ namespace RepoConsole.Presenter
                 return;
             }
 
-            foreach (var employee in emps)
-            {
-                UpdateStatus("ID: " + employee.Id +
-                             "\nFirst Name: " + employee.FirstName + 
-                             "\nStore ID: " + employee.StoreId +
-                             "\n");
-            }
+            OnObjectReturned?.Invoke(this, new ObjectReturnedArgs<IList<Employee>>(emps, false));
         }
 
         private void View_Remove(object sender, EventArgs e)
@@ -237,13 +233,7 @@ namespace RepoConsole.Presenter
                     return;
                 }
 
-                foreach (var employee in emps)
-                {
-                    UpdateStatus("ID: " + employee.Id +
-                                 "\nName: " + employee.FirstName + 
-                                 "\nStore ID: " + employee.StoreId +
-                                 "\n");
-                }
+                OnObjectReturned?.Invoke(this, new ObjectReturnedArgs<IList<Employee>>(emps, false));
             }
         }
     }

@@ -4,6 +4,8 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using System.Xml.Linq;
+using DataEngine.Entities;
+using RepoConsole.Events;
 using RepoConsole.Presenter;
 
 namespace RepoConsole.Views
@@ -16,6 +18,8 @@ namespace RepoConsole.Views
         public event EventHandler<EventArgs> GetAll;
         public event EventHandler<EventArgs> Remove;
 
+        public event EventHandler<UpdateInputArgs<IList<DataEngine.Entities.Store>>> Update;
+
         public int Id { get; set; }
         public string StoreName { get; set; }
 
@@ -27,6 +31,26 @@ namespace RepoConsole.Views
             _presenter = new StorePresenter(this);
             _presenter.OnUpdateStatus += Presenter_OnUpdateStatus;
             _presenter.OnOperationFail += Presenter_OnOperationFail;
+            _presenter.OnObjectReturned += Presenter_OnObjectReturned;
+        }
+
+        private void Presenter_OnObjectReturned(object sender, Events.ObjectReturnedArgs<IList<DataEngine.Entities.Store>> e)
+        {
+            if (e.Update)
+            {
+                Console.Clear();
+                Console.WriteLine("Update (ID: " + e.RecordList[0].Id + ") - " + e.RecordList[0].StoreName + "\n");
+                GetEditInput(e.RecordList);
+            }
+            else
+            {
+                foreach (var store in e.RecordList)
+                {
+                    Console.WriteLine("ID: " + store.Id +
+                                      "\nName: " + store.StoreName +
+                                      "\n");
+                }
+            }
         }
 
         private void Presenter_OnOperationFail(object sender, Events.OperationFailedArgs e)
@@ -154,6 +178,12 @@ namespace RepoConsole.Views
                         break;
                 }
             }
+        }
+
+        public void GetEditInput(IList<DataEngine.Entities.Store> stores)
+        {
+            Get_Name(null);
+            Update?.Invoke(this, new UpdateInputArgs<IList<Store>>(stores));
         }
 
         private void Get_ID(EventHandler<EventArgs> fireEvent)

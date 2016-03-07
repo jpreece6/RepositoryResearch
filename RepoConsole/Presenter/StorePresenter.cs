@@ -17,6 +17,8 @@ namespace RepoConsole.Presenter
     {
         private readonly IViewStore _view;
         private readonly StoreRepository<Store> _storeRepository;
+       
+        public event EventHandler<ObjectReturnedArgs<IList<Store>>> OnObjectReturned;
 
         public StorePresenter(IViewStore view)
         {
@@ -26,12 +28,38 @@ namespace RepoConsole.Presenter
             _view.GetAll += View_GetAll;
             _view.Remove += View_Remove;
             _view.Edit += View_Edit;
+            _view.Update += View_Update;
 
             // Init page.. 
             var sessionFactManager = new SessionFactoryManager();
             SessionContext = new SessionContext(sessionFactManager);
 
             _storeRepository = new StoreRepository<Store>(SessionContext);
+        }
+
+        private void View_Update(object sender, UpdateInputArgs<IList<Store>> e)
+        {
+            if (!OpenSession())
+                return;
+
+            if (e.Record.Count == 0)
+            {
+                OperationFailed(new Exception("No object available!"), "Object to update was missing from the collection!");
+                return;
+            }
+
+            e.Record[0].StoreName = _view.StoreName;
+
+            try
+            {
+                _storeRepository.Save(e.Record[0]);
+                _storeRepository.Commit();
+                UpdateStatus("Record updated successfully!");
+            }
+            catch (Exception ex)
+            {
+                OperationFailed(ex, "Could not update record!");
+            }
         }
 
         private void View_Edit(object sender, EventArgs e)
@@ -56,33 +84,9 @@ namespace RepoConsole.Presenter
                 return;
             }
 
-
-            Console.Clear();
-            Console.WriteLine("Edit: (ID: " + store.Id + ") " + store.StoreName);
-            Console.Write("\nName: ");
-            var input = Console.ReadLine();
-
-            if (input != "")
-            {
-                store.StoreName = input;
-
-                try
-                {
-                    _storeRepository.Save(store);
-                    _storeRepository.Commit();
-
-                    UpdateStatus("\nRecord updated successfully!");
-                }
-                catch (Exception ex)
-                {
-                    OperationFailed(ex, "Could not update Store");
-                }
-            }
-            else
-            {
-                UpdateStatus("Could not update Store no name specified");
-            }
-
+            var output = new List<Store>();
+            output.Add(store);
+            OnObjectReturned?.Invoke(this, new ObjectReturnedArgs<IList<Store>>(output, true));
         }
 
         private void View_Remove(object sender, EventArgs e)
@@ -145,12 +149,7 @@ namespace RepoConsole.Presenter
                 return;
             }
 
-            foreach (var store in stores)
-            {
-                UpdateStatus("ID: " + store.Id +
-                             "\nName: " + store.StoreName +
-                             "\n");
-            }
+            OnObjectReturned?.Invoke(this, new ObjectReturnedArgs<IList<Store>>(stores, false));
         }
 
         private void View_Get(object sender, EventArgs e)
@@ -178,8 +177,10 @@ namespace RepoConsole.Presenter
                     return;
                 }
 
-                UpdateStatus("ID: " + store.Id +
-                             "\nName: " + store.StoreName);
+                var output = new List<Store>();
+                output.Add(store);
+                OnObjectReturned?.Invoke(this, new ObjectReturnedArgs<IList<Store>>(output, false));
+
                 return;
             }
 
@@ -204,12 +205,7 @@ namespace RepoConsole.Presenter
                     return;
                 }
 
-                foreach (var store in stores)
-                {
-                    UpdateStatus("ID: " + store.Id +
-                                 "\nName: " + store.StoreName +
-                                 "\n");
-                }
+                OnObjectReturned?.Invoke(this, new ObjectReturnedArgs<IList<Store>>(stores, false));
             }
         }
 

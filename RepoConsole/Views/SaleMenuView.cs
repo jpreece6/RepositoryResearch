@@ -12,6 +12,7 @@ namespace RepoConsole.Views
     {
         public event EventHandler<EventArgs> Add;
         public event EventHandler<EventArgs> Edit;
+        public event EventHandler<EventArgs> Update;
         public event EventHandler<EventArgs> Get;
         public event EventHandler<EventArgs> GetAll;
         public event EventHandler<EventArgs> Remove;
@@ -160,6 +161,11 @@ namespace RepoConsole.Views
                         break;
                 }
             }
+        }
+
+        public void GetEditInput()
+        {
+            
         }
 
         private void Get_ID(EventHandler<EventArgs> fireEvent)

@@ -9,6 +9,7 @@ using DataEngine;
 using DataEngine.Contexts;
 using DataEngine.Entities;
 using Helpers;
+using RepoConsole.Events;
 using RepoConsole.Views;
 
 namespace RepoConsole.Presenter
@@ -18,6 +19,8 @@ namespace RepoConsole.Presenter
         private readonly IViewProduct _view;
         private readonly ProductRepository<Product> _productRepository;
 
+        public event EventHandler<ObjectReturnedArgs<IList<DataEngine.Entities.Product>>> OnObjectReturned; 
+
         public ProductPresenter(IViewProduct view)
         {
             _view = view;
@@ -26,12 +29,40 @@ namespace RepoConsole.Presenter
             _view.GetAll += View_GetAll;
             _view.Remove += View_Remove;
             _view.Edit += View_Edit;
+            _view.Update += View_Update;
 
             // Init page.. 
             var sessionFactManager = new SessionFactoryManager();
             SessionContext = new SessionContext(sessionFactManager);
 
             _productRepository = new ProductRepository<Product>(SessionContext);
+        }
+
+        private void View_Update(object sender, UpdateInputArgs<IList<Product>> e)
+        {
+            if (!OpenSession())
+                return;
+
+            if (e.Record.Count == 0)
+            {
+                OperationFailed(new Exception("No object available!"), "Object to update was missing from the collection!");
+                return;
+            }
+
+            e.Record[0].Prod_Name = _view.Name;
+            e.Record[0].Price = _view.Price;
+
+            try
+            {
+                _productRepository.Save(e.Record[0]);
+                _productRepository.Commit();
+
+                UpdateStatus("\nRecord updated successfully!");
+            }
+            catch (Exception ex)
+            {
+                OperationFailed(ex, "Could not update product");
+            }
         }
 
         private void View_Edit(object sender, EventArgs e)
@@ -57,40 +88,9 @@ namespace RepoConsole.Presenter
                 return;
             }
 
-            Console.Clear();
-            Console.WriteLine("Edit: (ID: " + prod.Id + ") " + prod.Prod_Name);
-            Console.Write("\nName: ");
-
-            var input = Console.ReadLine();
-            if (input == null)
-            {
-                UpdateStatus("\nPlease enter a name!");
-                return;
-            }
-
-            prod.Prod_Name = input;
-            Console.Write("Price: ");
-            input = Console.ReadLine();
-            float result;
-
-            if (float.TryParse(input, out result) == false)
-            {
-                UpdateStatus("\nPlease enter a valid type!");
-                return;
-            }
-
-            prod.Price = result;
-
-            try
-            {
-                _productRepository.Save(prod);
-                _productRepository.Commit();
-                UpdateStatus("\nRecord updated successfully!");
-            }
-            catch (Exception ex)
-            {
-                OperationFailed(ex, "Could not update product");
-            }
+            var output = new List<Product>();
+            output.Add(prod);
+            OnObjectReturned?.Invoke(this, new ObjectReturnedArgs<IList<Product>>(output, true));
 
         }
 
@@ -117,13 +117,7 @@ namespace RepoConsole.Presenter
                 return;
             }
 
-            foreach (var product in prods)
-            {
-                UpdateStatus("ID: " + product.Id +
-                             "\nName: " + product.Prod_Name +
-                             "\nPrice: " + product.Price +
-                             "\n");
-            }
+            OnObjectReturned?.Invoke(this, new ObjectReturnedArgs<IList<Product>>(prods, false));
         }
 
         private void View_Remove(object sender, EventArgs e)
@@ -226,13 +220,7 @@ namespace RepoConsole.Presenter
                 return;
             }
 
-            foreach (var product in prods)
-            {
-                UpdateStatus("ID: " + product.Id +
-                             "Name: " + product.Prod_Name +
-                             "Price: " + product.Price +
-                             "\n");
-            }
+            OnObjectReturned?.Invoke(this, new ObjectReturnedArgs<IList<Product>>(prods, false));
 
         }
 

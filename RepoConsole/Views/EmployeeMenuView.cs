@@ -1,6 +1,9 @@
 ﻿using System;
+using System.Collections.Generic;
 using System.Globalization;
 using System.Runtime.InteropServices;
+using DataEngine.Entities;
+using RepoConsole.Events;
 using RepoConsole.Presenter;
 
 namespace RepoConsole.Views
@@ -12,6 +15,8 @@ namespace RepoConsole.Views
         public event EventHandler<EventArgs> Get;
         public event EventHandler<EventArgs> Remove;
         public event EventHandler<EventArgs> GetAll;
+
+        public event EventHandler<UpdateInputArgs<IList<DataEngine.Entities.Employee>>> Update; 
 
         public int Id { get; set; }
         public string FirstName { get; set; }
@@ -25,6 +30,27 @@ namespace RepoConsole.Views
             _presenter = new EmployeePresenter(this);
             _presenter.OnUpdateStatus += Presenter_OnUpdateStatus;
             _presenter.OnOperationFail += Presenter_OnOperationFail;
+            _presenter.OnObjectReturned += Presenter_OnObjectReturned;
+        }
+
+        private void Presenter_OnObjectReturned(object sender, ObjectReturnedArgs<IList<DataEngine.Entities.Employee>> e)
+        {
+            if (e.Update)
+            {
+                Console.WriteLine("Update (ID: " + e.RecordList[0].Id + ") " + e.RecordList[0].FirstName + "\n");
+                Get_Name(null);
+                Get_StoreID(null);
+                Update?.Invoke(this, new UpdateInputArgs<IList<Employee>>(e.RecordList));
+            }
+            else
+            {
+                foreach (var employee in e.RecordList)
+                {
+                    Console.WriteLine("ID: " + employee.Id + 
+                                      "\nName: " + employee.FirstName +
+                                      "\nStore ID " + employee.StoreId);
+                }
+            }
         }
 
         private void Presenter_OnOperationFail(object sender, Events.OperationFailedArgs e)

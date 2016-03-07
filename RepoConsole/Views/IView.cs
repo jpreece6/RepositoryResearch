@@ -4,6 +4,7 @@ using System.Configuration;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using RepoConsole.Events;
 
 namespace RepoConsole.Views
 {
@@ -22,5 +23,6 @@ namespace RepoConsole.Views
         void Show_GetAll();
         void Show_Remove();
         void WaitForInput();
+        //void GetEditInput();
     }
 }

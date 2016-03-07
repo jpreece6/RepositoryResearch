@@ -3,6 +3,8 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using DataEngine.Entities;
+using RepoConsole.Events;
 using RepoConsole.Presenter;
 
 namespace RepoConsole.Views
@@ -14,6 +16,9 @@ namespace RepoConsole.Views
         public event EventHandler<EventArgs> Add;
         public event EventHandler<EventArgs> Edit;
         public event EventHandler<EventArgs> Get;
+
+        public event EventHandler<UpdateInputArgs<IList<DataEngine.Entities.Product>>> Update;
+
         public int Id { get; set; }
         public string Name { get; set; }
         public float Price { get; set; }
@@ -25,6 +30,28 @@ namespace RepoConsole.Views
             _presenter = new ProductPresenter(this);
             _presenter.OnUpdateStatus += Presenter_OnUpdateStatus;
             _presenter.OnOperationFail += Presenter_OnOperationFail;
+            _presenter.OnObjectReturned += Presenter_OnObjectReturned;
+        }
+
+        private void Presenter_OnObjectReturned(object sender, ObjectReturnedArgs<IList<DataEngine.Entities.Product>> e)
+        {
+            if (e.Update)
+            {
+                Console.WriteLine("Updating (ID: " + e.RecordList[0].Id + ") " + e.RecordList[0].Prod_Name + "\n");
+                Get_Name(null);
+                Get_Price(null);
+                Update?.Invoke(this, new UpdateInputArgs<IList<Product>>(e.RecordList));
+            }
+            else
+            {
+                foreach (var product in e.RecordList)
+                {
+                    Console.WriteLine("ID: " + product.Id +
+                                      "\nName: " + product.Prod_Name +
+                                      "\nPrice: " + product.Price +
+                                      "\n");
+                }
+            }
         }
 
         private void Presenter_OnOperationFail(object sender, Events.OperationFailedArgs e)
@@ -163,6 +190,11 @@ namespace RepoConsole.Views
                 Console.Write("\nChoice: ");
                 WaitForInput();
             } while (_exit == false);
+        }
+
+        public void GetEditInput()
+        {
+            
         }
 
         private void Get_ID(EventHandler<EventArgs> fireEvent)
