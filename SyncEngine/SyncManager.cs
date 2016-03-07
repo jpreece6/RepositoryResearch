@@ -48,13 +48,13 @@ namespace SyncEngine
             CreateContexts();
         }
 
-        public void CreateContexts()
+        private void CreateContexts()
         {
             _remoteSessionContext = new RemoteContext(_factoryManager);
             _localSessionContext = new LocalContext(_factoryManager);
         }
 
-        public void SyncTable_Employee()
+        private void SyncTable_Employee()
         {
             var localTable = new EmployeeRepository<Employee>(_localSessionContext);
             var remoteTable = new EmployeeRepository<Employee>(_remoteSessionContext);
@@ -97,7 +97,7 @@ namespace SyncEngine
             #endregion
         }
 
-        public void SyncTable_Product()
+        private void SyncTable_Product()
         {
             var localTable = new ProductRepository<Product>(_localSessionContext);
             var remoteTable = new ProductRepository<Product>(_remoteSessionContext);
@@ -146,7 +146,7 @@ namespace SyncEngine
 
         }
 
-        public void SyncTable_Store()
+        private void SyncTable_Store()
         {
             var localTable = new StoreRepository<Store>(_localSessionContext);
             var remoteTable = new StoreRepository<Store>(_remoteSessionContext);
@@ -194,7 +194,7 @@ namespace SyncEngine
 
         }
 
-        public void SyncTable_Sale()
+        private void SyncTable_Sale()
         {
             try
             {

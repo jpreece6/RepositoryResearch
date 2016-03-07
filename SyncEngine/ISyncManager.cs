@@ -2,7 +2,6 @@
 {
     public interface ISyncManager
     {
-        void CreateContexts();
         void SyncAllTables();
     }
 }
