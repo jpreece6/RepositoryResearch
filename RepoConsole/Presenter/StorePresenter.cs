@@ -234,17 +234,5 @@ namespace RepoConsole.Presenter
 
             UpdateStatus("New Store created with ID of " + store.Id);
         }
-
-        
-
-        private void SessionFinished()
-        {
-            if (SessionContext.IsLocal())
-            {
-                Console.WriteLine("Local instance found attemping to sync");
-                SyncManager syncManager = new SyncManager();
-                syncManager.SyncTable_Store();
-            }
-        }
     }
 }

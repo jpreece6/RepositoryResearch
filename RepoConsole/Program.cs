@@ -17,11 +17,6 @@ namespace RepoConsole
     {
         static void Main(string[] args)
         {
-            //MainMenu main = new MainMenu();
-            //main.Show();
-            //var manager = new ViewManager();
-            //manager.Start();
-
             // Load settings
             var configReader = new ConfigReader(@"C:\repoSettings.xml");
             BaseConfig.Sources = configReader.GetAllInstancesOf("ConnectionString");
