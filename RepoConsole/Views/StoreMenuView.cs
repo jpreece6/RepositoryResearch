@@ -106,7 +106,7 @@ namespace RepoConsole.Views
         public void Show_GetAll()
         {
             Console.Clear();
-            GetAll(this, EventArgs.Empty);
+            GetAll?.Invoke(this, EventArgs.Empty);
         }
 
         public void Show_Remove()
@@ -165,8 +165,7 @@ namespace RepoConsole.Views
             if (int.TryParse(input, out result))
             {
                 Id = result;
-                if (fireEvent == null) return;
-                fireEvent(this, EventArgs.Empty);
+                fireEvent?.Invoke(this, EventArgs.Empty);
             }
         }
 
@@ -175,10 +174,10 @@ namespace RepoConsole.Views
             Console.Write("Name: ");
             var input = Console.ReadLine();
 
-            if (input == "" || fireEvent == null) return;
+            if (input == "") return;
 
             StoreName = input;
-            fireEvent(this,EventArgs.Empty); 
+            fireEvent?.Invoke(this,EventArgs.Empty); 
         }
     }
 }
