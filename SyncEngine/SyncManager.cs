@@ -17,21 +17,11 @@ namespace SyncEngine
     public class SyncManager : ISyncManager
     {
         #region Events
-        public delegate void StatusUpdateHandler(object sender, ProgressEventArgs e);
-        public event StatusUpdateHandler OnUpdateStatus;
-
-        public delegate void FailedSycHandler(object sender, SyncFailedEventArgs e);
-        public event FailedSycHandler OnSyncFailure;
-
-        public delegate void CompleteSyncHandler(object sender, SyncCompleteArgs e);
-        public event CompleteSyncHandler OnSyncComplete;
-
-        public delegate void StartedSynchandler(object sender, SyncStartedArgs e);
-        public event StartedSynchandler OnSyncStart;
-
-        public delegate void Cleanuphandler(object sender, SyncCleanupArgs e);
-        public event Cleanuphandler OnCleanUp;
-
+        public event EventHandler<ProgressEventArgs> OnUpdateStatus;
+        public event EventHandler<SyncFailedEventArgs> OnSyncFailure;
+        public event EventHandler<SyncCompleteArgs> OnSyncComplete;
+        public event EventHandler<SyncStartedArgs> OnSyncStart;
+        public event EventHandler<SyncCleanupArgs> OnCleanUp;
         #endregion
 
 
@@ -59,7 +49,7 @@ namespace SyncEngine
             var localTable = new EmployeeRepository<Employee>(_localSessionContext);
             var remoteTable = new EmployeeRepository<Employee>(_remoteSessionContext);
 
-            SyncStarted("Employee");
+            OnSyncStart?.Invoke(this, new SyncStartedArgs("Employee"));
 
             #region SyncCode
 
@@ -87,7 +77,7 @@ namespace SyncEngine
                 // Save changes to remote
                 remoteTable.Commit();
 
-                SyncProgress(++count, total);
+                OnUpdateStatus?.Invoke(this, new ProgressEventArgs("Synced entity " + ++count + "/" + total));
 
                 // Remove after successful remove
                 localTable.Remove(row);
@@ -102,7 +92,7 @@ namespace SyncEngine
             var localTable = new ProductRepository<Product>(_localSessionContext);
             var remoteTable = new ProductRepository<Product>(_remoteSessionContext);
 
-            SyncStarted("Product");
+            OnSyncStart?.Invoke(this, new SyncStartedArgs("Product"));
 
             #region SyncCode
 
@@ -135,7 +125,7 @@ namespace SyncEngine
                 _recordRepository.Save(record);
                 _recordRepository.Commit();
 
-                SyncProgress(++count, total);
+                OnUpdateStatus?.Invoke(this, new ProgressEventArgs("Synced entity " + ++count + "/" + total));
 
                 // Remove after successful remove
                 localTable.Remove(row);
@@ -151,7 +141,7 @@ namespace SyncEngine
             var localTable = new StoreRepository<Store>(_localSessionContext);
             var remoteTable = new StoreRepository<Store>(_remoteSessionContext);
 
-            SyncStarted("Store");
+            OnSyncStart?.Invoke(this, new SyncStartedArgs("Store"));
 
             #region SyncCode
 
@@ -160,7 +150,7 @@ namespace SyncEngine
             foreach (var row in localTable.GetAll())
             {
                 var remoteId = 0;
-                if (remoteTable.Exists(row.Id) == 0)
+                if (remoteTable.Exists(row.Id) == 0) // TODO REMOVE!
                 {
                     var newObject = ObjectCopy.Copy(row);
                     remoteTable.Save(newObject);
@@ -183,7 +173,7 @@ namespace SyncEngine
                 _recordRepository.Save(record);
                 _recordRepository.Commit();
 
-                SyncProgress(++count, total);
+                OnUpdateStatus?.Invoke(this, new ProgressEventArgs("Synced entity " + ++count + "/" + total));
 
                 // Remove after successful remove
                 localTable.Remove(row);
@@ -191,63 +181,55 @@ namespace SyncEngine
             }
 
             #endregion
-
         }
 
         private void SyncTable_Sale()
         {
-            try
+            var localTable = new SaleRepository<Sale>(_localSessionContext);
+            var remoteTable = new SaleRepository<Sale>(_remoteSessionContext);
+
+            OnSyncStart?.Invoke(this, new SyncStartedArgs("Sale"));
+
+            #region SyncCode
+
+            var count = 0;
+            var total = localTable.Count();
+            foreach (var row in localTable.GetAll())
             {
-                var localTable = new SaleRepository<Sale>(_localSessionContext);
-                var remoteTable = new SaleRepository<Sale>(_remoteSessionContext);
+                // Find a sync record that matches our related column
+                var recordProduct = _recordRepository.GetByLocalId(row.ProductId, "product_table");
+                var recordStore = _recordRepository.GetByLocalId(row.StoreId, "store_table");
 
-                SyncStarted("Sale");
+                // Update our related column with the remote ID to prevent reference errors
+                // Update product relation
+                if (recordProduct != null)
+                    row.ProductId = recordProduct.Remote_Id;
 
-                #region SyncCode
+                // Update store relation
+                if (recordStore != null)
+                    row.StoreId = recordStore.Remote_Id;
 
-                var count = 0;
-                var total = localTable.Count();
-                foreach (var row in localTable.GetAll())
+                if (remoteTable.Exists(row.Id) == 0)
                 {
-                    // Find a sync record that matches our related column
-                    var recordProduct = _recordRepository.GetByLocalId(row.ProductId, "product_table");
-                    var recordStore = _recordRepository.GetByLocalId(row.StoreId, "store_table");
-
-                    // Update our related column with the remote ID to prevent reference errors
-                    // Update product relation
-                    if (recordProduct != null)
-                        row.ProductId = recordProduct.Remote_Id;
-
-                    // Update store relation
-                    if (recordStore != null)
-                        row.StoreId = recordStore.Remote_Id;
-
-                    if (remoteTable.Exists(row.Id) == 0)
-                    {
-                        var newObject = ObjectCopy.Copy(row);
-                        remoteTable.Save(newObject);
-                    }
-                    else
-                    {
-                        remoteTable.Save(row);
-                    }
-
-                    // Save changes to remote
-                    remoteTable.Commit();
-
-                    SyncProgress(++count, total);
-
-                    // Remove after successful remove
-                    localTable.Remove(row);
-                    localTable.Commit();
+                    var newObject = ObjectCopy.Copy(row);
+                    remoteTable.Save(newObject);
+                }
+                else
+                {
+                    remoteTable.Save(row);
                 }
 
-                #endregion
+                // Save changes to remote
+                remoteTable.Commit();
+
+                OnUpdateStatus?.Invoke(this, new ProgressEventArgs("Synced entity " + ++count + "/" + total));
+
+                // Remove after successful remove
+                localTable.Remove(row);
+                localTable.Commit();
             }
-            catch (Exception ex)
-            {
-                SyncFailed(ex);
-            }
+
+            #endregion
 
         }
 
@@ -262,13 +244,13 @@ namespace SyncEngine
 
                 if (_remoteSessionContext.IsLocal())
                 {
-                    SyncFailed(new Exception("Remote server is unavilable!"), "Unable to sync at this time!");
+                    OnSyncFailure?.Invoke(this, new SyncFailedEventArgs(new Exception("Remote server is unavilable!"), "Unable to sync at this time!"));
                     return;
                 }
 
                 _recordRepository = new SyncRecordRepository<SyncRecord>(_localSessionContext);
 
-                SyncStarted("All Tables");
+                OnSyncStart?.Invoke(this, new SyncStartedArgs("All Tables"));
 
                 SyncTable_Store();
                 SyncTable_Employee();
@@ -278,70 +260,22 @@ namespace SyncEngine
             }
             catch (Exception ex)
             {
-                SyncFailed(ex);
+                OnSyncFailure?.Invoke(this, new SyncFailedEventArgs(ex, "Sync Failed"));
             }
             finally
             {
                 if (_remoteSessionContext.IsLocal() == false)
                 {
                     CleanUp_Records();
-                    SyncComplete();
+                    OnSyncComplete?.Invoke(this, new SyncCompleteArgs("Sync Completed Successfully!"));
                 }
             }
         }
 
         private void CleanUp_Records()
         {
-            SyncCleanUp();
+            OnCleanUp?.Invoke(this, new SyncCleanupArgs("Removing sync records!"));
             _recordRepository.DeleteAll();
-        }
-
-        private void SyncCleanUp()
-        {
-            if (OnCleanUp == null) return;
-
-            var cleanup = new SyncCleanupArgs("Removing sync records!");
-            OnCleanUp(this, cleanup);
-        }
-
-        private void SyncFailed(Exception ex, string status)
-        {
-            if (OnSyncFailure == null) return;
-
-            SyncFailedEventArgs failedArgs = new SyncFailedEventArgs(ex, status);
-            OnSyncFailure(this, failedArgs);
-        }
-
-        private void SyncFailed(Exception ex)
-        {
-            if (OnSyncFailure == null) return;
-            
-            SyncFailedEventArgs failedArgs = new SyncFailedEventArgs(ex, "Sync Failed");
-            OnSyncFailure(this, failedArgs);
-        }
-
-        private void SyncProgress(int count, int total)
-        {
-            if (OnUpdateStatus == null) return;
-
-            ProgressEventArgs progArgs = new ProgressEventArgs("Synced entity " + count + "/" + total);
-            OnUpdateStatus(this, progArgs);
-        }
-
-        private void SyncComplete()
-        {
-            if (OnSyncComplete == null) return;
-
-            SyncCompleteArgs compArgs = new SyncCompleteArgs("Sync Completed Successfully!");
-            OnSyncComplete(this, compArgs);
-        }
-
-        private void SyncStarted(string table)
-        {
-            if (OnSyncStart == null) return;
-
-            SyncStartedArgs startedArgs = new SyncStartedArgs("Now syncing " + table + "...");
-            OnSyncStart(this, startedArgs);
         }
     }
 }
