@@ -81,7 +81,7 @@ namespace SyncConsole
 
         private static void Sync_OnSyncStart(object sender, SyncEngine.Events.SyncStartedArgs e)
         {
-            Console.WriteLine("\n" + e.Status);
+            Console.WriteLine("\nSyncing... " + e.Status);
         }
 
         private static void Sync_OnUpdateStatus(object sender, SyncEngine.Events.ProgressEventArgs e)
