@@ -19,7 +19,7 @@ namespace DataEngine
 
         public IList<Store> GetWithName(string name)
         {
-            var query = SessionContext.Session.Query<Store>().ToList();
+            var query = SessionContext.Session.QueryOver<Store>().Where(x => x.StoreName == name).List();
             IList<Store> stores = query;
 
             return stores;
