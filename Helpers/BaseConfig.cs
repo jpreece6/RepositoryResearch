@@ -35,8 +35,8 @@ namespace Helpers
             ConnectionMethod result;
             if (instance.TryGetValue(str, out result))
                 return result;
-            else
-                throw new InvalidCastException();
+
+            throw new InvalidCastException();
         }
 
     }
@@ -44,5 +44,6 @@ namespace Helpers
     public static class BaseConfig
     {
         public static IList<XElement> Sources;
+        public static bool IsLocal = false;
     }
 }

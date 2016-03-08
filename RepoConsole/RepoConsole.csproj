@@ -43,8 +43,10 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="Events\ObjectReturnedArgs.cs" />
     <Compile Include="Events\OperationFailedArgs.cs" />
     <Compile Include="Events\StatusUpdateArgs.cs" />
+    <Compile Include="Events\UpdateInputArgs.cs" />
     <Compile Include="Presenter\IPresenter.cs" />
     <Compile Include="Presenter\MainMenuPresenter.cs" />
     <Compile Include="Presenter\Presenter.cs" />
@@ -64,6 +66,7 @@
     <Compile Include="Views\ProductMenuView.cs" />
     <Compile Include="Views\SaleMenuView.cs" />
     <Compile Include="Views\StoreMenuView.cs" />
+    <Compile Include="Views\StateView.cs" />
   </ItemGroup>
   <ItemGroup>
     <None Include="App.config" />
