@@ -12,7 +12,9 @@ using NHibernate;
 
 namespace DataEngine.Contexts
 {
-
+    /// <summary>
+    /// Creates a new session object to connect to an appropriate database
+    /// </summary>
     public class SessionFactoryManager : ISessionFactoryManager
     {
         private readonly SessionRepository<ISessionFactory> _sessionsRepository;
@@ -22,6 +24,10 @@ namespace DataEngine.Contexts
             _sessionsRepository = new SessionRepository<ISessionFactory>();
         }
 
+        /// <summary>
+        /// Gets the session related to the preferred (remote) DB
+        /// </summary>
+        /// <returns>Session factory</returns>
         public ISessionFactory GetPreferred()
         {
             _sessionsRepository.Clear();
@@ -30,6 +36,10 @@ namespace DataEngine.Contexts
             return _sessionsRepository.GetCurrent();
         }
 
+        /// <summary>
+        /// Gets the session object related to the local database
+        /// </summary>
+        /// <returns>Session factory</returns>
         public ISessionFactory GetLocal()
         {
             _sessionsRepository.Clear();
@@ -38,11 +48,22 @@ namespace DataEngine.Contexts
             return _sessionsRepository.GetCurrent();
         }
 
+        /// <summary>
+        /// Gets a specific factory from the repository
+        /// </summary>
+        /// <param name="index">Index of factory to return</param>
+        /// <returns>Session factory</returns>
         public ISessionFactory Get(int index)
         {
             return _sessionsRepository.Get(index);
         }
 
+        /// <summary>
+        /// Loads a connection string from the XML settings file
+        /// and populates the session repository with the new
+        /// session factory
+        /// </summary>
+        /// <param name="strMode">XML element to load</param>
         public void LoadSpecifiedDataSource(string strMode)
         {
             var dataSources = BaseConfig.Sources;
