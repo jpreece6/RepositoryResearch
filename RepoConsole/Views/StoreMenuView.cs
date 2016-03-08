@@ -10,7 +10,7 @@ using RepoConsole.Presenter;
 
 namespace RepoConsole.Views
 {
-    public class StoreMenuView : IViewStore
+    public class StoreMenuView : StateView, IViewStore
     {
         public event EventHandler<EventArgs> Add;
         public event EventHandler<EventArgs> Edit;
@@ -38,12 +38,15 @@ namespace RepoConsole.Views
         {
             if (e.Update)
             {
-                Console.Clear();
-                Console.WriteLine("Update (ID: " + e.RecordList[0].Id + ") - " + e.RecordList[0].StoreName + "\n");
-                GetEditInput(e.RecordList);
+                DisplayStatus();
+                Console.WriteLine("Update (ID: " + e.RecordList[0].Id + ") - " + e.RecordList[0].StoreName);
+                Console.WriteLine("NOTE: Leave blank if you don't want to update a field \n");
+                Get_Name(null);
+                Update?.Invoke(this, new UpdateInputArgs<IList<Store>>(e.RecordList, e.IsLocal));
             }
             else
             {
+                DisplayStatus();
                 foreach (var store in e.RecordList)
                 {
                     Console.WriteLine("ID: " + store.Id +
@@ -55,12 +58,14 @@ namespace RepoConsole.Views
 
         private void Presenter_OnOperationFail(object sender, Events.OperationFailedArgs e)
         {
+            DisplayStatus();
             Console.WriteLine(e.Status);
             Console.WriteLine("\nError: " + (e.ExceptionObject.InnerException?.Message ?? e.ExceptionObject.Message));
         }
 
         private void Presenter_OnUpdateStatus(object sender, Events.StatusUpdateArgs e)
         {
+            DisplayStatus();
             Console.WriteLine(e.Status);
         }
 
@@ -68,7 +73,7 @@ namespace RepoConsole.Views
         {
             do
             {
-                Console.Clear();
+                DisplayStatus();
                 Console.WriteLine("Store Menu\n");
                 Console.WriteLine("1: Add new store");
                 Console.WriteLine("2: Edit store");
@@ -82,7 +87,7 @@ namespace RepoConsole.Views
 
         public void Show_Add()
         {
-            Console.Clear();
+            DisplayStatus();
             Console.WriteLine("Add New Store\n");
             Get_Name(Add);
 
@@ -91,7 +96,7 @@ namespace RepoConsole.Views
 
         public void Show_Get()
         {
-            Console.Clear();
+            DisplayStatus();
             Console.WriteLine("Find Store\n");
             Console.WriteLine("1: Search by ID");
             Console.WriteLine("2: Search by Name");
@@ -107,12 +112,12 @@ namespace RepoConsole.Views
                 switch (result)
                 {
                     case 1:
-                        Console.Clear();
+                        DisplayStatus();
                         Console.WriteLine("Filter by Id\n");
                         Get_ID(Get);
                         break;
                     case 2:
-                        Console.Clear();
+                        DisplayStatus();
                         Console.WriteLine("Filter by Name\n");
                         Get_Name(Get);
                         break;
@@ -129,13 +134,13 @@ namespace RepoConsole.Views
 
         public void Show_GetAll()
         {
-            Console.Clear();
+            DisplayStatus();
             GetAll?.Invoke(this, EventArgs.Empty);
         }
 
         public void Show_Remove()
         {
-            Console.Clear();
+            DisplayStatus();
             Console.WriteLine("Remove Store\n");
             Get_ID(Remove);
 
@@ -144,7 +149,7 @@ namespace RepoConsole.Views
 
         public void Show_Edit()
         {
-            Console.Clear();
+            DisplayStatus();
             Console.WriteLine("Edit Store\n");
             Get_ID(Edit);
 
@@ -178,12 +183,6 @@ namespace RepoConsole.Views
                         break;
                 }
             }
-        }
-
-        public void GetEditInput(IList<DataEngine.Entities.Store> stores)
-        {
-            Get_Name(null);
-            Update?.Invoke(this, new UpdateInputArgs<IList<Store>>(stores));
         }
 
         private void Get_ID(EventHandler<EventArgs> fireEvent)

@@ -43,25 +43,53 @@ namespace RepoConsole.Presenter
             if (!OpenSession())
                 return;
 
-            if (e.Record.Count == 0)
+            // Ensure network state hasn't changed!
+            // If it has we cannot ensure a safe update so we cannot continue the process
+            if ((e.IsLocal && SessionContext.IsLocal()) ||
+                (e.IsLocal == false && SessionContext.IsLocal() == false))
             {
-                OperationFailed(new Exception("No object available!"), "Object to update was missing from the collection!");
-                return;
+
+                var isDirty = false;
+                if (e.Record.Count == 0)
+                {
+                    OperationFailed(new Exception("No object available!"),
+                        "Object to update was missing from the collection!");
+                    return;
+                }
+
+                if (_view.Name != "" || _view.Name != null)
+                {
+                    e.Record[0].Prod_Name = _view.Name;
+                    isDirty = true;
+                }
+
+                if (_view.Price.HasValue)
+                {
+                    e.Record[0].Price = _view.Price.Value;
+                    isDirty = true;
+                }
+
+                if (isDirty == false)
+                {
+                    UpdateStatus("Record not updated, no values changed!");
+                    return;
+                }
+
+                try
+                {
+                    _productRepository.Save(e.Record[0]);
+                    _productRepository.Commit();
+
+                    UpdateStatus("\nRecord updated successfully!");
+                }
+                catch (Exception ex)
+                {
+                    OperationFailed(ex, "Could not update product");
+                }
             }
-
-            e.Record[0].Prod_Name = _view.Name;
-            e.Record[0].Price = _view.Price;
-
-            try
+            else
             {
-                _productRepository.Save(e.Record[0]);
-                _productRepository.Commit();
-
-                UpdateStatus("\nRecord updated successfully!");
-            }
-            catch (Exception ex)
-            {
-                OperationFailed(ex, "Could not update product");
+                OperationFailed(new Exception("Network state changed mid update!"), "Could not update record!");
             }
         }
 
@@ -90,7 +118,7 @@ namespace RepoConsole.Presenter
 
             var output = new List<Product>();
             output.Add(prod);
-            OnObjectReturned?.Invoke(this, new ObjectReturnedArgs<IList<Product>>(output, true));
+            OnObjectReturned?.Invoke(this, new ObjectReturnedArgs<IList<Product>>(output, true, SessionContext.IsLocal()));
 
         }
 
@@ -205,7 +233,7 @@ namespace RepoConsole.Presenter
                 }
                 else
                 {
-                    prods = _productRepository.GetWithPrice(_view.Price);
+                    prods = _productRepository.GetWithPrice(_view.Price.Value);
                 }
             }
             catch (Exception ex)
@@ -239,7 +267,7 @@ namespace RepoConsole.Presenter
             }*/
 
             prod.Prod_Name = _view.Name;
-            prod.Price = _view.Price;
+            prod.Price = _view.Price.Value;
 
             try
             {

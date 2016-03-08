@@ -9,13 +9,14 @@ using RepoConsole.Presenter;
 
 namespace RepoConsole.Views
 {
-    public class MainView : IView
+    public class MainView : StateView, IView
     {
         private MainMenuPresenter _presenter;
         private bool _exit = false;
 
         public event EventHandler<EventArgs> Add;
         public event EventHandler<EventArgs> Edit;
+        public event EventHandler<EventArgs> Update;
         public event EventHandler<EventArgs> Get;
         public event EventHandler<EventArgs> GetAll;
         public event EventHandler<EventArgs> Remove;
@@ -62,7 +63,7 @@ namespace RepoConsole.Views
         {
             do
             {
-                Console.Clear();
+                DisplayStatus();
                 Console.WriteLine("Main Menu\n");
                 Console.WriteLine("1: Stores");
                 Console.WriteLine("2: Employees");
@@ -72,6 +73,11 @@ namespace RepoConsole.Views
                 Console.Write("\nChoice: ");
                 WaitForInput();
             } while(_exit == false);
+        }
+
+        public void GetEditInput()
+        {
+            throw new NotImplementedException();
         }
 
         public void Show_Add()

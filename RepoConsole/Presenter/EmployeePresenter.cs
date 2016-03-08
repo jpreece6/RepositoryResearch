@@ -41,25 +41,53 @@ namespace RepoConsole.Presenter
             if (!OpenSession())
                 return;
 
-            if (e.Record.Count == 0)
+            // Ensure network state hasn't changed!
+            // If it has we cannot ensure a safe update so we cannot continue the process
+            if ((e.IsLocal && SessionContext.IsLocal()) ||
+                (e.IsLocal == false && SessionContext.IsLocal() == false))
             {
-                OperationFailed(new Exception("No object available!"), "Object to update was missing from the collection!");
-                return;
+
+                var isDirty = false;
+                if (e.Record.Count == 0)
+                {
+                    OperationFailed(new Exception("No object available!"),
+                        "Object to update was missing from the collection!");
+                    return;
+                }
+
+                if (_view.FirstName != "" || _view.FirstName != null)
+                {
+                    e.Record[0].FirstName = _view.FirstName;
+                    isDirty = true;
+                }
+
+                if (_view.StoreId != 0)
+                {
+                    e.Record[0].StoreId = _view.StoreId;
+                    isDirty = true;
+                }
+
+                if (isDirty == false)
+                {
+                    UpdateStatus("Record not updated, no values changed!");
+                    return;
+                }
+
+                try
+                {
+                    _employeeRepository.Save(e.Record[0]);
+                    _employeeRepository.Commit();
+
+                    UpdateStatus("\nRecord successfully updated!");
+                }
+                catch (Exception ex)
+                {
+                    OperationFailed(ex, "Could not update Employee\n");
+                }
             }
-
-            e.Record[0].FirstName = _view.FirstName;
-            e.Record[0].StoreId = _view.StoreId;
-
-            try
+            else
             {
-                _employeeRepository.Save(e.Record[0]);
-                _employeeRepository.Commit();
-
-                UpdateStatus("\nRecord successfully updated!");
-            }
-            catch (Exception ex)
-            {
-                OperationFailed(ex, "Could not update Employee\n");
+                OperationFailed(new Exception("Network state changed mid update!"), "Could not update record!");
             }
         }
 
@@ -88,7 +116,7 @@ namespace RepoConsole.Presenter
 
             var output = new List<Employee>();
             output.Add(emp);
-            OnObjectReturned?.Invoke(this, new ObjectReturnedArgs<IList<Employee>>(output, true));
+            OnObjectReturned?.Invoke(this, new ObjectReturnedArgs<IList<Employee>>(output, true, SessionContext.IsLocal()));
 
         }
 

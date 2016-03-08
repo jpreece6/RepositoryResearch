@@ -42,23 +42,43 @@ namespace RepoConsole.Presenter
             if (!OpenSession())
                 return;
 
-            if (e.Record.Count == 0)
+            // Ensure network state hasn't changed!
+            // If it has we cannot ensure a safe update so we cannot continue the process
+            if ((e.IsLocal && SessionContext.IsLocal()) ||
+                (e.IsLocal == false && SessionContext.IsLocal() == false))
             {
-                OperationFailed(new Exception("No object available!"), "Object to update was missing from the collection!");
-                return;
-            }
 
-            e.Record[0].StoreName = _view.StoreName;
+                if (e.Record.Count == 0)
+                {
+                    OperationFailed(new Exception("No object available!"),
+                        "Object to update was missing from the collection!");
+                    return;
+                }
 
-            try
-            {
-                _storeRepository.Save(e.Record[0]);
-                _storeRepository.Commit();
-                UpdateStatus("Record updated successfully!");
+                if (_view.StoreName != "" || _view.StoreName != null)
+                {
+                    e.Record[0].StoreName = _view.StoreName;
+                }
+                else
+                {
+                    UpdateStatus("Record not updated, value was not changed!");
+                    return;
+                }
+
+                try
+                {
+                    _storeRepository.Save(e.Record[0]);
+                    _storeRepository.Commit();
+                    UpdateStatus("Record updated successfully!");
+                }
+                catch (Exception ex)
+                {
+                    OperationFailed(ex, "Could not update record!");
+                }
             }
-            catch (Exception ex)
+            else
             {
-                OperationFailed(ex, "Could not update record!");
+                OperationFailed(new Exception("Network state changed mid update!"), "Could not update record!");
             }
         }
 
@@ -86,7 +106,7 @@ namespace RepoConsole.Presenter
 
             var output = new List<Store>();
             output.Add(store);
-            OnObjectReturned?.Invoke(this, new ObjectReturnedArgs<IList<Store>>(output, true));
+            OnObjectReturned?.Invoke(this, new ObjectReturnedArgs<IList<Store>>(output, true, SessionContext.IsLocal()));
         }
 
         private void View_Remove(object sender, EventArgs e)

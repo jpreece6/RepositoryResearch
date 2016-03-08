@@ -11,6 +11,7 @@ namespace RepoConsole.Events
     {
         public T RecordList { get; set; }
         public bool Update { get; set; }
+        public bool IsLocal { get; set; }
 
         public ObjectReturnedArgs(T record)
         {
@@ -21,6 +22,13 @@ namespace RepoConsole.Events
         {
             RecordList = record;
             Update = bUpdate;
+        }
+
+        public ObjectReturnedArgs(T record, bool bUpdate, bool isLocal)
+        {
+            RecordList = record;
+            Update = bUpdate;
+            IsLocal = isLocal;
         }
     }
 }

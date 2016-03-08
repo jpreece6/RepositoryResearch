@@ -9,7 +9,7 @@ using RepoConsole.Presenter;
 
 namespace RepoConsole.Views
 {
-    class ProductMenuView : IViewProduct
+    public class ProductMenuView : StateView, IViewProduct
     {
         public event EventHandler<EventArgs> GetAll;
         public event EventHandler<EventArgs> Remove;
@@ -21,7 +21,7 @@ namespace RepoConsole.Views
 
         public int Id { get; set; }
         public string Name { get; set; }
-        public float Price { get; set; }
+        public float? Price { get; set; }
         private ProductPresenter _presenter;
         private bool _exit = false;
 
@@ -37,13 +37,16 @@ namespace RepoConsole.Views
         {
             if (e.Update)
             {
-                Console.WriteLine("Updating (ID: " + e.RecordList[0].Id + ") " + e.RecordList[0].Prod_Name + "\n");
+                DisplayStatus();
+                Console.WriteLine("Updating (ID: " + e.RecordList[0].Id + ") " + e.RecordList[0].Prod_Name);
+                Console.WriteLine("NOTE: Leave blank if you don't want to update a field \n");
                 Get_Name(null);
                 Get_Price(null);
-                Update?.Invoke(this, new UpdateInputArgs<IList<Product>>(e.RecordList));
+                Update?.Invoke(this, new UpdateInputArgs<IList<Product>>(e.RecordList, e.IsLocal));
             }
             else
             {
+                DisplayStatus();
                 foreach (var product in e.RecordList)
                 {
                     Console.WriteLine("ID: " + product.Id +
@@ -56,12 +59,14 @@ namespace RepoConsole.Views
 
         private void Presenter_OnOperationFail(object sender, Events.OperationFailedArgs e)
         {
+            DisplayStatus();
             Console.WriteLine(e.Status);
             Console.WriteLine("Error: " + (e.ExceptionObject.InnerException?.Message ?? e.ExceptionObject.Message));
         }
 
         private void Presenter_OnUpdateStatus(object sender, Events.StatusUpdateArgs e)
         {
+            DisplayStatus();
             Console.WriteLine(e.Status);
         }
 
@@ -97,7 +102,7 @@ namespace RepoConsole.Views
 
         public void Show_Add()
         {
-            Console.Clear();
+            DisplayStatus();
             Console.WriteLine("Add New Product\n");
             Get_Name(null);
             Get_Price(Add);
@@ -107,7 +112,7 @@ namespace RepoConsole.Views
 
         public void Show_Edit()
         {
-            Console.Clear();
+            DisplayStatus();
             Console.WriteLine("Edit Product\n");
             Get_ID(Edit);
 
@@ -116,7 +121,7 @@ namespace RepoConsole.Views
 
         public void Show_Get()
         {
-            Console.Clear();
+            DisplayStatus();
             Console.WriteLine("Find Product(s)\n");
             Console.WriteLine("1: Search by ID");
             Console.WriteLine("2: Search by Name");
@@ -133,19 +138,19 @@ namespace RepoConsole.Views
                 switch (result)
                 {
                     case 1:
-                        Console.Clear();
+                        DisplayStatus();
                         Console.WriteLine("Enter Product ID\n");
                         Get_ID(Get);
 
                         break;
                     case 2:
-                        Console.Clear();
+                        DisplayStatus();
                         Console.WriteLine("Enter Product Name\n");
                         Get_Name(Get);
 
                         break;
                     case 3:
-                        Console.Clear();
+                        DisplayStatus();
                         Console.WriteLine("Enter Product Price\n");
                         Get_Price(Get);
                         break;
@@ -162,14 +167,14 @@ namespace RepoConsole.Views
 
         public void Show_GetAll()
         {
-            Console.Clear();
+            DisplayStatus();
             Console.WriteLine("List all Products\n");
             GetAll?.Invoke(this, EventArgs.Empty);
         }
 
         public void Show_Remove()
         {
-            Console.Clear();
+            DisplayStatus();
             Console.WriteLine("Remove Employee\n");
             Get_ID(Remove);
 
@@ -180,7 +185,7 @@ namespace RepoConsole.Views
         {
             do
             {
-                Console.Clear();
+                DisplayStatus();
                 Console.WriteLine("Products Menu\n");
                 Console.WriteLine("1: Add new product");
                 Console.WriteLine("2: Edit product");
@@ -190,11 +195,6 @@ namespace RepoConsole.Views
                 Console.Write("\nChoice: ");
                 WaitForInput();
             } while (_exit == false);
-        }
-
-        public void GetEditInput()
-        {
-            
         }
 
         private void Get_ID(EventHandler<EventArgs> fireEvent)

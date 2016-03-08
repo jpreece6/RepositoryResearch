@@ -8,7 +8,7 @@ using RepoConsole.Presenter;
 
 namespace RepoConsole.Views
 {
-    internal class EmployeeMenuView : IViewEmployee
+    internal class EmployeeMenuView : StateView, IViewEmployee
     {
         public event EventHandler<EventArgs> Add;
         public event EventHandler<EventArgs> Edit;
@@ -37,30 +37,36 @@ namespace RepoConsole.Views
         {
             if (e.Update)
             {
-                Console.WriteLine("Update (ID: " + e.RecordList[0].Id + ") " + e.RecordList[0].FirstName + "\n");
+                DisplayStatus();
+                Console.WriteLine("Update (ID: " + e.RecordList[0].Id + ") " + e.RecordList[0].FirstName);
+                Console.WriteLine("NOTE: Leave blank if you don't want to update a field \n");
                 Get_Name(null);
                 Get_StoreID(null);
-                Update?.Invoke(this, new UpdateInputArgs<IList<Employee>>(e.RecordList));
+                Update?.Invoke(this, new UpdateInputArgs<IList<Employee>>(e.RecordList, e.IsLocal));
             }
             else
             {
+                DisplayStatus();
                 foreach (var employee in e.RecordList)
                 {
                     Console.WriteLine("ID: " + employee.Id + 
                                       "\nName: " + employee.FirstName +
-                                      "\nStore ID " + employee.StoreId);
+                                      "\nStore ID " + employee.StoreId +
+                                      "\n");
                 }
             }
         }
 
         private void Presenter_OnOperationFail(object sender, Events.OperationFailedArgs e)
         {
+            DisplayStatus();
             Console.WriteLine(e.Status);
             Console.WriteLine("Error: " + (e.ExceptionObject.InnerException?.Message ?? e.ExceptionObject.Message));
         }
 
         private void Presenter_OnUpdateStatus(object sender, Events.StatusUpdateArgs e)
         {
+            DisplayStatus();
             Console.WriteLine(e.Status);
         }
 
@@ -94,13 +100,13 @@ namespace RepoConsole.Views
 
         public void Show_GetAll()
         {
-            Console.Clear();
+            DisplayStatus();
             GetAll?.Invoke(this, EventArgs.Empty);
         }
 
         public void Show_Remove()
         {
-            Console.Clear();
+            DisplayStatus();
             Console.WriteLine("Remove Employee\n");
             Get_ID(Remove);
 
@@ -109,7 +115,7 @@ namespace RepoConsole.Views
 
         public void Show_Edit()
         {
-            Console.Clear();
+            DisplayStatus();
             Console.WriteLine("Edit Employee\n");
             Get_ID(Edit);
 
@@ -118,7 +124,7 @@ namespace RepoConsole.Views
 
         public void Show_Get()
         {
-            Console.Clear();
+            DisplayStatus();
             Console.WriteLine("Employee Info\n");
             Console.WriteLine("1: Search by ID");
             Console.WriteLine("2: Search by Name");
@@ -135,22 +141,22 @@ namespace RepoConsole.Views
                 switch (result)
                 {
                     case 1:
-                        Console.Clear();
+                        DisplayStatus();
                         Console.WriteLine("Enter Employee ID\n");
                         Get_ID(Get);
                         break;
                     case 2:
-                        Console.Clear();
+                        DisplayStatus();
                         Console.WriteLine("Enter Employee Name\n");
                         Get_Name(Get);
                         break;
                     case 3:
-                        Console.Clear();
+                        DisplayStatus();
                         Console.WriteLine("Enter Store ID\n");
                         Get_StoreID(Get);
                         break;
                     case 4:
-                        Console.Clear();
+                        DisplayStatus();
                         GetAll(this, EventArgs.Empty);
                         break;
                     case 5:
@@ -162,7 +168,7 @@ namespace RepoConsole.Views
 
         public void Show_Add()
         {
-            Console.Clear();
+            DisplayStatus();
             Console.WriteLine("Add new Employee\n");
             Get_Name(null);
             Get_StoreID(Add);
@@ -174,7 +180,7 @@ namespace RepoConsole.Views
         {
             do
             {
-                Console.Clear();
+                DisplayStatus();
                 Console.WriteLine("Employee Menu\n");
                 Console.WriteLine("1: Add new employee");
                 Console.WriteLine("2: Edit employee");
