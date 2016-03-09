@@ -41,6 +41,11 @@ namespace Helpers
 
     }
 
+    /// <summary>
+    /// BaseConfig stores static data to be used within a variety of
+    /// locations within the program. Designed to be a singleton this
+    /// is the best way we can achieve global settings across the program
+    /// </summary>
     public static class BaseConfig
     {
         public static IList<XElement> Sources;

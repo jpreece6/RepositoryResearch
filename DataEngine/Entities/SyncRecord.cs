@@ -6,6 +6,11 @@ using System.Threading.Tasks;
 
 namespace DataEngine.Entities
 {
+    /// <summary>
+    /// SyncRecord entity, relates to the SyncRecord table
+    /// Keeps track of the remote IDs assigned to new records on commit and rembers the local
+    /// ID this allows us to update all foreign keys in the local DB before syncing
+    /// </summary>
     public class SyncRecord : IEntity
     {
         public virtual int Id { get; protected set; }

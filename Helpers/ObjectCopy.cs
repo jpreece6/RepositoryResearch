@@ -2,6 +2,13 @@
 
 namespace Helpers
 {
+    /// <summary>
+    /// Copies all data from one object to another. nHibernate does not allow us
+    /// to modify the ID property of entities as this property is set by the database's
+    /// auto increment feature. However for us to be able to sync local records to the remote database
+    /// we need to 'reset' the property ID so that the remote database can use its auto increment to update this value.
+    /// To do this we copy all data from one entity to another exluding the ID property so remote DB can re assign this value.
+    /// </summary>
     public static class ObjectCopy
     {
         /// <summary>

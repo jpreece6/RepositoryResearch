@@ -6,6 +6,10 @@ using System.Threading.Tasks;
 
 namespace RepoConsole.Events
 {
+    /// <summary>
+    /// 
+    /// </summary>
+    /// <typeparam name="T"></typeparam>
     public class UpdateInputArgs<T> : EventArgs
     {
         public T Record { get; set; }

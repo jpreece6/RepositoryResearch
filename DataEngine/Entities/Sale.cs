@@ -6,6 +6,9 @@ using System.Threading.Tasks;
 
 namespace DataEngine.Entities
 {
+    /// <summary>
+    /// Sale entity, relates to the Sale table
+    /// </summary>
     public class Sale : IEntity
     {
         public virtual int Id { get; protected set; }
