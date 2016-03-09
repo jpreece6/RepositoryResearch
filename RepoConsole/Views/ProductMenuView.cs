@@ -249,6 +249,7 @@ namespace RepoConsole.Views
             do
             {
                 DisplayStatus();
+                ClearProperties(); // Reset properties
                 Console.WriteLine("Products Menu\n");
                 Console.WriteLine("1: Add new product");
                 Console.WriteLine("2: Edit product");
@@ -306,6 +307,17 @@ namespace RepoConsole.Views
 
             Name = input;
             fireEvent?.Invoke(this, EventArgs.Empty);
+        }
+
+        /// <summary>
+        /// Clear view properties this is so that
+        /// there are no lingering values between operations
+        /// </summary>
+        private void ClearProperties()
+        {
+            Id = 0;
+            Name = null;
+            Price = null;
         }
     }
 }

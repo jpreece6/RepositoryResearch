@@ -121,6 +121,7 @@ namespace RepoConsole.Views
             do
             {
                 DisplayStatus();
+                ClearProperties(); // Reset properties
                 Console.WriteLine("Sales Menu\n");
                 Console.WriteLine("1: Add Sale");
                 Console.WriteLine("2: Edit Sale");
@@ -315,7 +316,7 @@ namespace RepoConsole.Views
         /// executes a specified event
         /// </summary>
         /// <param name="fireEvent">Event to call after input</param>
-        private void Get_Timestamp(EventHandler<EventArgs> fireevent)
+        private void Get_Timestamp(EventHandler<EventArgs> fireEvent)
         {
             Console.Write("Update timestamp? [yes or no]:");
             var input = Console.ReadLine();
@@ -323,8 +324,19 @@ namespace RepoConsole.Views
             if (input != null && input.ToLower().Trim().Equals("yes"))
             {
                 Timestamp = DateTime.Now;
-                fireevent?.Invoke(this, EventArgs.Empty);
+                fireEvent?.Invoke(this, EventArgs.Empty);
             }
+        }
+
+        /// <summary>
+        /// Clear view properties this is so that
+        /// there are no lingering values between operations
+        /// </summary>
+        private void ClearProperties()
+        {
+            Id = 0;
+            StoreId = 0;
+            ProductId = 0;
         }
     }
 }

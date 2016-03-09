@@ -214,7 +214,7 @@ namespace RepoConsole.Views
                         break;
                     case 4:
                         DisplayStatus();
-                        GetAll(this, EventArgs.Empty);
+                        GetAll?.Invoke(this, EventArgs.Empty);
                         break;
                     case 5:
                         break;
@@ -245,6 +245,7 @@ namespace RepoConsole.Views
             do
             {
                 DisplayStatus();
+                ClearProperties(); // Reset properties
                 Console.WriteLine("Employee Menu\n");
                 Console.WriteLine("1: Add new employee");
                 Console.WriteLine("2: Edit employee");
@@ -307,6 +308,17 @@ namespace RepoConsole.Views
                 FirstName = input;
                 fireEvent?.Invoke(this, EventArgs.Empty);
             }
+        }
+
+        /// <summary>
+        /// Clear view properties this is so that
+        /// there are no lingering values between operations
+        /// </summary>
+        private void ClearProperties()
+        {
+            Id = 0;
+            StoreId = 0;
+            FirstName = null;
         }
     }
 }
