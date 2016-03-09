@@ -263,10 +263,10 @@ namespace RepoConsole.Views
                 DisplayStatus();
                 ClearProperties(); // Reset properties
                 Console.WriteLine("Products Menu\n");
-                Console.WriteLine("1: Add new product");
-                Console.WriteLine("2: Edit product");
+                Console.WriteLine("1: Add new Product");
+                Console.WriteLine("2: Edit Product");
                 Console.WriteLine("3: Find Product(s)");
-                Console.WriteLine("4: Remove product");
+                Console.WriteLine("4: Remove Product");
                 Console.WriteLine("5: Back");
                 Console.Write("\nChoice: ");
                 WaitForInput();

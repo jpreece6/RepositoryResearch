@@ -259,10 +259,10 @@ namespace RepoConsole.Views
                 DisplayStatus();
                 ClearProperties(); // Reset properties
                 Console.WriteLine("Employee Menu\n");
-                Console.WriteLine("1: Add new employee");
-                Console.WriteLine("2: Edit employee");
+                Console.WriteLine("1: Add new Employee");
+                Console.WriteLine("2: Edit Employee");
                 Console.WriteLine("3: Find Employee(s)");
-                Console.WriteLine("4: Remove employee");
+                Console.WriteLine("4: Remove Employee");
                 Console.WriteLine("5: Back");
                 Console.Write("\nChoice: ");
                 WaitForInput();

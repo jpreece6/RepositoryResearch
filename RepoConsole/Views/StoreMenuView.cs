@@ -126,10 +126,10 @@ namespace RepoConsole.Views
                 DisplayStatus();
                 ClearProperties(); // Reset properties
                 Console.WriteLine("Store Menu\n");
-                Console.WriteLine("1: Add new store");
-                Console.WriteLine("2: Edit store");
-                Console.WriteLine("3: Find store(s)");
-                Console.WriteLine("4: Remove store");
+                Console.WriteLine("1: Add new Store");
+                Console.WriteLine("2: Edit Store");
+                Console.WriteLine("3: Find Store(s)");
+                Console.WriteLine("4: Remove Store");
                 Console.WriteLine("5: Back");
                 Console.Write("\nChoice: ");
                 WaitForInput();
