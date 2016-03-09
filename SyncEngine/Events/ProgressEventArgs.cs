@@ -6,6 +6,9 @@ using System.Threading.Tasks;
 
 namespace SyncEngine.Events
 {
+    /// <summary>
+    /// Keeps track of progress messages during sync
+    /// </summary>
     public class ProgressEventArgs
     {
         public string Status { get; private set; }

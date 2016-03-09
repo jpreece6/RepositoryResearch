@@ -14,6 +14,10 @@ namespace SyncEngine
     // TODO TALK ABOUT GENERIC ISSUES WHERE YOU CANT HAVE DIFFERENT TYPES EVEN INTERFACES
     // TODO - Note the addition of sync records to update references
     // TODO - talk about possibly syncing all data down then back up
+    /// <summary>
+    /// Sync manager handles all sync functions from the local
+    /// database to the remote database
+    /// </summary>
     public class SyncManager
     {
         #region Events
@@ -31,6 +35,9 @@ namespace SyncEngine
         private readonly SessionFactoryManager _factoryManager;
         private SyncRecordRepository<SyncRecord> _recordRepository; 
 
+        /// <summary>
+        /// Creates a new instance of SyncManager
+        /// </summary>
         public SyncManager()
         {
             _factoryManager = new SessionFactoryManager();
@@ -38,12 +45,19 @@ namespace SyncEngine
             CreateContexts();
         }
 
+        /// <summary>
+        /// Creates the local and remote contexts so the
+        /// repositories can connect to both local and remote databases
+        /// </summary>
         private void CreateContexts()
         {
             _remoteSessionContext = new RemoteContext(_factoryManager);
             _localSessionContext = new LocalContext(_factoryManager);
         }
 
+        /// <summary>
+        /// Sync logic for employee table
+        /// </summary>
         private void SyncTable_Employee()
         {
             var localTable = new EmployeeRepository<Employee>(_localSessionContext);
@@ -81,6 +95,9 @@ namespace SyncEngine
             #endregion
         }
 
+        /// <summary>
+        /// Sync logic for product table
+        /// </summary>
         private void SyncTable_Product()
         {
             var localTable = new ProductRepository<Product>(_localSessionContext);
@@ -122,6 +139,9 @@ namespace SyncEngine
 
         }
 
+        /// <summary>
+        /// Sync logic for store table
+        /// </summary>
         private void SyncTable_Store()
         {
             var localTable = new StoreRepository<Store>(_localSessionContext);
@@ -161,6 +181,9 @@ namespace SyncEngine
             #endregion
         }
 
+        /// <summary>
+        /// Sync logic for sale table
+        /// </summary>
         private void SyncTable_Sale()
         {
             var localTable = new SaleRepository<Sale>(_localSessionContext);
@@ -205,6 +228,11 @@ namespace SyncEngine
 
         }
 
+        /// <summary>
+        /// Opens the sessions on local and remote contexts
+        /// and calls each table in order of relations this is important.
+        /// If a table depends on a relation it must come after the table it depends on
+        /// </summary>
         public void SyncAllTables()
         {
             try
@@ -214,6 +242,7 @@ namespace SyncEngine
                 _localSessionContext.OpenContextSession();
                 _remoteSessionContext.OpenContextSession();
 
+                // If we've fallen onto local stop the sync!
                 if (_remoteSessionContext.IsLocal())
                 {
                     OnSyncFailure?.Invoke(this, new SyncFailedEventArgs(new Exception("Remote server is unavilable!"), "Unable to sync at this time!"));
@@ -224,6 +253,7 @@ namespace SyncEngine
 
                 OnSyncStart?.Invoke(this, new SyncStartedArgs("All Tables"));
 
+                // Sync all tables in order
                 SyncTable_Store();
                 SyncTable_Employee();
                 SyncTable_Product();
@@ -236,14 +266,19 @@ namespace SyncEngine
             }
             finally
             {
+                // Only run for remote
                 if (_remoteSessionContext.IsLocal() == false)
                 {
-                    CleanUp_Records();
+                    CleanUp_Records(); // Clean up!
                     OnSyncComplete?.Invoke(this, new SyncCompleteArgs("Sync Completed Successfully!"));
                 }
             }
         }
 
+        /// <summary>
+        /// Removes all records from SyncRecords table as we no longer
+        /// need the data to keep track of foreign key data
+        /// </summary>
         private void CleanUp_Records()
         {
             OnCleanUp?.Invoke(this, new SyncCleanupArgs("Removing sync records!"));

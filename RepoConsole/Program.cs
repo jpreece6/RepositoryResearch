@@ -15,6 +15,10 @@ using DataEngine.Entities;
 
 namespace RepoConsole
 {
+    /// <summary>
+    /// Main run application which demonstrates a full database
+    /// CRUD application that reacts to network failures
+    /// </summary>
     class Program
     {
         private static SyncManager _sync;
@@ -55,12 +59,19 @@ namespace RepoConsole
             //Console.ReadKey();
         }
 
+        /// <summary>
+        /// Clears the screen and calls sync
+        /// </summary>
         private static void Sync()
         {
             Console.Clear();
             _sync.SyncAllTables();
         }
 
+        /// <summary>
+        /// Checks the settings file for the last run connection status
+        /// </summary>
+        /// <returns>True = remote connection, false = local connection</returns>
         private static bool WasLastRun_Local()
         {
             var elLastRun = _configReader.GetAllInstancesOf("LastRun");
@@ -73,6 +84,9 @@ namespace RepoConsole
             return value;
         }
 
+        /// <summary>
+        /// Saves the current connection status to the XML settings file
+        /// </summary>
         private static void SaveRun_Status()
         {
             var elLastRun = _configReader.GetAllInstancesOf("LastRun");
@@ -82,29 +96,55 @@ namespace RepoConsole
         }
 
         #region EventListeners
+        /// <summary>
+        /// Called by sync manager when cleaning up SyncRecords
+        /// </summary>
+        /// <param name="sender"></param>
+        /// <param name="e"></param>
         private static void Sync_OnCleanUp(object sender, SyncEngine.Events.SyncCleanupArgs e)
         {
             Console.WriteLine("\nCleaning up - " + e.Status);
         }
 
+        /// <summary>
+        /// Called by sync manager when starting a new table
+        /// </summary>
+        /// <param name="sender"></param>
+        /// <param name="e"></param>
         private static void Sync_OnSyncStart(object sender, SyncEngine.Events.SyncStartedArgs e)
         {
             Console.WriteLine("\nSyncing... " + e.Status);
         }
 
+        /// <summary>
+        /// Called by sync manager when a record is synced
+        /// </summary>
+        /// <param name="sender"></param>
+        /// <param name="e"></param>
         private static void Sync_OnUpdateStatus(object sender, SyncEngine.Events.ProgressEventArgs e)
         {
             Console.WriteLine(e.Status);
         }
 
+        /// <summary>
+        /// Called by sync when a table/entity failes to sync
+        /// </summary>
+        /// <param name="sender"></param>
+        /// <param name="e"></param>
         private static void Sync_OnSyncFailure(object sender, SyncEngine.Events.SyncFailedEventArgs e)
         {
             Console.Clear();
             Console.WriteLine("\n" + e.Status);
             Console.WriteLine("Error: " + (e.ExceptionObject.InnerException?.Message ?? e.ExceptionObject.Message));
-            Console.ReadLine();
+            Console.Write("\nPress any key to continue...");
+            Console.ReadKey();
         }
 
+        /// <summary>
+        /// Called by sync when all tables have been sync successfully
+        /// </summary>
+        /// <param name="sender"></param>
+        /// <param name="e"></param>
         private static void Sync_OnSyncComplete(object sender, SyncEngine.Events.SyncCompleteArgs e)
         {
             SaveRun_Status();

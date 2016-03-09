@@ -8,6 +8,10 @@ using SyncEngine;
 
 namespace SyncConsole
 {
+    /// <summary>
+    /// Sync program is a standalone test program to demonstrate syncing from local to remote
+    /// databases.
+    /// </summary>
     class Program
     {
         static void Main(string[] args)
@@ -15,80 +19,56 @@ namespace SyncConsole
             var configReader = new ConfigReader(@"C:\repoSettings.xml");
             BaseConfig.Sources = configReader.GetAllInstancesOf("ConnectionString");
 
-            // TODO local repo will still lose the original id of its object due to autonumber....
             SyncManager sync = new SyncManager();
 
+            // Bind to all sync events
             sync.OnSyncComplete += Sync_OnSyncComplete;
             sync.OnSyncFailure += Sync_OnSyncFailure;
             sync.OnUpdateStatus += Sync_OnUpdateStatus;
             sync.OnSyncStart += Sync_OnSyncStart;
             sync.OnCleanUp += Sync_OnCleanUp;
 
+            // SYNC!
             sync.SyncAllTables();
-
-            /*var sessionFactManager = new SessionFactoryManager();
-            var readContext = new LocalContext(sessionFactManager);
-            var writeContext = new RemoteContext(sessionFactManager);
-
-            readContext.OpenContextSession();
-            writeContext.OpenContextSession();
-
-            var employeeLocalRepository = new EmployeeRepository<Employee>(readContext);
-            var employeeRemoteRepository = new EmployeeRepository<Employee>(writeContext);
-
-            Console.WriteLine("Num records : " + employeeLocalRepository.Count() + "\n");
-
-            // Get all from ....
-            foreach (var emply in employeeLocalRepository.GetAll())
-            {
-                var tag = "Inserting";
-
-                // Do we need to insert or update?
-                // TODO ID for local is autonumber this prevents updating properly....
-                if (employeeRemoteRepository.Exists(emply.Id) == 0)
-                {
-                    var tmpEmply = new Employee();
-                    tmpEmply.FirstName = emply.FirstName;
-                    employeeRemoteRepository.Save(tmpEmply);
-                }
-                else
-                {
-                    tag = "Updating";
-                    employeeRemoteRepository.Save(emply);
-                }
-
-                Console.WriteLine(tag + "..... {ID = " + emply.Id + "} {FirstName = " + emply.FirstName + "}\n");
-
-                // Remove from local
-                employeeLocalRepository.Remove(emply);
-            }
-
-            Console.WriteLine("Remote records : " + employeeRemoteRepository.Count());
-
-            employeeRemoteRepository.Commit();
-            employeeLocalRepository.Commit();*/
-
-            Console.ReadLine();
-
-            // Sync all to ....
 
         }
 
+        #region EventListeners
+        /// <summary>
+        /// Called by sync manager when cleaning up SyncRecords
+        /// </summary>
+        /// <param name="sender"></param>
+        /// <param name="e"></param>
         private static void Sync_OnCleanUp(object sender, SyncEngine.Events.SyncCleanupArgs e)
         {
             Console.WriteLine("\nCleaning up - " + e.Status);
         }
 
+        /// <summary>
+        /// Called by sync manager when starting a new table
+        /// </summary>
+        /// <param name="sender"></param>
+        /// <param name="e"></param>
         private static void Sync_OnSyncStart(object sender, SyncEngine.Events.SyncStartedArgs e)
         {
             Console.WriteLine("\nSyncing... " + e.Status);
         }
 
+        /// <summary>
+        /// Called by sync manager when a record is synced
+        /// </summary>
+        /// <param name="sender"></param>
+        /// <param name="e"></param>
         private static void Sync_OnUpdateStatus(object sender, SyncEngine.Events.ProgressEventArgs e)
         {
             Console.WriteLine(e.Status);
         }
 
+        /// <summary>
+        /// Called by sync when a table/entity failes to sync
+        /// </summary>
+        /// <param name="sender"></param>
+        /// <param name="e"></param>
         private static void Sync_OnSyncFailure(object sender, SyncEngine.Events.SyncFailedEventArgs e)
         {
             Console.Clear();
@@ -96,9 +76,17 @@ namespace SyncConsole
             Console.WriteLine("Error: " + e.ExceptionObject.Message);
         }
 
+        /// <summary>
+        /// Called by sync when all tables have been sync successfully
+        /// </summary>
+        /// <param name="sender"></param>
+        /// <param name="e"></param>
         private static void Sync_OnSyncComplete(object sender, SyncEngine.Events.SyncCompleteArgs e)
         {
             Console.WriteLine("\n" + e.Status);
+            Console.Write("\nPress any key to continue...");
+            Console.ReadKey();
         }
+        #endregion
     }
 }
