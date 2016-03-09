@@ -8,8 +8,16 @@ using RepoConsole.Events;
 
 namespace RepoConsole.Views
 {
+    /// <summary>
+    /// Abstract class that all view should inherit
+    /// allows us to display the current session state to the
+    /// console
+    /// </summary>
     public abstract class StateView
     {
+        /// <summary>
+        /// Prints the current session state to the console
+        /// </summary>
         public void DisplayStatus()
         {
             Console.Clear();

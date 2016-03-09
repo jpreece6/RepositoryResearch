@@ -14,6 +14,9 @@ using RepoConsole.Views;
 
 namespace RepoConsole.Presenter
 {
+    /// <summary>
+    /// Handles the DB logic for the Product menu
+    /// </summary>
     class ProductPresenter : Presenter
     {
         private readonly IViewProduct _view;
@@ -21,8 +24,13 @@ namespace RepoConsole.Presenter
 
         public event EventHandler<ObjectReturnedArgs<IList<DataEngine.Entities.Product>>> OnObjectReturned; 
 
+        /// <summary>
+        /// Creates a new instance of the product presenter
+        /// </summary>
+        /// <param name="view">View to bind to</param>
         public ProductPresenter(IViewProduct view)
         {
+            // Bind to all view events
             _view = view;
             _view.Add += View_Add;
             _view.Get += View_Get;
@@ -31,13 +39,18 @@ namespace RepoConsole.Presenter
             _view.Edit += View_Edit;
             _view.Update += View_Update;
 
-            // Init page.. 
+            // Create a new repository
             var sessionFactManager = new SessionFactoryManager();
             SessionContext = new SessionContext(sessionFactManager);
 
             _productRepository = new ProductRepository<Product>(SessionContext);
         }
 
+        /// <summary>
+        /// Called when a user wants to update a entity
+        /// </summary>
+        /// <param name="sender">Event owner</param>
+        /// <param name="e">Event args</param>
         private void View_Update(object sender, UpdateInputArgs<IList<Product>> e)
         {
             if (!OpenSession())
@@ -50,6 +63,9 @@ namespace RepoConsole.Presenter
             {
 
                 var isDirty = false;
+
+                // We should have at least 1 object
+                // if not inform the user and prevent the update
                 if (e.Record.Count == 0)
                 {
                     OperationFailed(new Exception("No object available!"),
@@ -69,6 +85,8 @@ namespace RepoConsole.Presenter
                     isDirty = true;
                 }
 
+                // No properties were changed inform the user
+                // we don't need to update the entity
                 if (isDirty == false)
                 {
                     UpdateStatus("Record not updated, no values changed!");
@@ -77,6 +95,7 @@ namespace RepoConsole.Presenter
 
                 try
                 {
+                    // Update the entity in the DB
                     _productRepository.Save(e.Record[0]);
                     _productRepository.Commit();
 
@@ -93,6 +112,11 @@ namespace RepoConsole.Presenter
             }
         }
 
+        /// <summary>
+        /// Called when the user wants to edit an entity
+        /// </summary>
+        /// <param name="sender">Event owner</param>
+        /// <param name="e">Event args</param>
         private void View_Edit(object sender, EventArgs e)
         {
             if (!OpenSession())
@@ -102,6 +126,7 @@ namespace RepoConsole.Presenter
 
             try
             {
+                // Search with ID
                 prod = _productRepository.Get(_view.Id);
             }
             catch (Exception ex)
@@ -110,18 +135,29 @@ namespace RepoConsole.Presenter
                 return;
             }
 
+            // No products found with the criteria inform the user
             if (prod == null)
             {
                 UpdateStatus("No product found with an ID of " + _view.Id);
                 return;
             }
 
+            // Package our product object into a list so we can return it
             var output = new List<Product>();
             output.Add(prod);
+
+            // Return the object to the view so we can process it
+            // update = true, so we will update the entity when we get it back
+            // Connection state is recorded so we can check is on update
             OnObjectReturned?.Invoke(this, new ObjectReturnedArgs<IList<Product>>(output, true, SessionContext.IsLocal()));
 
         }
 
+        /// <summary>
+        /// Called when the user wants to return all Products
+        /// </summary>
+        /// <param name="sender">Event owner</param>
+        /// <param name="e">Event args</param>
         private void View_GetAll(object sender, EventArgs e)
         {
             if (!OpenSession())
@@ -131,6 +167,7 @@ namespace RepoConsole.Presenter
 
             try
             {
+                // Get all
                 prods = _productRepository.GetAll();
             }
             catch (Exception ex)
@@ -139,15 +176,22 @@ namespace RepoConsole.Presenter
                 return;
             }
 
+            // We found nothing so inform the user
             if (prods.Count <= 0)
             {
                 UpdateStatus("No products found.");
                 return;
             }
 
+            // Return the list of products to the view to display them
             OnObjectReturned?.Invoke(this, new ObjectReturnedArgs<IList<Product>>(prods, false));
         }
 
+        /// <summary>
+        /// Called when the user wants to remove a product
+        /// </summary>
+        /// <param name="sender">Event owner</param>
+        /// <param name="e">Event args</param>
         private void View_Remove(object sender, EventArgs e)
         {
             if (!OpenSession())
@@ -155,15 +199,9 @@ namespace RepoConsole.Presenter
 
             Product prod;
 
-            /* TODO
-            if (_productRepository.AllowLocalEdits == false && SessionContext.IsLocal())
-            {
-                Console.WriteLine("Unable to remove Product local remove is not allowed!");
-                return;
-            }*/
-
             try
             {
+                // Search by ID
                 prod = _productRepository.Get(_view.Id);
             }
             catch (Exception ex)
@@ -172,6 +210,7 @@ namespace RepoConsole.Presenter
                 return;
             }
 
+            // No product found inform the user
             if (prod == null)
             {
                 UpdateStatus("No product found with an ID of " + _view.Id);
@@ -180,29 +219,37 @@ namespace RepoConsole.Presenter
 
             try
             {
+                // Remove the product from the DB
                 _productRepository.Remove(prod);
                 _productRepository.Commit();
+
+                UpdateStatus("Product Removed!");
             }
             catch (Exception ex)
             {
                 OperationFailed(ex, "Could not remove Product!");
-                return;
             }
-
-            UpdateStatus("Product Removed!");
         }
 
+        /// <summary>
+        /// Called when the user wants to search for one or more
+        /// products in the DB with a ceriteria
+        /// </summary>
+        /// <param name="sender">event owner</param>
+        /// <param name="e">Event args</param>
         private void View_Get(object sender, EventArgs e)
         {
             if (!OpenSession())
                 return;
 
+            // Search by ID if we have one
             if (_view.Id != 0)
             {
                 Product prod;
 
                 try
                 {
+                    // Search by ID
                     prod = _productRepository.Get(_view.Id);
                 }
                 catch (Exception ex)
@@ -211,15 +258,18 @@ namespace RepoConsole.Presenter
                     return;
                 }
 
+                // Nothing found inform the user and return
                 if (prod == null)
                 {
                     UpdateStatus("No product found with an ID of " + _view.Id);
                     return;
                 }
 
+                // Display what we found to the user
                 UpdateStatus("ID: " + prod.Id +
                              "\nName: " + prod.Prod_Name +
                              "\nPrice: " + prod.Price);
+                // Stop further searching
                 return;
             }
 
@@ -227,12 +277,15 @@ namespace RepoConsole.Presenter
 
             try
             {
+                // Dtermine the search to perform
                 if (_view.Name != null)
                 {
+                    // Search by name
                     prods = _productRepository.GetWithName(_view.Name);
                 }
                 else
                 {
+                    // Search by price
                     prods = _productRepository.GetWithPrice(_view.Price.Value);
                 }
             }
@@ -242,47 +295,46 @@ namespace RepoConsole.Presenter
                 return;
             }
 
+            // Nothing found inform the user
             if (prods.Count == 0)
             {
                 UpdateStatus("No Products Found");
                 return;
             }
 
+            // Return a list of products that we found to display them
             OnObjectReturned?.Invoke(this, new ObjectReturnedArgs<IList<Product>>(prods, false));
 
         }
 
+        /// <summary>
+        /// Called when the user wants to add a new product
+        /// </summary>
+        /// <param name="sender">Event owner</param>
+        /// <param name="e">Event args</param>
         private void View_Add(object sender, EventArgs e)
         {
             if (!OpenSession())
                 return;
 
+            // Create a new object and add the new values
+            // the values should be checked before getting here
             var prod = new Product();
-
-            /* TODO
-            if (_productRepository.AllowLocalEdits == false && SessionContext.IsLocal())
-            {
-                Console.WriteLine("Unable to create Product local creation not allowed!");
-                return;
-            }*/
-
             prod.Prod_Name = _view.Name;
             prod.Price = _view.Price.Value;
 
             try
             {
-
+                // Save the new product to the DB
                 _productRepository.Save(prod);
                 _productRepository.Commit();
 
+                UpdateStatus("Added new product with ID of " + prod.Id);
             }
             catch (Exception ex)
             {
                 OperationFailed(ex, "Could not save Product");
-                return;
             }
-
-            UpdateStatus("Added new product with ID of " + prod.Id);
         }
     }
 }

@@ -13,6 +13,9 @@ using RepoConsole.Views;
 
 namespace RepoConsole.Presenter
 {
+    /// <summary>
+    /// Handles the DB logic for the sales menu
+    /// </summary>
     public class SalePresenter : Presenter
     {
         private readonly IViewSale _view;
@@ -20,8 +23,13 @@ namespace RepoConsole.Presenter
 
         public event EventHandler<ObjectReturnedArgs<IList<Sale>>> OnObjectReturned;
 
+        /// <summary>
+        /// Creates new instance of sale presenter
+        /// </summary>
+        /// <param name="view">View to bind to</param>
         public SalePresenter(IViewSale view)
         {
+            // Bind to all view events
             _view = view;
             _view.Add += View_Add;
             _view.Get += View_Get;
@@ -30,13 +38,18 @@ namespace RepoConsole.Presenter
             _view.Edit += View_Edit;
             _view.Update += View_Update;
 
-            // Init page.. 
+            // Create a new repository
             var sessionFactManager = new SessionFactoryManager();
             SessionContext = new SessionContext(sessionFactManager);
 
             _saleRepository = new SaleRepository<Sale>(SessionContext);
         }
 
+        /// <summary>
+        /// Called when the user wants to update a sale 
+        /// </summary>
+        /// <param name="sender">event owner</param>
+        /// <param name="e">Event args</param>
         private void View_Update(object sender, UpdateInputArgs<IList<Sale>> e)
         {
             if (!OpenSession())
@@ -74,6 +87,8 @@ namespace RepoConsole.Presenter
                     isDirty = true;
                 }
 
+                // No properties were changed inform the user
+                // and do not continue with the update
                 if (isDirty == false)
                 {
                     UpdateStatus("Record not updated, no values changed!");
@@ -82,6 +97,7 @@ namespace RepoConsole.Presenter
 
                 try
                 {
+                    // Update the record
                     _saleRepository.Save(e.Record[0]);
                     _saleRepository.Commit();
 
@@ -98,6 +114,11 @@ namespace RepoConsole.Presenter
             }
         }
 
+        /// <summary>
+        /// Called when the user wants to edit a sale
+        /// </summary>
+        /// <param name="sender">Event owner</param>
+        /// <param name="e">Event args</param>
         private void View_Edit(object sender, EventArgs e)
         {
             if (!OpenSession())
@@ -107,6 +128,7 @@ namespace RepoConsole.Presenter
 
             try
             {
+                // Search by ID
                 sale = _saleRepository.Get(_view.Id);
             }
             catch (Exception ex)
@@ -115,51 +137,27 @@ namespace RepoConsole.Presenter
                 return;
             }
 
+            // None found inform the user
             if (sale == null)
             {
                 UpdateStatus("Could not find Sale with an ID of " + _view.Id);
                 return;
             }
 
+            // Package the sale into a list so we can process it
             var output = new List<Sale>();
             output.Add(sale);
+
+            // Return the object to the view
             OnObjectReturned?.Invoke(this, new ObjectReturnedArgs<IList<Sale>>(output, true, SessionContext.IsLocal()));
 
-            /*
-            Console.WriteLine("Edit: (ID: " + sale.Id + ")\n");
-            Console.Write("Store ID: ");
-
-            var input = Console.ReadLine();
-            int result;
-
-            if (int.TryParse(input, out result))
-            {
-                Console.WriteLine("\nPlease enter a valid Store ID");
-                return;
-            }
-
-            sale.StoreId = result;
-
-            Console.Write("Product ID: ");
-            input = Console.ReadLine();
-
-            if (int.TryParse(input, out result))
-            {
-                Console.WriteLine("\nPlease enter a valid Product ID");
-                return;
-            }
-
-            sale.ProductId = result;
-
-            Console.Write("\nUpdate Timestamp? [yes or no]: ");
-            input = Console.ReadLine();
-
-            if (input.ToLower().Equals("yes"))
-                sale.Timestamp = DateTime.Now;*/
-
-            
         }
 
+        /// <summary>
+        /// Called when a user wants to remove a sale
+        /// </summary>
+        /// <param name="sender">Event owner</param>
+        /// <param name="e">Event args</param>
         private void View_Remove(object sender, EventArgs e)
         {
             if (!OpenSession())
@@ -168,6 +166,7 @@ namespace RepoConsole.Presenter
             Sale sale;
             try
             {
+                // Search by ID
                 sale = _saleRepository.Get(_view.Id);
             }
             catch (Exception ex)
@@ -176,6 +175,7 @@ namespace RepoConsole.Presenter
                 return;
             }
 
+            // None found inform the user
             if (sale == null)
             {
                 UpdateStatus("Could not find Sale with an Id of " + _view.Id);
@@ -184,8 +184,10 @@ namespace RepoConsole.Presenter
 
             try
             {
+                // Remove from the DB
                 _saleRepository.Remove(sale);
                 _saleRepository.Commit();
+
                 UpdateStatus("Sale Removed!");
             }
             catch (Exception ex)
@@ -194,6 +196,11 @@ namespace RepoConsole.Presenter
             }
         }
 
+        /// <summary>
+        /// Called when the user wants to return all sales
+        /// </summary>
+        /// <param name="sender">Event owner</param>
+        /// <param name="e">Event args</param>
         private void View_GetAll(object sender, EventArgs e)
         {
             if (!OpenSession())
@@ -202,6 +209,7 @@ namespace RepoConsole.Presenter
             IList<Sale> sales = new List<Sale>();
             try
             {
+                // Find all
                 sales = _saleRepository.GetAll();
             }
             catch (Exception ex)
@@ -210,25 +218,35 @@ namespace RepoConsole.Presenter
                 return;
             }
 
+            // None found inform the user
             if (sales.Count == 0)
             {
                 UpdateStatus("No Sales found.");
                 return;
             }
 
+            // Return the list of sales to the view
             OnObjectReturned?.Invoke(this, new ObjectReturnedArgs<IList<Sale>>(sales, false));
         }
 
+        /// <summary>
+        /// Called when the user wants to find one or more sales
+        /// using a specfied criteria
+        /// </summary>
+        /// <param name="sender">Event owner</param>
+        /// <param name="e">Event args</param>
         private void View_Get(object sender, EventArgs e)
         {
             if (!OpenSession())
                 return;
 
+            // Search by ID if we have one
             if (_view.Id != 0)
             {
                 var sale = new Sale();
                 try
                 {
+                    // Search by ID
                     sale = _saleRepository.Get(_view.Id);
                 }
                 catch (Exception ex)
@@ -237,29 +255,34 @@ namespace RepoConsole.Presenter
                     return;
                 }
 
+                // Nothing found inform the user
                 if (sale == null)
                 {
                     UpdateStatus("Could not find Sale with an ID of " + _view.Id);
                     return;
                 }
 
+                // TODO REPLACE
                 UpdateStatus("ID: " + sale.Id +
                              "\nStore ID: " + sale.StoreId +
                              "\nProduct ID: " + sale.ProductId +
                              "\nTimestamp: " + sale.Timestamp);
 
-                return;
+                return; // Prevent further searching
 
             }
 
             IList<Sale> sales = new List<Sale>();
             try
             {
+                // Determine which search to perform
                 if (_view.StoreId != 0)
                 {
+                    // Search by store ID
                     sales = _saleRepository.GetWithStoreId(_view.StoreId);
                 } else if (_view.ProductId != 0)
                 {
+                    // Search by product ID
                     sales = _saleRepository.GetWithProductId(_view.ProductId);
                 }
             }
@@ -269,22 +292,31 @@ namespace RepoConsole.Presenter
                 return;
             }
 
+            // None found inform the user
             if (sales.Count == 0)
             {
                 UpdateStatus("No Sales found with the Store ID of " + _view.StoreId);
                 return;
             }
 
+            // Return the list of sales back to the view
             OnObjectReturned?.Invoke(this, new ObjectReturnedArgs<IList<Sale>>(sales, false));
 
         }
 
+        /// <summary>
+        /// Called when the user wants to add a new sale
+        /// </summary>
+        /// <param name="sender">Event owner</param>
+        /// <param name="e">Event args</param>
         private void View_Add(object sender, EventArgs e)
         {
 
             if (!OpenSession())
                 return;
 
+            // Create a new sale object and assign values
+            // values should be validated before getting here
             var sale = new Sale();
             sale.StoreId = _view.StoreId;
             sale.ProductId = _view.ProductId;
@@ -292,16 +324,16 @@ namespace RepoConsole.Presenter
 
             try
             {
+                // Save new sale
                 _saleRepository.Save(sale);
                 _saleRepository.Commit();
+
+                UpdateStatus("New sale created with ID of " + sale.Id);
             }
             catch (Exception ex)
             {
                 OperationFailed(ex, "Could not add Sale\n");
-                return;
             }
-
-            UpdateStatus("New sale created with ID of " + sale.Id);
         }
     }
 }

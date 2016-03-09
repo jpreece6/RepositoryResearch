@@ -8,6 +8,9 @@ using RepoConsole.Presenter;
 
 namespace RepoConsole.Views
 {
+    /// <summary>
+    /// Handles printing to the console screen for the employee menu
+    /// </summary>
     internal class EmployeeMenuView : StateView, IViewEmployee
     {
         public event EventHandler<EventArgs> Add;
@@ -25,16 +28,26 @@ namespace RepoConsole.Views
         private EmployeePresenter _presenter;
         private bool _exit = false;
 
+        /// <summary>
+        /// Create a new instance of the employee view
+        /// </summary>
         public EmployeeMenuView()
         {
+            // Bind to all presenter events
             _presenter = new EmployeePresenter(this);
             _presenter.OnUpdateStatus += Presenter_OnUpdateStatus;
             _presenter.OnOperationFail += Presenter_OnOperationFail;
             _presenter.OnObjectReturned += Presenter_OnObjectReturned;
         }
 
+        /// <summary>
+        /// Called when an object was returned from the DB
+        /// </summary>
+        /// <param name="sender">Event owner</param>
+        /// <param name="e">Event args</param>
         private void Presenter_OnObjectReturned(object sender, ObjectReturnedArgs<IList<DataEngine.Entities.Employee>> e)
         {
+            // If we're updating then we need to request user input
             if (e.Update)
             {
                 DisplayStatus();
@@ -47,6 +60,7 @@ namespace RepoConsole.Views
             else
             {
                 DisplayStatus();
+                // Loop through all returned employees and print them
                 foreach (var employee in e.RecordList)
                 {
                     Console.WriteLine("ID: " + employee.Id + 
@@ -57,6 +71,11 @@ namespace RepoConsole.Views
             }
         }
 
+        /// <summary>
+        /// Called when a operation fails in the presenter
+        /// </summary>
+        /// <param name="sender">Event owner</param>
+        /// <param name="e">event args</param>
         private void Presenter_OnOperationFail(object sender, Events.OperationFailedArgs e)
         {
             DisplayStatus();
@@ -64,12 +83,22 @@ namespace RepoConsole.Views
             Console.WriteLine("Error: " + (e.ExceptionObject.InnerException?.Message ?? e.ExceptionObject.Message));
         }
 
+        /// <summary>
+        /// Called when the presenter needs to inform the user of a status change
+        /// or provide the user with further instruction
+        /// </summary>
+        /// <param name="sender"></param>
+        /// <param name="e"></param>
         private void Presenter_OnUpdateStatus(object sender, Events.StatusUpdateArgs e)
         {
             DisplayStatus();
             Console.WriteLine(e.Status);
         }
 
+        /// <summary>
+        /// Main input logic this determines what choice the
+        /// user made on the menu
+        /// </summary>
         public void WaitForInput()
         {
             var input = Console.ReadLine();
@@ -98,12 +127,19 @@ namespace RepoConsole.Views
             }
         }
 
+        /// <summary>
+        /// Tells the presenter to get all employee's
+        /// from the DB using the get all event
+        /// </summary>
         public void Show_GetAll()
         {
             DisplayStatus();
             GetAll?.Invoke(this, EventArgs.Empty);
         }
 
+        /// <summary>
+        /// Tells the presenter to remove an employee
+        /// </summary>
         public void Show_Remove()
         {
             DisplayStatus();
@@ -113,6 +149,10 @@ namespace RepoConsole.Views
             Console.ReadLine();
         }
 
+        /// <summary>
+        /// Tells the presenter the user wants to edit/update
+        /// an employee
+        /// </summary>
         public void Show_Edit()
         {
             DisplayStatus();
@@ -122,6 +162,11 @@ namespace RepoConsole.Views
             Console.ReadLine();
         }
 
+        /// <summary>
+        /// Gives the user an option to search for an employee
+        /// with a number of criteria. Once the user selects 
+        /// one it asks for that criteria to be inputted
+        /// </summary>
         public void Show_Get()
         {
             DisplayStatus();
@@ -136,6 +181,7 @@ namespace RepoConsole.Views
             var input = Console.ReadLine();
             int result;
 
+            // Determine choice
             if (int.TryParse(input, out result))
             {
                 switch (result)
@@ -166,6 +212,9 @@ namespace RepoConsole.Views
             Console.ReadLine();
         }
 
+        /// <summary>
+        /// Tells the presenter to add a new employee
+        /// </summary>
         public void Show_Add()
         {
             DisplayStatus();
@@ -176,6 +225,10 @@ namespace RepoConsole.Views
             Console.ReadLine();
         }
 
+        /// <summary>
+        /// Shows the main employee menu to the user.
+        /// Keeps displaying until _exit = true
+        /// </summary>
         public void Show()
         {
             do
@@ -192,6 +245,11 @@ namespace RepoConsole.Views
             } while (_exit == false);
         }
 
+        /// <summary>
+        /// Asks the user to provide an ID and then
+        /// executes a specified event
+        /// </summary>
+        /// <param name="fireEvent">Event to call after input</param>
         private void Get_ID(EventHandler<EventArgs> fireEvent)
         {
             Console.Write("ID: ");
@@ -205,6 +263,11 @@ namespace RepoConsole.Views
             }
         }
 
+        /// <summary>
+        /// Asks the user to provide an store ID and then
+        /// executes a specified event
+        /// </summary>
+        /// <param name="fireEvent">Event to call after input</param>
         private void Get_StoreID(EventHandler<EventArgs> fireEvent)
         {
             Console.Write("Store ID: ");
@@ -218,6 +281,11 @@ namespace RepoConsole.Views
             }
         }
 
+        /// <summary>
+        /// Asks the user to provide an name and then
+        /// executes a specified event
+        /// </summary>
+        /// <param name="fireEvent">Event to call after input</param>
         private void Get_Name(EventHandler<EventArgs> fireEvent)
         {
             Console.Write("Name: ");

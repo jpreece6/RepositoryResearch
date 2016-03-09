@@ -9,6 +9,9 @@ using RepoConsole.Presenter;
 
 namespace RepoConsole.Views
 {
+    /// <summary>
+    /// Handles printing to the console screen for the main menu
+    /// </summary>
     public class MainView : StateView, IView
     {
         private MainMenuPresenter _presenter;
@@ -21,11 +24,18 @@ namespace RepoConsole.Views
         public event EventHandler<EventArgs> GetAll;
         public event EventHandler<EventArgs> Remove;
 
+        /// <summary>
+        /// Creates a new instance of main menu
+        /// </summary>
         public MainView()
         {
             _presenter = new MainMenuPresenter(this);
         }
 
+        /// <summary>
+        /// Determines what choice the user made on
+        /// the menu and displays the appropriate menu
+        /// </summary>
         public void WaitForInput()
         {
             var input = Console.ReadLine();
@@ -59,6 +69,9 @@ namespace RepoConsole.Views
             }
         }
 
+        /// <summary>
+        /// Prints the main menu to the screen
+        /// </summary>
         public void Show()
         {
             do
