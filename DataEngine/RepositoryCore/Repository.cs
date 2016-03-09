@@ -44,6 +44,9 @@ namespace DataEngine.RepositoryCore
             SessionContext.Remove(tData);
         }
 
+        /// <summary>
+        /// Push cahnges to the database
+        /// </summary>
         public void Commit()
         {
             SessionContext.Commit();
@@ -59,9 +62,12 @@ namespace DataEngine.RepositoryCore
             return (T) SessionContext.Session.Get(typeof(T), id);
         }
 
+        /// <summary>
+        /// Get all data from an entity table
+        /// </summary>
+        /// <returns></returns>
         public virtual IList<T> GetAll()
         {
-            //return _sessionContext.Session.CreateQuery("FROM " + typeof(T).Name).Enumerable<T>();
             try
             {
                 return SessionContext.Session.CreateCriteria<T>().List<T>();
@@ -74,6 +80,10 @@ namespace DataEngine.RepositoryCore
             }
         }
 
+        /// <summary>
+        /// Count all records in a table
+        /// </summary>
+        /// <returns></returns>
         public virtual int Count()
         {
             return
@@ -82,6 +92,11 @@ namespace DataEngine.RepositoryCore
                     .UniqueResult<int>();
         }
 
+        /// <summary>
+        /// Check if a record exists in the databae
+        /// </summary>
+        /// <param name="id">Id to check</param>
+        /// <returns>Int number of records that match</returns>
         public virtual int Exists(int id)
         {
             return
