@@ -82,12 +82,21 @@ namespace RepoConsole.Views
         private void Presenter_OnObjectGetAllReturned(object sender, Events.ObjectGetAllReturnedArgs<IList<Store>> e)
         {
             DisplayStatus();
+            var index = 0;
             foreach (var store in e.RecordList)
             {
                 Console.WriteLine("ID: " + store.Id +
                                     "\nName: " + store.StoreName +
                                     "\n");
+                if (++index == 20)
+                {
+                    Console.Write("More...");
+                    index = 0;
+                    Console.ReadKey();
+                }
             }
+
+            Console.Write("Done...");
         }
 
         /// <summary>

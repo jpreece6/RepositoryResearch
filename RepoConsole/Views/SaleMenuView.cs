@@ -89,6 +89,7 @@ namespace RepoConsole.Views
         {
 
             DisplayStatus();
+            var index = 0;
             foreach (var sale in e.RecordList)
             {
                 Console.WriteLine("ID: " + sale.Id +
@@ -96,7 +97,16 @@ namespace RepoConsole.Views
                                   "\nProduct ID: " + sale.ProductId +
                                   "\nTimestamp: " + sale.Timestamp +
                                   "\n");
+
+                if (++index == 20)
+                {
+                    Console.Write("More...");
+                    index = 0;
+                    Console.ReadKey();
+                }
             }
+
+            Console.Write("Done...");
         }
 
         /// <summary>

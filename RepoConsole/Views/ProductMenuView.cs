@@ -86,14 +86,22 @@ namespace RepoConsole.Views
         {
 
             DisplayStatus();
+            var index = 0;
             foreach (var product in e.RecordList)
             {
                 Console.WriteLine("ID: " + product.Id +
                                   "\nName: " + product.Prod_Name +
                                   "\nPrice: " + product.Price +
                                   "\n");
-            }
+                if (++index == 20)
+                {
+                    Console.Write("More...");
+                    index = 0;
+                    Console.ReadKey();
+                }
 
+            }
+            Console.Write("Done...");
         }
 
         /// <summary>

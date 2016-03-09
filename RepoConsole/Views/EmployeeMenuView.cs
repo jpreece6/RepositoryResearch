@@ -81,6 +81,7 @@ namespace RepoConsole.Views
         private void Presenter_OnObjectGetAllReturned(object sender, ObjectGetAllReturnedArgs<IList<DataEngine.Entities.Employee>> e)
         {
             DisplayStatus();
+            var index = 0;
 
             // Loop through all returned employees and print them
             foreach (var employee in e.RecordList)
@@ -89,7 +90,15 @@ namespace RepoConsole.Views
                                   "\nName: " + employee.FirstName +
                                   "\nStore ID " + employee.StoreId +
                                   "\n");
+                if (++index == 20)
+                {
+                    Console.Write("More...");
+                    index = 0;
+                    Console.ReadKey();
+                }
+
             }
+            Console.Write("Done...");
         }
 
         /// <summary>
