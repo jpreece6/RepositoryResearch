@@ -90,7 +90,6 @@
     <Compile Include="RepositoryCore\IRepository.cs" />
     <Compile Include="RepositoryCore\IRepositoryKeyValue.cs" />
     <Compile Include="RepositoryCore\Repository.cs" />
-    <Compile Include="RepositoryCore\RepositoryKeyValue.cs" />
     <Compile Include="SaleRepository.cs" />
     <Compile Include="StoreRepository.cs" />
     <Compile Include="SyncRecordRepository.cs" />
