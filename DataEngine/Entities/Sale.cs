@@ -14,6 +14,6 @@ namespace DataEngine.Entities
         public virtual int Id { get; protected set; }
         public virtual int StoreId { get; set; }
         public virtual int ProductId { get; set; }
-        public virtual DateTime Timestamp { get; set; }
+        public virtual DateTime SaleTime { get; set; }
     }
 }

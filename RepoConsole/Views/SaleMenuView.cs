@@ -5,6 +5,7 @@ using System.Runtime.InteropServices;
 using System.Text;
 using System.Threading.Tasks;
 using DataEngine.Entities;
+using Helpers;
 using RepoConsole.Events;
 using RepoConsole.Presenter;
 
@@ -75,7 +76,7 @@ namespace RepoConsole.Views
                 Console.WriteLine("ID: " + e.Entity.Id +
                                   "\nStore ID: " + e.Entity.StoreId +
                                   "\nProduct ID: " + e.Entity.ProductId +
-                                  "\nTimestamp: " + e.Entity.Timestamp +
+                                  "\nTimestamp: " + e.Entity.SaleTime +
                                   "\n");
             }
         }
@@ -95,7 +96,7 @@ namespace RepoConsole.Views
                 Console.WriteLine("ID: " + sale.Id +
                                   "\nStore ID: " + sale.StoreId +
                                   "\nProduct ID: " + sale.ProductId +
-                                  "\nTimestamp: " + sale.Timestamp +
+                                  "\nTimestamp: " + sale.SaleTime +
                                   "\n");
 
                 if (++index == 20)
@@ -345,7 +346,7 @@ namespace RepoConsole.Views
 
             if (input != null && input.ToLower().Trim().Equals("yes"))
             {
-                Timestamp = DateTime.Now;
+                Timestamp = DateFormatter.GetDateWithoutMilliseconds(DateTime.Now);
                 fireEvent?.Invoke(this, EventArgs.Empty);
             }
         }

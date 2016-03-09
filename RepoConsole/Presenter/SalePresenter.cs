@@ -8,6 +8,7 @@ using System.Threading.Tasks;
 using DataEngine;
 using DataEngine.Contexts;
 using DataEngine.Entities;
+using Helpers;
 using RepoConsole.Events;
 using RepoConsole.Views;
 
@@ -84,7 +85,7 @@ namespace RepoConsole.Presenter
 
                 if (_view.Timestamp.HasValue)
                 {
-                    e.Entity.Timestamp = _view.Timestamp.Value;
+                    e.Entity.SaleTime = _view.Timestamp.Value;
                     isDirty = true;
                 }
 
@@ -263,7 +264,7 @@ namespace RepoConsole.Presenter
                 UpdateStatus("ID: " + sale.Id +
                              "\nStore ID: " + sale.StoreId +
                              "\nProduct ID: " + sale.ProductId +
-                             "\nTimestamp: " + sale.Timestamp);
+                             "\nTimestamp: " + sale.SaleTime);
 
                 return; // Prevent further searching
 
@@ -317,7 +318,7 @@ namespace RepoConsole.Presenter
             var sale = new Sale();
             sale.StoreId = _view.StoreId;
             sale.ProductId = _view.ProductId;
-            sale.Timestamp = DateTime.Now;
+            sale.SaleTime = DateFormatter.GetDateWithoutMilliseconds(DateTime.Now);
 
             try
             {

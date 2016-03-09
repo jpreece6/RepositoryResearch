@@ -15,7 +15,7 @@ namespace DataEngine.Mapping
             Id(x => x.Id);
             Map(x => x.StoreId);
             Map(x => x.ProductId);
-            Map(x => x.Timestamp);
+            Map(x => x.SaleTime);
         }
     }
 }
