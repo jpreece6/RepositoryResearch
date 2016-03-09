@@ -64,15 +64,9 @@ namespace SyncEngine
                 if (record != null)
                     row.StoreId = record.Remote_Id;
 
-                if (remoteTable.Exists(row.Id) == 0)
-                {
-                    var newObject = ObjectCopy.Copy(row);
-                    remoteTable.Save(newObject);
-                }
-                else
-                {
-                    remoteTable.Save(row);
-                }
+                // Copy object and save (this removes ID)
+                var newObject = ObjectCopy.Copy(row);
+                remoteTable.Save(newObject);
 
                 // Save changes to remote
                 remoteTable.Commit();
@@ -102,16 +96,10 @@ namespace SyncEngine
             {
 
                 var remoteId = 0;
-                if (remoteTable.Exists(row.Id) == 0)
-                {
-                    var newObject = ObjectCopy.Copy(row);
-                    remoteTable.Save(newObject);
-                    remoteId = 0;
-                }
-                else
-                {
-                    remoteTable.Save(row);
-                }
+
+                // Copy object and save (this removes ID)
+                var newObject = ObjectCopy.Copy(row);
+                remoteTable.Save(newObject);
 
                 // Save changes to remote
                 remoteTable.Commit();
@@ -149,17 +137,10 @@ namespace SyncEngine
             var total = localTable.Count();
             foreach (var row in localTable.GetAll())
             {
-                var remoteId = 0;
-                if (remoteTable.Exists(row.Id) == 0) // TODO REMOVE!
-                {
-                    var newObject = ObjectCopy.Copy(row);
-                    remoteTable.Save(newObject);
-                    remoteId = newObject.Id;
-                }
-                else
-                {
-                    remoteTable.Save(row);
-                }
+                // Copy object and save (this removes ID)
+                var newObject = ObjectCopy.Copy(row);
+                remoteTable.Save(newObject);
+                var remoteId = newObject.Id;
 
                 // Save changes to remote
                 remoteTable.Commit();
@@ -209,15 +190,9 @@ namespace SyncEngine
                 if (recordStore != null)
                     row.StoreId = recordStore.Remote_Id;
 
-                if (remoteTable.Exists(row.Id) == 0)
-                {
-                    var newObject = ObjectCopy.Copy(row);
-                    remoteTable.Save(newObject);
-                }
-                else
-                {
-                    remoteTable.Save(row);
-                }
+                // Copy object and save (this removes ID)
+                var newObject = ObjectCopy.Copy(row);
+                remoteTable.Save(newObject);
 
                 // Save changes to remote
                 remoteTable.Commit();
