@@ -19,7 +19,6 @@ namespace DataEngine
     {
         public SaleRepository(ISessionContext sessionContext) : base(sessionContext)
         {
-            AllowLocalEdits = true;
         }
 
         /// <summary>

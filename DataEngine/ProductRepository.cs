@@ -20,7 +20,6 @@ namespace DataEngine
 
         public ProductRepository(ISessionContext sessionContext) : base(sessionContext)
         {
-            AllowLocalEdits = false;
         }
 
         /// <summary>

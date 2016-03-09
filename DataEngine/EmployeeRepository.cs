@@ -18,7 +18,6 @@ namespace DataEngine
     {
         public EmployeeRepository(ISessionContext sessionContext) : base(sessionContext)
         {
-            AllowLocalEdits = true;
         }
 
         /// <summary>
