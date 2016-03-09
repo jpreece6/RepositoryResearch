@@ -257,10 +257,10 @@ namespace RepoConsole.Presenter
             {
                 if (_view.StoreId != 0)
                 {
-                    sales = _saleRepository.GetWithStoreID(_view.StoreId);
+                    sales = _saleRepository.GetWithStoreId(_view.StoreId);
                 } else if (_view.ProductId != 0)
                 {
-                    sales = _saleRepository.GetWithProductID(_view.ProductId);
+                    sales = _saleRepository.GetWithProductId(_view.ProductId);
                 }
             }
             catch (Exception ex)
