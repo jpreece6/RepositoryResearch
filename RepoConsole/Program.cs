@@ -98,6 +98,8 @@ namespace RepoConsole
         private static void Sync_OnSyncComplete(object sender, SyncEngine.Events.SyncCompleteArgs e)
         {
             Console.WriteLine("\n" + e.Status);
+            Console.Write("\nPress any key to continue...");
+            Console.ReadKey();
         }
         #endregion
     }
