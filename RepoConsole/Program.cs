@@ -35,13 +35,13 @@ namespace RepoConsole
             _sync.OnCleanUp += Sync_OnCleanUp;
 
             Sync();
-            BaseConfig.IsLocal = false;
+            //BaseConfig.IsLocal = false;
 
             var main = new MainView();
             main.Show();
 
-            BaseConfig.IsLocal = false;
-            Sync();
+            if (BaseConfig.IsLocal)
+                Sync();
 
             Console.ReadKey();
         }
