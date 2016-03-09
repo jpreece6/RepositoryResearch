@@ -30,5 +30,10 @@ namespace Helpers
         {
             return _xmlDocument.Root?.Elements(elementName).ToList();
         }
+
+        public void SaveChanges(string path)
+        {
+            _xmlDocument.Save(path);
+        }
     }
 }
