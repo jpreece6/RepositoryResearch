@@ -90,6 +90,8 @@ namespace RepoConsole.Views
             DisplayStatus();
             Console.WriteLine(e.Status);
             Console.WriteLine("\nError: " + (e.ExceptionObject.InnerException?.Message ?? e.ExceptionObject.Message));
+            Console.Write("\n\nPress any key to continue...");
+            Console.ReadKey();
         }
 
         /// <summary>
