@@ -22,9 +22,21 @@ namespace RepoConsole.Views
         {
             Console.Clear();
 
-            var status = (BaseConfig.IsLocal) ? "Local" : "Remote";
+            Console.Write("## Current State: ");
 
-            Console.WriteLine("## Current State: " + status + " Connection ##\n");
+            if (BaseConfig.IsLocal)
+            {
+                Console.ForegroundColor = ConsoleColor.DarkYellow;
+                Console.Write("Local");
+
+            } else { 
+                Console.ForegroundColor = ConsoleColor.DarkGreen;
+                Console.Write("Remote");
+            }
+
+            Console.ForegroundColor = ConsoleColor.Gray;
+            Console.Write(" Connection ##\n\n");
+            
         }
     }
 }
