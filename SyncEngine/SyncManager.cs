@@ -95,8 +95,6 @@ namespace SyncEngine
             foreach (var row in localTable.GetAll())
             {
 
-                var remoteId = 0;
-
                 // Copy object and save (this removes ID)
                 var newObject = ObjectCopy.Copy(row);
                 remoteTable.Save(newObject);
@@ -109,7 +107,7 @@ namespace SyncEngine
                 var record = new SyncRecord();
                 record.Table_Id = "product_table";
                 record.Local_Id = row.Id;
-                record.Remote_Id = remoteId;
+                record.Remote_Id = newObject.Id;
                 _recordRepository.Save(record);
                 _recordRepository.Commit();
 
@@ -140,7 +138,6 @@ namespace SyncEngine
                 // Copy object and save (this removes ID)
                 var newObject = ObjectCopy.Copy(row);
                 remoteTable.Save(newObject);
-                var remoteId = newObject.Id;
 
                 // Save changes to remote
                 remoteTable.Commit();
@@ -150,7 +147,7 @@ namespace SyncEngine
                 var record = new SyncRecord();
                 record.Table_Id = "store_table";
                 record.Local_Id = row.Id;
-                record.Remote_Id = remoteId;
+                record.Remote_Id = newObject.Id;
                 _recordRepository.Save(record);
                 _recordRepository.Commit();
 
