@@ -6,7 +6,7 @@ using System.Runtime.InteropServices;
 // set of attributes. Change these attribute values to modify the information
 // associated with an assembly.
 [assembly: AssemblyTitle("Helpers")]
-[assembly: AssemblyDescription("")]
+[assembly: AssemblyDescription("Helper files used throughout the project and don't belong in one place")]
 [assembly: AssemblyConfiguration("")]
 [assembly: AssemblyCompany("")]
 [assembly: AssemblyProduct("Helpers")]

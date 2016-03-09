@@ -6,7 +6,7 @@ using System.Runtime.InteropServices;
 // set of attributes. Change these attribute values to modify the information
 // associated with an assembly.
 [assembly: AssemblyTitle("RepoConsole")]
-[assembly: AssemblyDescription("")]
+[assembly: AssemblyDescription("Prototype application to demonstrate the repository network redundency")]
 [assembly: AssemblyConfiguration("")]
 [assembly: AssemblyCompany("")]
 [assembly: AssemblyProduct("RepoConsole")]

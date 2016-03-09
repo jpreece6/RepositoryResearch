@@ -6,7 +6,7 @@ using System.Runtime.InteropServices;
 // set of attributes. Change these attribute values to modify the information
 // associated with an assembly.
 [assembly: AssemblyTitle("SyncEngine")]
-[assembly: AssemblyDescription("")]
+[assembly: AssemblyDescription("Sync engine strongly coupled with DataEngine to sync all tables between local and remote dbs")]
 [assembly: AssemblyConfiguration("")]
 [assembly: AssemblyCompany("")]
 [assembly: AssemblyProduct("SyncEngine")]

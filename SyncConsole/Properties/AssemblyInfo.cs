@@ -6,7 +6,7 @@ using System.Runtime.InteropServices;
 // set of attributes. Change these attribute values to modify the information
 // associated with an assembly.
 [assembly: AssemblyTitle("SyncConsole")]
-[assembly: AssemblyDescription("")]
+[assembly: AssemblyDescription("Prototype sync application to test sync functions")]
 [assembly: AssemblyConfiguration("")]
 [assembly: AssemblyCompany("")]
 [assembly: AssemblyProduct("SyncConsole")]
