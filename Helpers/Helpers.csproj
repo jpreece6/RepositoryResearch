@@ -42,6 +42,7 @@
   <ItemGroup>
     <Compile Include="BaseConfig.cs" />
     <Compile Include="ConfigReader.cs" />
+    <Compile Include="DateFormatter.cs" />
     <Compile Include="ObjectCopy.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
   </ItemGroup>
