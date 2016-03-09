@@ -10,6 +10,9 @@ using RepoConsole.Presenter;
 
 namespace RepoConsole.Views
 {
+    /// <summary>
+    /// Handles printing to the console for the store menu
+    /// </summary>
     public class StoreMenuView : StateView, IViewStore
     {
         public event EventHandler<EventArgs> Add;
@@ -26,22 +29,34 @@ namespace RepoConsole.Views
         private bool _exit = false;
         private StorePresenter _presenter;
 
+        /// <summary>
+        /// Creates a new instance of store menu
+        /// </summary>
         public StoreMenuView()
         {
+            // Bind to all presenter events
             _presenter = new StorePresenter(this);
             _presenter.OnUpdateStatus += Presenter_OnUpdateStatus;
             _presenter.OnOperationFail += Presenter_OnOperationFail;
             _presenter.OnObjectReturned += Presenter_OnObjectReturned;
         }
 
+        /// <summary>
+        /// Called when an object is returned from the DB
+        /// </summary>
+        /// <param name="sender">Event owner</param>
+        /// <param name="e">Event args</param>
         private void Presenter_OnObjectReturned(object sender, Events.ObjectReturnedArgs<IList<DataEngine.Entities.Store>> e)
         {
+            // If we're updating then ask the user for input
             if (e.Update)
             {
                 DisplayStatus();
                 Console.WriteLine("Update (ID: " + e.RecordList[0].Id + ") - " + e.RecordList[0].StoreName);
                 Console.WriteLine("NOTE: Leave blank if you don't want to update a field \n");
                 Get_Name(null);
+
+                // Tell the presenter to update
                 Update?.Invoke(this, new UpdateInputArgs<IList<Store>>(e.RecordList, e.IsLocal));
             }
             else
@@ -56,6 +71,11 @@ namespace RepoConsole.Views
             }
         }
 
+        /// <summary>
+        /// Called when the presenter fails an operation
+        /// </summary>
+        /// <param name="sender">Event owner</param>
+        /// <param name="e">Event args</param>
         private void Presenter_OnOperationFail(object sender, Events.OperationFailedArgs e)
         {
             DisplayStatus();
@@ -63,12 +83,21 @@ namespace RepoConsole.Views
             Console.WriteLine("\nError: " + (e.ExceptionObject.InnerException?.Message ?? e.ExceptionObject.Message));
         }
 
+        /// <summary>
+        /// Called when the presenter wants to inform the user of a state change or
+        /// provides the user with further instrction
+        /// </summary>
+        /// <param name="sender">Event owner</param>
+        /// <param name="e">Event args</param>
         private void Presenter_OnUpdateStatus(object sender, Events.StatusUpdateArgs e)
         {
             DisplayStatus();
             Console.WriteLine(e.Status);
         }
 
+        /// <summary>
+        /// Prints the store menu to console
+        /// </summary>
         public void Show()
         {
             do
@@ -85,6 +114,9 @@ namespace RepoConsole.Views
             } while (_exit == false);
         }
 
+        /// <summary>
+        /// Tells the presenter to add a new store
+        /// </summary>
         public void Show_Add()
         {
             DisplayStatus();
@@ -94,6 +126,10 @@ namespace RepoConsole.Views
             Console.ReadLine();
         }
 
+        /// <summary>
+        /// Displays all search options available
+        /// and asks the user to provide criteria after selection
+        /// </summary>
         public void Show_Get()
         {
             DisplayStatus();
@@ -132,12 +168,18 @@ namespace RepoConsole.Views
             if (result != 4) Console.ReadLine();
         }
 
+        /// <summary>
+        /// Tells the presenter to return all stores
+        /// </summary>
         public void Show_GetAll()
         {
             DisplayStatus();
             GetAll?.Invoke(this, EventArgs.Empty);
         }
 
+        /// <summary>
+        /// Tells the presenter to remove a store
+        /// </summary>
         public void Show_Remove()
         {
             DisplayStatus();
@@ -147,6 +189,9 @@ namespace RepoConsole.Views
             Console.ReadLine();
         }
 
+        /// <summary>
+        /// Tells the presenter to edit/update a store
+        /// </summary>
         public void Show_Edit()
         {
             DisplayStatus();
@@ -156,6 +201,9 @@ namespace RepoConsole.Views
             Console.ReadLine();
         }
 
+        /// <summary>
+        /// Determines the users choice on the main menu
+        /// </summary>
         public void WaitForInput()
         {
             var input = Console.ReadLine();
@@ -185,6 +233,11 @@ namespace RepoConsole.Views
             }
         }
 
+        /// <summary>
+        /// Asks the user to provide an ID and then
+        /// executes a specified event
+        /// </summary>
+        /// <param name="fireEvent">Event to call after input</param>
         private void Get_ID(EventHandler<EventArgs> fireEvent)
         {
             Console.Write("ID: ");
@@ -198,6 +251,11 @@ namespace RepoConsole.Views
             }
         }
 
+        /// <summary>
+        /// Asks the user to provide an name and then
+        /// executes a specified event
+        /// </summary>
+        /// <param name="fireEvent">Event to call after input</param>
         private void Get_Name(EventHandler<EventArgs> fireEvent)
         {
             Console.Write("Name: ");
