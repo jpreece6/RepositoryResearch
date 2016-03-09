@@ -24,6 +24,8 @@ namespace RepoConsole.Presenter
 
         public delegate void OperationFailedHandler(object sender, OperationFailedArgs e);
         public event OperationFailedHandler OnOperationFail;
+
+        public event EventHandler<StateChangeArgs> OnStateChange; 
         #endregion
 
         /// <summary>
@@ -73,19 +75,18 @@ namespace RepoConsole.Presenter
         /// <returns>True if connection established, false if local and remote are unavailable</returns>
         protected virtual bool OpenSession()
         {
-            UpdateStatus("\nConnecting....");
+            UpdateStatus("Connecting....");
             bool connectionState = BaseConfig.IsLocal; // remember the connection state
 
             try
             {
                 SessionContext.OpenContextSession();
-                Console.Clear();
 
                 // If we're running on local inform the user
                 // only show if we were running remote then changed to local
                 if (SessionContext.IsLocal() && connectionState == false)
                 {
-                    OperationFailed(new Exception("Could not connect to server!"), "- Now using local DB for all operations until restart!");
+                    OnStateChange?.Invoke(this, new StateChangeArgs("- Now using local DB for all operations until restart!"));
                 }
             }
             catch (Exception ex)

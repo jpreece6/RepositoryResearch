@@ -46,6 +46,7 @@
     <Compile Include="Events\ObjectGetAllReturnedArgs.cs" />
     <Compile Include="Events\ObjectGetReturnedArgs.cs" />
     <Compile Include="Events\OperationFailedArgs.cs" />
+    <Compile Include="Events\StateChangeArgs.cs" />
     <Compile Include="Events\StatusUpdateArgs.cs" />
     <Compile Include="Events\UpdateInputArgs.cs" />
     <Compile Include="Presenter\IPresenter.cs" />

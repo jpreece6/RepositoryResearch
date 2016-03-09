@@ -40,6 +40,16 @@ namespace RepoConsole.Views
             _presenter.OnOperationFail += Presenter_OnOperationFail;
             _presenter.OnObjectGetAllReturned += Presenter_OnObjectGetAllReturned;
             _presenter.OnObjectGetReturned += Presenter_OnObjectGetReturned;
+            _presenter.OnStateChange += Presenter_OnStateChange;
+        }
+
+        private void Presenter_OnStateChange(object sender, StateChangeArgs e)
+        {
+            Console.Clear();
+            DisplayStatus();
+            Console.WriteLine(e.Status);
+            Console.WriteLine("\nPress any key to continue...");
+            Console.ReadKey();
         }
 
         private void Presenter_OnObjectGetReturned(object sender, ObjectGetReturnedArgs<Product> e)
