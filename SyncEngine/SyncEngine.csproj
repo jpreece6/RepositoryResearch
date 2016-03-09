@@ -45,7 +45,6 @@
     <Compile Include="Events\SyncCompleteArgs.cs" />
     <Compile Include="Events\SyncFailedEventArgs.cs" />
     <Compile Include="Events\SyncStartedArgs.cs" />
-    <Compile Include="ISyncManager.cs" />
     <Compile Include="Contexts\LocalContext.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="Contexts\RemoteContext.cs" />

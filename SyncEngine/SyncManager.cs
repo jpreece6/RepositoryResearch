@@ -14,7 +14,7 @@ namespace SyncEngine
     // TODO TALK ABOUT GENERIC ISSUES WHERE YOU CANT HAVE DIFFERENT TYPES EVEN INTERFACES
     // TODO - Note the addition of sync records to update references
     // TODO - talk about possibly syncing all data down then back up
-    public class SyncManager : ISyncManager
+    public class SyncManager
     {
         #region Events
         public event EventHandler<ProgressEventArgs> OnUpdateStatus;
