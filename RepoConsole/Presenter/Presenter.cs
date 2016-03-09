@@ -4,6 +4,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using DataEngine.Contexts;
+using Helpers;
 using RepoConsole.Events;
 
 namespace RepoConsole.Presenter
@@ -73,6 +74,7 @@ namespace RepoConsole.Presenter
         protected virtual bool OpenSession()
         {
             UpdateStatus("\nConnecting....");
+            bool connectionState = BaseConfig.IsLocal; // remember the connection state
 
             try
             {
@@ -80,9 +82,10 @@ namespace RepoConsole.Presenter
                 Console.Clear();
 
                 // If we're running on local inform the user
-                if (SessionContext.IsLocal())
+                // only show if we were running remote then changed to local
+                if (SessionContext.IsLocal() && connectionState == false)
                 {
-                    UpdateStatus("Could not connect to server!\n- Now using local DB for this operation!\n");
+                    OperationFailed(new Exception("Could not connect to server!"), "- Now using local DB for all operations until restart!");
                 }
             }
             catch (Exception ex)
