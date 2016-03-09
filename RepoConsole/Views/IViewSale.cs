@@ -14,6 +14,6 @@ namespace RepoConsole.Views
         int ProductId { get; set; }
         DateTime? Timestamp { get; set; }
 
-        event EventHandler<UpdateInputArgs<IList<DataEngine.Entities.Sale>>> Update;
+        event EventHandler<UpdateInputArgs<DataEngine.Entities.Sale>> Update;
     }
 }

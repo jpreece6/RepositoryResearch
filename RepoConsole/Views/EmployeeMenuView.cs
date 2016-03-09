@@ -19,7 +19,7 @@ namespace RepoConsole.Views
         public event EventHandler<EventArgs> Remove;
         public event EventHandler<EventArgs> GetAll;
 
-        public event EventHandler<UpdateInputArgs<IList<DataEngine.Entities.Employee>>> Update; 
+        public event EventHandler<UpdateInputArgs<DataEngine.Entities.Employee>> Update; 
 
         public int Id { get; set; }
         public string FirstName { get; set; }
@@ -37,7 +37,30 @@ namespace RepoConsole.Views
             _presenter = new EmployeePresenter(this);
             _presenter.OnUpdateStatus += Presenter_OnUpdateStatus;
             _presenter.OnOperationFail += Presenter_OnOperationFail;
-            _presenter.OnObjectReturned += Presenter_OnObjectReturned;
+            _presenter.OnObjectGetAllReturned += Presenter_OnObjectGetAllReturned;
+            _presenter.OnObjectGetReturned += Presenter_OnObjectGetReturned;
+        }
+
+        private void Presenter_OnObjectGetReturned(object sender, ObjectGetReturnedArgs<Employee> e)
+        {
+            DisplayStatus();
+
+            // If we're updating then we need to request user input
+            if (e.Update)
+            {
+                Console.WriteLine("Update (ID: " + e.Entity.Id + ") " + e.Entity.FirstName);
+                Console.WriteLine("NOTE: Leave blank if you don't want to update a field \n");
+                Get_Name(null);
+                Get_StoreID(null);
+                Update?.Invoke(this, new UpdateInputArgs<Employee>(e.Entity, e.IsLocal));
+            }
+            else
+            {
+                Console.WriteLine("ID: " + e.Entity.Id +
+                                  "\nName: " + e.Entity.FirstName +
+                                  "\nStore ID " + e.Entity.StoreId +
+                                  "\n");
+            }
         }
 
         /// <summary>
@@ -45,29 +68,17 @@ namespace RepoConsole.Views
         /// </summary>
         /// <param name="sender">Event owner</param>
         /// <param name="e">Event args</param>
-        private void Presenter_OnObjectReturned(object sender, ObjectReturnedArgs<IList<DataEngine.Entities.Employee>> e)
+        private void Presenter_OnObjectGetAllReturned(object sender, ObjectGetAllReturnedArgs<IList<DataEngine.Entities.Employee>> e)
         {
-            // If we're updating then we need to request user input
-            if (e.Update)
+            DisplayStatus();
+
+            // Loop through all returned employees and print them
+            foreach (var employee in e.RecordList)
             {
-                DisplayStatus();
-                Console.WriteLine("Update (ID: " + e.RecordList[0].Id + ") " + e.RecordList[0].FirstName);
-                Console.WriteLine("NOTE: Leave blank if you don't want to update a field \n");
-                Get_Name(null);
-                Get_StoreID(null);
-                Update?.Invoke(this, new UpdateInputArgs<IList<Employee>>(e.RecordList, e.IsLocal));
-            }
-            else
-            {
-                DisplayStatus();
-                // Loop through all returned employees and print them
-                foreach (var employee in e.RecordList)
-                {
-                    Console.WriteLine("ID: " + employee.Id + 
-                                      "\nName: " + employee.FirstName +
-                                      "\nStore ID " + employee.StoreId +
-                                      "\n");
-                }
+                Console.WriteLine("ID: " + employee.Id +
+                                  "\nName: " + employee.FirstName +
+                                  "\nStore ID " + employee.StoreId +
+                                  "\n");
             }
         }
 

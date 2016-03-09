@@ -19,7 +19,8 @@ namespace RepoConsole.Presenter
         private readonly IViewEmployee _view;
         private readonly EmployeeRepository<Employee> _employeeRepository;
 
-        public event EventHandler<ObjectReturnedArgs<IList<Employee>>> OnObjectReturned;
+        public event EventHandler<ObjectGetReturnedArgs<Employee>> OnObjectGetReturned;
+        public event EventHandler<ObjectGetAllReturnedArgs<IList<Employee>>> OnObjectGetAllReturned;
 
         /// <summary>
         /// Create a new instance of the EmployeePresenter
@@ -48,7 +49,7 @@ namespace RepoConsole.Presenter
         /// </summary>
         /// <param name="sender">Event owner</param>
         /// <param name="e">Event Args</param>
-        private void View_Update(object sender, Events.UpdateInputArgs<IList<Employee>> e)
+        private void View_Update(object sender, Events.UpdateInputArgs<Employee> e)
         {
             // Make sure we can open a session
             if (!OpenSession())
@@ -63,7 +64,7 @@ namespace RepoConsole.Presenter
                 var isDirty = false;
 
                 // We should at least have 1 object to update
-                if (e.Record.Count == 0)
+                if (e.Entity == null)
                 {
                     OperationFailed(new Exception("No object available!"),
                         "Object to update was missing from the collection!");
@@ -72,13 +73,13 @@ namespace RepoConsole.Presenter
 
                 if (_view.FirstName != "" || _view.FirstName != null)
                 {
-                    e.Record[0].FirstName = _view.FirstName;
+                    e.Entity.FirstName = _view.FirstName;
                     isDirty = true;
                 }
 
                 if (_view.StoreId != 0)
                 {
-                    e.Record[0].StoreId = _view.StoreId;
+                    e.Entity.StoreId = _view.StoreId;
                     isDirty = true;
                 }
 
@@ -93,7 +94,7 @@ namespace RepoConsole.Presenter
                 try
                 {
                     // Update record in DB
-                    _employeeRepository.Save(e.Record[0]);
+                    _employeeRepository.Save(e.Entity);
                     _employeeRepository.Commit();
 
                     UpdateStatus("\nRecord successfully updated!");
@@ -145,7 +146,7 @@ namespace RepoConsole.Presenter
             // Return the Employee object to the view
             // update flag = true so we want to update it when we get it back
             // Connection status is recorded so we can check again on update
-            OnObjectReturned?.Invoke(this, new ObjectReturnedArgs<IList<Employee>>(output, true, SessionContext.IsLocal()));
+            OnObjectGetReturned?.Invoke(this, new ObjectGetReturnedArgs<Employee>(emp, true, SessionContext.IsLocal()));
 
         }
 
@@ -179,7 +180,7 @@ namespace RepoConsole.Presenter
             }
 
             // Return the list of employees to the view
-            OnObjectReturned?.Invoke(this, new ObjectReturnedArgs<IList<Employee>>(emps, false));
+            OnObjectGetAllReturned?.Invoke(this, new ObjectGetAllReturnedArgs<IList<Employee>>(emps));
         }
 
         /// <summary>
@@ -324,7 +325,7 @@ namespace RepoConsole.Presenter
                 }
 
                 // Return the list of employees to the view so we can display it
-                OnObjectReturned?.Invoke(this, new ObjectReturnedArgs<IList<Employee>>(emps, false));
+                OnObjectGetAllReturned?.Invoke(this, new ObjectGetAllReturnedArgs<IList<Employee>>(emps));
             }
         }
     }

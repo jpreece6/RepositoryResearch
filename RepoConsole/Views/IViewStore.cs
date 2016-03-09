@@ -12,6 +12,6 @@ namespace RepoConsole.Views
         int Id { get; set; }
         string StoreName { get; set; }
 
-        event EventHandler<UpdateInputArgs<IList<DataEngine.Entities.Store>>>  Update;
+        event EventHandler<UpdateInputArgs<DataEngine.Entities.Store>>  Update;
     }
 }

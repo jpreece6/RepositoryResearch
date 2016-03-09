@@ -21,7 +21,8 @@ namespace RepoConsole.Presenter
         private readonly IViewStore _view;
         private readonly StoreRepository<Store> _storeRepository;
 
-        public event EventHandler<ObjectReturnedArgs<IList<Store>>> OnObjectReturned;
+        public event EventHandler<ObjectGetReturnedArgs<Store>> OnObjectGetReturned;
+        public event EventHandler<ObjectGetAllReturnedArgs<IList<Store>>> OnObjectGetAllReturned;
 
         /// <summary>
         /// Creates a new instance of the store presenter
@@ -50,7 +51,7 @@ namespace RepoConsole.Presenter
         /// </summary>
         /// <param name="sender">Event owner</param>
         /// <param name="e">Event args</param>
-        private void View_Update(object sender, UpdateInputArgs<IList<Store>> e)
+        private void View_Update(object sender, UpdateInputArgs<Store> e)
         {
             if (!OpenSession())
                 return;
@@ -62,7 +63,7 @@ namespace RepoConsole.Presenter
             {
                 // We should have at least 1 record
                 // inform the user and do not update
-                if (e.Record.Count == 0)
+                if (e.Entity == null)
                 {
                     OperationFailed(new Exception("No object available!"),
                         "Object to update was missing from the collection!");
@@ -71,7 +72,7 @@ namespace RepoConsole.Presenter
 
                 if (_view.StoreName != "" || _view.StoreName != null)
                 {
-                    e.Record[0].StoreName = _view.StoreName;
+                    e.Entity.StoreName = _view.StoreName;
                 }
                 else
                 {
@@ -83,7 +84,7 @@ namespace RepoConsole.Presenter
                 try
                 {
                     // Update record in DB
-                    _storeRepository.Save(e.Record[0]);
+                    _storeRepository.Save(e.Entity);
                     _storeRepository.Commit();
 
                     UpdateStatus("Record updated successfully!");
@@ -128,14 +129,10 @@ namespace RepoConsole.Presenter
                 return;
             }
 
-            // Package store into list so we can return it
-            var output = new List<Store>();
-            output.Add(store);
-
-            // Return the list of stores to the user
+            // Return the store to the user
             // update = true, when we get the entity back update it
             // Connection state recorded so we can check this on update
-            OnObjectReturned?.Invoke(this, new ObjectReturnedArgs<IList<Store>>(output, true, SessionContext.IsLocal()));
+            OnObjectGetReturned?.Invoke(this, new ObjectGetReturnedArgs<Store>(store, true, SessionContext.IsLocal()));
         }
 
         /// <summary>
@@ -213,7 +210,7 @@ namespace RepoConsole.Presenter
             }
 
             // Return the list of stores to the view
-            OnObjectReturned?.Invoke(this, new ObjectReturnedArgs<IList<Store>>(stores, false));
+            OnObjectGetAllReturned?.Invoke(this, new ObjectGetAllReturnedArgs<IList<Store>>(stores));
         }
 
         /// <summary>
@@ -249,12 +246,8 @@ namespace RepoConsole.Presenter
                     return;
                 }
 
-                // Package store into a list so we can return it
-                var output = new List<Store>();
-                output.Add(store);
-
-                // Return list to the view
-                OnObjectReturned?.Invoke(this, new ObjectReturnedArgs<IList<Store>>(output, false));
+                // Return store to view
+                OnObjectGetReturned?.Invoke(this, new ObjectGetReturnedArgs<Store>(store, false));
 
                 return;
             }
@@ -283,7 +276,7 @@ namespace RepoConsole.Presenter
                 }
 
                 // Return the list of stores to the view
-                OnObjectReturned?.Invoke(this, new ObjectReturnedArgs<IList<Store>>(stores, false));
+                OnObjectGetAllReturned?.Invoke(this, new ObjectGetAllReturnedArgs<IList<Store>>(stores));
             }
         }
 

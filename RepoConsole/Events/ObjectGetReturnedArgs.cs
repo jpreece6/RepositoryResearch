@@ -14,13 +14,12 @@ namespace RepoConsole.Events
     /// the current session database
     /// </summary>
     /// <typeparam name="T">Entity Type</typeparam>
-    public class ObjectReturnedArgs<T> : EventArgs
+    public class ObjectGetReturnedArgs<T> : EventArgs
     {
         /// <summary>
-        /// IList of Entities
-        /// Holds a list of entites that have been returned
+        /// Holds a returned entity 
         /// </summary>
-        public T RecordList { get; set; }
+        public T Entity { get; set; }
 
         /// <summary>
         /// Update flag tells the program we want to update the record in RecordList
@@ -36,9 +35,9 @@ namespace RepoConsole.Events
         /// Creates a new ObjectReturnedArgs instance with list only
         /// </summary>
         /// <param name="record">IList of entities</param>
-        public ObjectReturnedArgs(T record)
+        public ObjectGetReturnedArgs(T record)
         {
-            RecordList = record;
+            Entity = record;
         }
 
         /// <summary>
@@ -47,9 +46,9 @@ namespace RepoConsole.Events
         /// </summary>
         /// <param name="record">IList of entities</param>
         /// <param name="bUpdate">Bool update the stored entity</param>
-        public ObjectReturnedArgs(T record, bool bUpdate)
+        public ObjectGetReturnedArgs(T record, bool bUpdate)
         {
-            RecordList = record;
+            Entity = record;
             Update = bUpdate;
         }
 
@@ -60,9 +59,9 @@ namespace RepoConsole.Events
         /// <param name="record">IList of entities</param>
         /// <param name="bUpdate">Bool update the stored entity</param>
         /// <param name="isLocal">Bool connection state</param>
-        public ObjectReturnedArgs(T record, bool bUpdate, bool isLocal)
+        public ObjectGetReturnedArgs(T record, bool bUpdate, bool isLocal)
         {
-            RecordList = record;
+            Entity = record;
             Update = bUpdate;
             IsLocal = isLocal;
         }

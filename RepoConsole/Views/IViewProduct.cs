@@ -13,6 +13,6 @@ namespace RepoConsole.Views
         string Name { get; set; }
         float? Price { get; set; }
 
-        event EventHandler<UpdateInputArgs<IList<DataEngine.Entities.Product>>> Update;
+        event EventHandler<UpdateInputArgs<DataEngine.Entities.Product>> Update;
     }
 }

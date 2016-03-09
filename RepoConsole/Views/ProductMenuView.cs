@@ -20,7 +20,7 @@ namespace RepoConsole.Views
         public event EventHandler<EventArgs> Edit;
         public event EventHandler<EventArgs> Get;
 
-        public event EventHandler<UpdateInputArgs<IList<DataEngine.Entities.Product>>> Update;
+        public event EventHandler<UpdateInputArgs<Product>> Update;
 
         public int Id { get; set; }
         public string Name { get; set; }
@@ -38,7 +38,32 @@ namespace RepoConsole.Views
             _presenter = new ProductPresenter(this);
             _presenter.OnUpdateStatus += Presenter_OnUpdateStatus;
             _presenter.OnOperationFail += Presenter_OnOperationFail;
-            _presenter.OnObjectReturned += Presenter_OnObjectReturned;
+            _presenter.OnObjectGetAllReturned += Presenter_OnObjectGetAllReturned;
+            _presenter.OnObjectGetReturned += Presenter_OnObjectGetReturned;
+        }
+
+        private void Presenter_OnObjectGetReturned(object sender, ObjectGetReturnedArgs<Product> e)
+        {
+            DisplayStatus();
+
+            // If update is true then ask for input to update the object
+            if (e.Update)
+            {
+                Console.WriteLine("Updating (ID: " + e.Entity.Id + ") " + e.Entity.Prod_Name);
+                Console.WriteLine("NOTE: Leave blank if you don't want to update a field \n");
+                Get_Name(null);
+                Get_Price(null);
+
+                // Tell the presenter to update
+                Update?.Invoke(this, new UpdateInputArgs<Product>(e.Entity, e.IsLocal));
+            }
+            else
+            {
+                Console.WriteLine("ID: " + e.Entity.Id +
+                                  "\nName: " + e.Entity.Prod_Name +
+                                  "\nPrice: " + e.Entity.Price +
+                                  "\n");
+            }
         }
 
         /// <summary>
@@ -46,31 +71,19 @@ namespace RepoConsole.Views
         /// </summary>
         /// <param name="sender">Event owner</param>
         /// <param name="e">Event args</param>
-        private void Presenter_OnObjectReturned(object sender, ObjectReturnedArgs<IList<DataEngine.Entities.Product>> e)
+        private void Presenter_OnObjectGetAllReturned(object sender,
+            ObjectGetAllReturnedArgs<IList<DataEngine.Entities.Product>> e)
         {
-            // If update is true then ask for input to update the object
-            if (e.Update)
-            {
-                DisplayStatus();
-                Console.WriteLine("Updating (ID: " + e.RecordList[0].Id + ") " + e.RecordList[0].Prod_Name);
-                Console.WriteLine("NOTE: Leave blank if you don't want to update a field \n");
-                Get_Name(null);
-                Get_Price(null);
 
-                // Tell the presenter to update
-                Update?.Invoke(this, new UpdateInputArgs<IList<Product>>(e.RecordList, e.IsLocal));
-            }
-            else
+            DisplayStatus();
+            foreach (var product in e.RecordList)
             {
-                DisplayStatus();
-                foreach (var product in e.RecordList)
-                {
-                    Console.WriteLine("ID: " + product.Id +
-                                      "\nName: " + product.Prod_Name +
-                                      "\nPrice: " + product.Price +
-                                      "\n");
-                }
+                Console.WriteLine("ID: " + product.Id +
+                                  "\nName: " + product.Prod_Name +
+                                  "\nPrice: " + product.Price +
+                                  "\n");
             }
+
         }
 
         /// <summary>

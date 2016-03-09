@@ -10,6 +10,6 @@ namespace RepoConsole.Views
         string FirstName { get; set; }
         int StoreId { get; set; }
 
-        event EventHandler<UpdateInputArgs<IList<DataEngine.Entities.Employee>>> Update;
+        event EventHandler<UpdateInputArgs<DataEngine.Entities.Employee>> Update;
     }
 }

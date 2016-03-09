@@ -22,7 +22,8 @@ namespace RepoConsole.Presenter
         private readonly IViewProduct _view;
         private readonly ProductRepository<Product> _productRepository;
 
-        public event EventHandler<ObjectReturnedArgs<IList<DataEngine.Entities.Product>>> OnObjectReturned; 
+        public event EventHandler<ObjectGetReturnedArgs<Product>> OnObjectGetReturned;
+        public event EventHandler<ObjectGetAllReturnedArgs<IList<Product>>> OnObjectGetAllReturned;
 
         /// <summary>
         /// Creates a new instance of the product presenter
@@ -51,7 +52,7 @@ namespace RepoConsole.Presenter
         /// </summary>
         /// <param name="sender">Event owner</param>
         /// <param name="e">Event args</param>
-        private void View_Update(object sender, UpdateInputArgs<IList<Product>> e)
+        private void View_Update(object sender, UpdateInputArgs<Product> e)
         {
             if (!OpenSession())
                 return;
@@ -66,7 +67,7 @@ namespace RepoConsole.Presenter
 
                 // We should have at least 1 object
                 // if not inform the user and prevent the update
-                if (e.Record.Count == 0)
+                if (e.Entity == null)
                 {
                     OperationFailed(new Exception("No object available!"),
                         "Object to update was missing from the collection!");
@@ -75,13 +76,13 @@ namespace RepoConsole.Presenter
 
                 if (_view.Name != "" || _view.Name != null)
                 {
-                    e.Record[0].Prod_Name = _view.Name;
+                    e.Entity.Prod_Name = _view.Name;
                     isDirty = true;
                 }
 
                 if (_view.Price.HasValue)
                 {
-                    e.Record[0].Price = _view.Price.Value;
+                    e.Entity.Price = _view.Price.Value;
                     isDirty = true;
                 }
 
@@ -96,7 +97,7 @@ namespace RepoConsole.Presenter
                 try
                 {
                     // Update the entity in the DB
-                    _productRepository.Save(e.Record[0]);
+                    _productRepository.Save(e.Entity);
                     _productRepository.Commit();
 
                     UpdateStatus("\nRecord updated successfully!");
@@ -149,7 +150,7 @@ namespace RepoConsole.Presenter
             // Return the object to the view so we can process it
             // update = true, so we will update the entity when we get it back
             // Connection state is recorded so we can check is on update
-            OnObjectReturned?.Invoke(this, new ObjectReturnedArgs<IList<Product>>(output, true, SessionContext.IsLocal()));
+            OnObjectGetReturned?.Invoke(this, new ObjectGetReturnedArgs<Product>(prod, true, SessionContext.IsLocal()));
 
         }
 
@@ -184,7 +185,7 @@ namespace RepoConsole.Presenter
             }
 
             // Return the list of products to the view to display them
-            OnObjectReturned?.Invoke(this, new ObjectReturnedArgs<IList<Product>>(prods, false));
+            OnObjectGetAllReturned?.Invoke(this, new ObjectGetAllReturnedArgs<IList<Product>>(prods));
         }
 
         /// <summary>
@@ -303,7 +304,7 @@ namespace RepoConsole.Presenter
             }
 
             // Return a list of products that we found to display them
-            OnObjectReturned?.Invoke(this, new ObjectReturnedArgs<IList<Product>>(prods, false));
+            OnObjectGetAllReturned?.Invoke(this, new ObjectGetAllReturnedArgs<IList<Product>>(prods));
 
         }
 

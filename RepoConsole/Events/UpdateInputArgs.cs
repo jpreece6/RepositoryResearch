@@ -12,17 +12,17 @@ namespace RepoConsole.Events
     /// <typeparam name="T"></typeparam>
     public class UpdateInputArgs<T> : EventArgs
     {
-        public T Record { get; set; }
+        public T Entity { get; set; }
         public bool IsLocal { get; set; }
 
         public UpdateInputArgs(T record)
         {
-            Record = record;
+            Entity = record;
         }
 
         public UpdateInputArgs(T record, bool isLocal)
         {
-            Record = record;
+            Entity = record;
             IsLocal = isLocal;
         }
     }

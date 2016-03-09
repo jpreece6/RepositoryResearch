@@ -21,7 +21,7 @@ namespace RepoConsole.Views
         public event EventHandler<EventArgs> GetAll;
         public event EventHandler<EventArgs> Remove;
 
-        public event EventHandler<UpdateInputArgs<IList<DataEngine.Entities.Sale>>> Update; 
+        public event EventHandler<UpdateInputArgs<Sale>> Update; 
 
         public int Id { get; set; }
         public int StoreId { get; set; }
@@ -40,7 +40,34 @@ namespace RepoConsole.Views
             _presenter = new SalePresenter(this);
             _presenter.OnUpdateStatus += Presenter_OnUpdateStatus;
             _presenter.OnOperationFail += Presenter_OnOperationFail;
-            _presenter.OnObjectReturned += Presenter_OnObjectReturned;
+            _presenter.OnObjectGetAllReturned += Presenter_OnObjectGetAllReturned;
+            _presenter.OnObjectGetReturned += Presenter_OnObjectGetReturned;
+        }
+
+        private void Presenter_OnObjectGetReturned(object sender, ObjectGetReturnedArgs<Sale> e)
+        {
+            DisplayStatus();
+
+            // If we need to update we ask the user to provide input
+            if (e.Update)
+            {
+                Console.WriteLine("Update (ID: " + e.Entity.Id);
+                Console.WriteLine("NOTE: Leave blank if you don't want to update a field \n");
+                Get_StoreID(null);
+                Get_ProductID(null);
+                Get_Timestamp(null);
+
+                // Tell the presenter to update
+                Update?.Invoke(this, new UpdateInputArgs<Sale>(e.Entity, e.IsLocal));
+            }
+            else
+            {
+                Console.WriteLine("ID: " + e.Entity.Id +
+                                  "\nStore ID: " + e.Entity.StoreId +
+                                  "\nProduct ID: " + e.Entity.ProductId +
+                                  "\nTimestamp: " + e.Entity.Timestamp +
+                                  "\n");
+            }
         }
 
         /// <summary>
@@ -48,32 +75,17 @@ namespace RepoConsole.Views
         /// </summary>
         /// <param name="sender">Event owner</param>
         /// <param name="e">Event args</param>
-        private void Presenter_OnObjectReturned(object sender, ObjectReturnedArgs<IList<DataEngine.Entities.Sale>> e)
+        private void Presenter_OnObjectGetAllReturned(object sender, ObjectGetAllReturnedArgs<IList<DataEngine.Entities.Sale>> e)
         {
-            // If we need to update we ask the user to provide input
-            if (e.Update)
-            {
-                DisplayStatus();
-                Console.WriteLine("Update (ID: " + e.RecordList[0].Id);
-                Console.WriteLine("NOTE: Leave blank if you don't want to update a field \n");
-                Get_StoreID(null);
-                Get_ProductID(null);
-                Get_Timestamp(null);
 
-                // Tell the presenter to update
-                Update?.Invoke(this, new UpdateInputArgs<IList<Sale>>(e.RecordList, e.IsLocal));
-            }
-            else
+            DisplayStatus();
+            foreach (var sale in e.RecordList)
             {
-                DisplayStatus();
-                foreach (var sale in e.RecordList)
-                {
-                    Console.WriteLine("ID: " + sale.Id +
-                                      "\nStore ID: " + sale.StoreId +
-                                      "\nProduct ID: " + sale.ProductId +
-                                      "\nTimestamp: " + sale.Timestamp +
-                                      "\n");
-                }
+                Console.WriteLine("ID: " + sale.Id +
+                                  "\nStore ID: " + sale.StoreId +
+                                  "\nProduct ID: " + sale.ProductId +
+                                  "\nTimestamp: " + sale.Timestamp +
+                                  "\n");
             }
         }
 
@@ -156,7 +168,7 @@ namespace RepoConsole.Views
             Console.WriteLine("Find a Sale\n");
             Console.WriteLine("1: Search by ID");
             Console.WriteLine("2: Search by Store ID");
-            Console.WriteLine("3: Search by Prodict ID");
+            Console.WriteLine("3: Search by Product ID");
             Console.WriteLine("4: Get All");
             Console.WriteLine("5: Back");
             Console.Write("\nChoice: ");

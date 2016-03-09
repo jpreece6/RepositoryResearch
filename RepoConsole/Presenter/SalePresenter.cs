@@ -21,7 +21,8 @@ namespace RepoConsole.Presenter
         private readonly IViewSale _view;
         private readonly SaleRepository<Sale> _saleRepository;
 
-        public event EventHandler<ObjectReturnedArgs<IList<Sale>>> OnObjectReturned;
+        public event EventHandler<ObjectGetReturnedArgs<Sale>> OnObjectGetReturned;
+        public event EventHandler<ObjectGetAllReturnedArgs<IList<Sale>>> OnObjectGetAllReturned;
 
         /// <summary>
         /// Creates new instance of sale presenter
@@ -50,7 +51,7 @@ namespace RepoConsole.Presenter
         /// </summary>
         /// <param name="sender">event owner</param>
         /// <param name="e">Event args</param>
-        private void View_Update(object sender, UpdateInputArgs<IList<Sale>> e)
+        private void View_Update(object sender, UpdateInputArgs<Sale> e)
         {
             if (!OpenSession())
                 return;
@@ -62,7 +63,7 @@ namespace RepoConsole.Presenter
             {
 
                 var isDirty = false;
-                if (e.Record.Count == 0)
+                if (e.Entity == null)
                 {
                     OperationFailed(new Exception("No object available!"),
                         "Object to update was missing from the collection!");
@@ -71,19 +72,19 @@ namespace RepoConsole.Presenter
 
                 if (_view.StoreId != 0)
                 {
-                    e.Record[0].StoreId = _view.StoreId;
+                    e.Entity.StoreId = _view.StoreId;
                     isDirty = true;
                 }
 
                 if (_view.ProductId != 0)
                 {
-                    e.Record[0].ProductId = _view.ProductId;
+                    e.Entity.ProductId = _view.ProductId;
                     isDirty = true;
                 }
 
                 if (_view.Timestamp.HasValue)
                 {
-                    e.Record[0].Timestamp = _view.Timestamp.Value;
+                    e.Entity.Timestamp = _view.Timestamp.Value;
                     isDirty = true;
                 }
 
@@ -98,7 +99,7 @@ namespace RepoConsole.Presenter
                 try
                 {
                     // Update the record
-                    _saleRepository.Save(e.Record[0]);
+                    _saleRepository.Save(e.Entity);
                     _saleRepository.Commit();
 
                     UpdateStatus("\nRecord updated successfully!");
@@ -144,12 +145,8 @@ namespace RepoConsole.Presenter
                 return;
             }
 
-            // Package the sale into a list so we can process it
-            var output = new List<Sale>();
-            output.Add(sale);
-
             // Return the object to the view
-            OnObjectReturned?.Invoke(this, new ObjectReturnedArgs<IList<Sale>>(output, true, SessionContext.IsLocal()));
+            OnObjectGetReturned?.Invoke(this, new ObjectGetReturnedArgs<Sale>(sale, true, SessionContext.IsLocal()));
 
         }
 
@@ -226,7 +223,7 @@ namespace RepoConsole.Presenter
             }
 
             // Return the list of sales to the view
-            OnObjectReturned?.Invoke(this, new ObjectReturnedArgs<IList<Sale>>(sales, false));
+            OnObjectGetAllReturned?.Invoke(this, new ObjectGetAllReturnedArgs<IList<Sale>>(sales));
         }
 
         /// <summary>
@@ -300,7 +297,7 @@ namespace RepoConsole.Presenter
             }
 
             // Return the list of sales back to the view
-            OnObjectReturned?.Invoke(this, new ObjectReturnedArgs<IList<Sale>>(sales, false));
+            OnObjectGetAllReturned?.Invoke(this, new ObjectGetAllReturnedArgs<IList<Sale>>(sales));
 
         }
 
