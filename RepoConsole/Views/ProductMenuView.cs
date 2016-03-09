@@ -174,7 +174,7 @@ namespace RepoConsole.Views
             Get_Name(null);
             Get_Price(Add);
 
-            Console.ReadLine();
+            Console.ReadKey();
         }
 
         /// <summary>
@@ -186,7 +186,7 @@ namespace RepoConsole.Views
             Console.WriteLine("Edit Product\n");
             Get_ID(Edit);
 
-            Console.ReadLine();
+            Console.ReadKey();
         }
 
         /// <summary>
@@ -236,7 +236,7 @@ namespace RepoConsole.Views
                 }
             }
 
-            Console.Read();
+            Console.ReadKey();
         }
 
         /// <summary>
@@ -258,7 +258,7 @@ namespace RepoConsole.Views
             Console.WriteLine("Remove Product\n");
             Get_ID(Remove);
 
-            Console.Read();
+            Console.ReadKey();
         }
 
         /// <summary>
@@ -309,7 +309,10 @@ namespace RepoConsole.Views
             var input = Console.ReadLine();
             float result;
 
-            if (!float.TryParse(input, out result)) return;
+            if (!float.TryParse(input, out result))
+            {
+                Console.WriteLine("\nInvalid price input must be a float (Example: 1 or 1.0)...");   
+            }
 
             Price = result;
             fireEvent?.Invoke(this, EventArgs.Empty);

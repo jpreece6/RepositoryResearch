@@ -166,7 +166,7 @@ namespace RepoConsole.Views
             Get_StoreID(null);
             Get_ProductID(Add);
 
-            Console.ReadLine();
+            Console.ReadKey();
         }
 
         /// <summary>
@@ -178,7 +178,7 @@ namespace RepoConsole.Views
             Console.WriteLine("Edit Store\n");
             Get_ID(Edit);
 
-            Console.ReadLine();
+            Console.ReadKey();
         }
 
         /// <summary>
@@ -226,7 +226,7 @@ namespace RepoConsole.Views
                 } 
             }
 
-            Console.ReadLine();
+            Console.ReadKey();
         }
 
         /// <summary>
@@ -247,7 +247,7 @@ namespace RepoConsole.Views
             Console.WriteLine("Remove Sale\n");
             Get_ID(Remove);
 
-            Console.ReadLine();
+            Console.ReadKey();
         }
 
         /// <summary>

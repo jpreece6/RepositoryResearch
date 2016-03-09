@@ -178,7 +178,7 @@ namespace RepoConsole.Views
             Console.WriteLine("Remove Employee\n");
             Get_ID(Remove);
 
-            Console.ReadLine();
+            Console.ReadKey();
         }
 
         /// <summary>
@@ -191,7 +191,7 @@ namespace RepoConsole.Views
             Console.WriteLine("Edit Employee\n");
             Get_ID(Edit);
 
-            Console.ReadLine();
+            Console.ReadKey();
         }
 
         /// <summary>
@@ -241,7 +241,7 @@ namespace RepoConsole.Views
                         break;
                 }
             }
-            Console.ReadLine();
+            Console.ReadKey();
         }
 
         /// <summary>
@@ -254,7 +254,7 @@ namespace RepoConsole.Views
             Get_Name(null);
             Get_StoreID(Add);
 
-            Console.ReadLine();
+            Console.ReadKey();
         }
 
         /// <summary>
