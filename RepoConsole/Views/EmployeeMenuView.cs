@@ -199,7 +199,7 @@ namespace RepoConsole.Views
         public void Show_Get()
         {
             DisplayStatus();
-            Console.WriteLine("Employee Info\n");
+            Console.WriteLine("Find Employee(s)\n");
             Console.WriteLine("1: Search by ID");
             Console.WriteLine("2: Search by Name");
             Console.WriteLine("3: Search by Store");
@@ -238,7 +238,8 @@ namespace RepoConsole.Views
                         break;
                 }
             }
-            Console.ReadKey();
+
+            if (result != 5) Console.ReadKey();
         }
 
         /// <summary>

@@ -185,7 +185,7 @@ namespace RepoConsole.Views
         public void Show_Get()
         {
             DisplayStatus();
-            Console.WriteLine("Find a Sale\n");
+            Console.WriteLine("Find Sale(s)\n");
             Console.WriteLine("1: Search by ID");
             Console.WriteLine("2: Search by Store ID");
             Console.WriteLine("3: Search by Product ID");
@@ -223,7 +223,7 @@ namespace RepoConsole.Views
                 } 
             }
 
-            Console.ReadKey();
+            if (result != 5) Console.ReadKey();
         }
 
         /// <summary>
