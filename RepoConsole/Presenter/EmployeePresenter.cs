@@ -71,7 +71,7 @@ namespace RepoConsole.Presenter
                     return;
                 }
 
-                if (_view.FirstName != "" || _view.FirstName != null)
+                if (!string.IsNullOrEmpty(_view.FirstName))
                 {
                     e.Entity.FirstName = _view.FirstName;
                     isDirty = true;

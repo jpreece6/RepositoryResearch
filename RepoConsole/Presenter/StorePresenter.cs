@@ -70,7 +70,7 @@ namespace RepoConsole.Presenter
                     return;
                 }
 
-                if (_view.StoreName != "" || _view.StoreName != null)
+                if (!string.IsNullOrEmpty(_view.StoreName))
                 {
                     e.Entity.StoreName = _view.StoreName;
                 }

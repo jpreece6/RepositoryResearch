@@ -74,7 +74,7 @@ namespace RepoConsole.Presenter
                     return;
                 }
 
-                if (_view.Name != "" || _view.Name != null)
+                if (!string.IsNullOrEmpty(_view.Name))
                 {
                     e.Entity.Prod_Name = _view.Name;
                     isDirty = true;
