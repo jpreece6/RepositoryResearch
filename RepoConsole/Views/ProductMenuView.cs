@@ -234,7 +234,7 @@ namespace RepoConsole.Views
                 }
             }
 
-            Console.ReadKey();
+            if (result != 5) Console.ReadKey();
         }
 
         /// <summary>
@@ -309,10 +309,14 @@ namespace RepoConsole.Views
 
             if (!float.TryParse(input, out result))
             {
-                Console.WriteLine("\nInvalid price input must be a float (Example: 1 or 1.0)...");   
+                Console.WriteLine("\nInvalid price input must be a float (Example: 1 or 1.0)...\n\nSkipping field..");
+                Price = null;
+            }
+            else
+            {
+                Price = result;
             }
 
-            Price = result;
             fireEvent?.Invoke(this, EventArgs.Empty);
         }
 
