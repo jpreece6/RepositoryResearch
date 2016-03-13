@@ -47,8 +47,7 @@ namespace RepoConsole.Views
         {
             Console.Clear();
             DisplayStatus();
-            Console.WriteLine(e.Status);
-            Console.WriteLine("\nPress any key to continue...");
+            Console.WriteLine($"{e.Status}\n\nPress any key to continue...");
             Console.ReadKey();
         }
 
@@ -59,7 +58,7 @@ namespace RepoConsole.Views
             // If we're updating then ask the user for input
             if (e.Update)
             {
-                Console.WriteLine("Update (ID: " + e.Entity.Id + ") - " + e.Entity.StoreName);
+                Console.WriteLine($"Update (ID: {e.Entity.Id}) - {e.Entity.StoreName}");
                 Console.WriteLine("NOTE: Leave blank if you don't want to update a field \n");
                 Get_Name(null);
 
@@ -68,9 +67,7 @@ namespace RepoConsole.Views
             }
             else
             {
-                Console.WriteLine("ID: " + e.Entity.Id +
-                                    "\nName: " + e.Entity.StoreName +
-                                    "\n");
+                Console.WriteLine($"ID: {e.Entity.Id}\nName: {e.Entity.StoreName}\n");
             }
         }
 
@@ -85,9 +82,7 @@ namespace RepoConsole.Views
             var index = 0;
             foreach (var store in e.RecordList)
             {
-                Console.WriteLine("ID: " + store.Id +
-                                    "\nName: " + store.StoreName +
-                                    "\n");
+                Console.WriteLine($"ID: {store.Id}\nName: {store.StoreName}\n");
                 if (++index == 20)
                 {
                     Console.Write("More...");
@@ -108,7 +103,7 @@ namespace RepoConsole.Views
         {
             DisplayStatus();
             Console.WriteLine(e.Status);
-            Console.WriteLine("\nError: " + (e.ExceptionObject.InnerException?.Message ?? e.ExceptionObject.Message));
+            Console.WriteLine($"\nError: {(e.ExceptionObject.InnerException?.Message ?? e.ExceptionObject.Message)}");
             Console.Write("\n\nPress any key to continue...");
             Console.ReadKey();
         }

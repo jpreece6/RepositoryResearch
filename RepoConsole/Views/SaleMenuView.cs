@@ -50,8 +50,7 @@ namespace RepoConsole.Views
         {
             Console.Clear();
             DisplayStatus();
-            Console.WriteLine(e.Status);
-            Console.WriteLine("\nPress any key to continue...");
+            Console.WriteLine($"{e.Status}\nPress any key to continue...");
             Console.ReadKey();
         }
 
@@ -62,7 +61,7 @@ namespace RepoConsole.Views
             // If we need to update we ask the user to provide input
             if (e.Update)
             {
-                Console.WriteLine("Update (ID: " + e.Entity.Id);
+                Console.WriteLine($"Update (ID: {e.Entity.Id})");
                 Console.WriteLine("NOTE: Leave blank if you don't want to update a field \n");
                 Get_StoreID(null);
                 Get_ProductID(null);
@@ -73,11 +72,9 @@ namespace RepoConsole.Views
             }
             else
             {
-                Console.WriteLine("ID: " + e.Entity.Id +
-                                  "\nStore ID: " + e.Entity.StoreId +
-                                  "\nProduct ID: " + e.Entity.ProductId +
-                                  "\nTimestamp: " + e.Entity.SaleTime +
-                                  "\n");
+                Console.WriteLine($"ID: {e.Entity.Id}\nStore ID: {e.Entity.StoreId}" +
+                                  $"\nProduct ID: {e.Entity.ProductId}" +
+                                  $"\nTimestamp: {e.Entity.SaleTime}\n");
             }
         }
 
@@ -93,11 +90,10 @@ namespace RepoConsole.Views
             var index = 0;
             foreach (var sale in e.RecordList)
             {
-                Console.WriteLine("ID: " + sale.Id +
-                                  "\nStore ID: " + sale.StoreId +
-                                  "\nProduct ID: " + sale.ProductId +
-                                  "\nTimestamp: " + sale.SaleTime +
-                                  "\n");
+                Console.WriteLine($"ID: {sale.Id}" +
+                                  $"\nStore ID: {sale.StoreId}" +
+                                  $"\nProduct ID: {sale.ProductId}" +
+                                  $"\nTimestamp: {sale.SaleTime}\n");
 
                 if (++index == 20)
                 {
@@ -119,7 +115,7 @@ namespace RepoConsole.Views
         {
             DisplayStatus();
             Console.WriteLine(e.Status);
-            Console.WriteLine("Error: " + (e.ExceptionObject.InnerException?.Message ?? e.ExceptionObject.Message));
+            Console.WriteLine($"Error: {(e.ExceptionObject.InnerException?.Message ?? e.ExceptionObject.Message)}");
             Console.Write("\n\nPress any key to continue...");
             Console.ReadKey();
         }

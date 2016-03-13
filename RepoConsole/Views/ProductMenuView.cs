@@ -47,8 +47,7 @@ namespace RepoConsole.Views
         {
             Console.Clear();
             DisplayStatus();
-            Console.WriteLine(e.Status);
-            Console.WriteLine("\nPress any key to continue...");
+            Console.WriteLine($"{e.Status}\nPress any key to continue...");
             Console.ReadKey();
         }
 
@@ -59,7 +58,7 @@ namespace RepoConsole.Views
             // If update is true then ask for input to update the object
             if (e.Update)
             {
-                Console.WriteLine("Updating (ID: " + e.Entity.Id + ") " + e.Entity.Prod_Name);
+                Console.WriteLine($"Updating (ID: {e.Entity.Id}) {e.Entity.Prod_Name}");
                 Console.WriteLine("NOTE: Leave blank if you don't want to update a field \n");
                 Get_Name(null);
                 Get_Price(null);
@@ -69,10 +68,9 @@ namespace RepoConsole.Views
             }
             else
             {
-                Console.WriteLine("ID: " + e.Entity.Id +
-                                  "\nName: " + e.Entity.Prod_Name +
-                                  "\nPrice: " + e.Entity.Price +
-                                  "\n");
+                Console.WriteLine($"ID: {e.Entity.Id}" +
+                                  $"\nName: {e.Entity.Prod_Name}" +
+                                  $"\nPrice: {e.Entity.Price}\n");
             }
         }
 
@@ -89,10 +87,10 @@ namespace RepoConsole.Views
             var index = 0;
             foreach (var product in e.RecordList)
             {
-                Console.WriteLine("ID: " + product.Id +
-                                  "\nName: " + product.Prod_Name +
-                                  "\nPrice: " + product.Price +
-                                  "\n");
+                Console.WriteLine($"ID: {product.Id}" +
+                                  $"\nName: {product.Prod_Name}" +
+                                  $"\nPrice: {product.Price}\n");
+
                 if (++index == 20)
                 {
                     Console.Write("More...");
@@ -113,7 +111,7 @@ namespace RepoConsole.Views
         {
             DisplayStatus();
             Console.WriteLine(e.Status);
-            Console.WriteLine("Error: " + (e.ExceptionObject.InnerException?.Message ?? e.ExceptionObject.Message));
+            Console.WriteLine($"Error: {(e.ExceptionObject.InnerException?.Message ?? e.ExceptionObject.Message)}");
             Console.Write("\n\nPress any key to continue...");
             Console.ReadKey();
         }
