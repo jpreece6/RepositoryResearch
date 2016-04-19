@@ -7,6 +7,11 @@ using RepoConsole.Events;
 
 namespace RepoConsole.Views
 {
+    /// <summary>
+    /// Defines the attributes of the store entity
+    /// would have liked this to inherit from IEntity but
+    /// due to the ID property being protected this is not possible
+    /// </summary>
     public interface IViewStore : IView
     {
         int Id { get; set; }

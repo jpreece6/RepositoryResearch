@@ -7,7 +7,7 @@ using System.Threading.Tasks;
 namespace RepoConsole.Events
 {
     /// <summary>
-    /// 
+    /// Passes the updated eneity back to the presenter to be sent to be processed
     /// </summary>
     /// <typeparam name="T"></typeparam>
     public class UpdateInputArgs<T> : EventArgs

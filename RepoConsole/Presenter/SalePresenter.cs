@@ -260,7 +260,6 @@ namespace RepoConsole.Presenter
                     return;
                 }
 
-                // TODO REPLACE
                 UpdateStatus("ID: " + sale.Id +
                              "\nStore ID: " + sale.StoreId +
                              "\nProduct ID: " + sale.ProductId +

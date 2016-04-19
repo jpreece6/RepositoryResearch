@@ -8,6 +8,9 @@ using FluentNHibernate.Mapping;
 
 namespace DataEngine.Mapping
 {
+    /// <summary>
+    /// Tells the ORM which eneity and attributes to map to the employee table
+    /// </summary>
     public class SyncRecordMap : ClassMap<SyncRecord>
     {
         public SyncRecordMap()

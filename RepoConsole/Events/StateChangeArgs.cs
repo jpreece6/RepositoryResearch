@@ -6,6 +6,9 @@ using System.Threading.Tasks;
 
 namespace RepoConsole.Events
 {
+    /// <summary>
+    /// Resturns a state message when the network state changes
+    /// </summary>
     public class StateChangeArgs : EventArgs
     {
         public string Status { get; set; }

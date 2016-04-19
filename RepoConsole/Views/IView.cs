@@ -8,6 +8,10 @@ using RepoConsole.Events;
 
 namespace RepoConsole.Views
 {
+    /// <summary>
+    /// Enfore all views to include the
+    /// followinf methods
+    /// </summary>
     public interface IView
     {
         event EventHandler<EventArgs> Add;

@@ -11,9 +11,7 @@ using SyncEngine.Events;
 
 namespace SyncEngine
 {
-    // TODO TALK ABOUT GENERIC ISSUES WHERE YOU CANT HAVE DIFFERENT TYPES EVEN INTERFACES
-    // TODO - Note the addition of sync records to update references
-    // TODO - talk about possibly syncing all data down then back up
+
     /// <summary>
     /// Sync manager handles all sync functions from the local
     /// database to the remote database

@@ -112,7 +112,7 @@ namespace DataEngine.Contexts
                 using (var transaction = Session.BeginTransaction())
                 {
                     transaction.Commit(); // Commit changes to database
-                    Session.Clear(); // TODO FIND FIX!!!! FOR JEDRIVER AUTONUMBER
+                    Session.Clear(); // TODO FIX FOR JEDRIVER AUTONUMBER
                 }
             }
             catch (Exception ex)

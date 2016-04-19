@@ -3,6 +3,9 @@ using Employee = DataEngine.Entities.Employee;
 
 namespace DataEngine.Mapping
 {
+    /// <summary>
+    /// Tells the ORM which eneity and attributes to map to the employee table
+    /// </summary>
     public class EmployeeMap : ClassMap<Employee>
     {
         public EmployeeMap()
