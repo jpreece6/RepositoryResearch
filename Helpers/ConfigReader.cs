@@ -6,6 +6,7 @@ namespace Helpers
 {
     /// <summary>
     /// Config reader allows us to read a
+    /// 
     /// XML settings file and query any elements from the root node.
     /// </summary>
     public class ConfigReader

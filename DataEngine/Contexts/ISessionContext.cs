@@ -3,6 +3,9 @@ using NHibernate;
 
 namespace DataEngine.Contexts
 {
+    /// <summary>
+    /// Interface to expose session methods to the repositories
+    /// </summary>
     public interface ISessionContext
     {
         ISession Session { get; }

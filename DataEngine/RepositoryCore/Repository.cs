@@ -15,6 +15,7 @@ namespace DataEngine.RepositoryCore
     /// <typeparam name="T"></typeparam>
     public abstract class Repository<T> : IRepository<T> where T : class
     {
+        // Session object used to store the connection to the database/source
         protected readonly ISessionContext SessionContext;
 
         protected Repository()
@@ -27,7 +28,7 @@ namespace DataEngine.RepositoryCore
         }
 
         /// <summary>
-        /// Add a new object to the DAL
+        /// Add a new object to the Data-Access-Layer DAL
         /// </summary>
         /// <param name="tData">Object to store</param>
         public virtual void Save(T tData)
