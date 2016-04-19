@@ -3,6 +3,9 @@ using System.Collections.Generic;
 
 namespace DataEngine.RepositoryCore
 {
+    /// <summary>
+    /// Base repository interface def
+    /// </summary>
     public interface IRepository
     {
         int Count();
@@ -10,6 +13,10 @@ namespace DataEngine.RepositoryCore
         void Commit();
     }
 
+    /// <summary>
+    /// Extends the base repository interface with a generic version
+    /// </summary>
+    /// <typeparam name="T"></typeparam>
     public interface IRepository<T> : IRepository where T : class
     {
         void Save(T tData);
